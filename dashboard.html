@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dashboard · Altiora</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.dash-wrap { max-width: 1100px; margin: 0 auto; padding: 52px 40px 100px; }
+
+.greeting { margin-bottom: 48px; }
+.greeting-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+.greeting-name  { font-size: 44px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; }
+.greeting-sub   { font-size: 16px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+
+.book-banner {
+  display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  background: linear-gradient(135deg,rgba(255,107,0,.12),rgba(255,107,0,.05));
+  border: 1px solid rgba(255,107,0,.22); border-radius: 22px; padding: 28px 32px; margin-bottom: 32px;
+}
+.book-banner-text  { font-size: 16px; font-weight: 700; }
+.book-banner-sub   { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 26px 22px;
+  transition: transform .3s, border-color .3s;
+}
+.stat-card:hover { transform: translateY(-3px); border-color: rgba(79,195,247,.22); }
+.stat-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 10px; }
+.stat-value { font-size: 28px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+.stat-value em { color: var(--accent); font-style: normal; }
+.stat-sub   { font-size: 12px; color: var(--muted2); margin-top: 6px; }
+
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dash-col  { display: flex; flex-direction: column; gap: 20px; }
+
+.d-card {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 24px; padding: 32px; position: relative; overflow: hidden;
+}
+.d-card-title {
+  font-size: 14px; font-weight: 700; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 9px;
+}
+.d-card-title::before { content:''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; flex-shrink: 0; }
+.card-glow { position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: radial-gradient(circle,rgba(79,195,247,.07) 0%,transparent 70%); pointer-events: none; }
+
+/* ALT DISPLAY */
+.alt-row   { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.alt-big   { font-size: 72px; font-weight: 900; letter-spacing: -4px; line-height: 1; }
+.alt-big em { color: var(--accent); font-style: normal; }
+.alt-unit  { font-size: 22px; color: var(--muted); }
+.alt-cmp   { font-size: 14px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+.alt-cmp strong { color: var(--accent); font-weight: 600; }
+.prog-track { height: 6px; background: rgba(255,255,255,.06); border-radius: 100px; overflow: hidden; margin-bottom: 10px; }
+.prog-fill  { height: 100%; background: linear-gradient(90deg,rgba(79,195,247,.6),var(--accent)); border-radius: 100px; width: 0; transition: width 1.8s cubic-bezier(.4,0,.2,1); }
+.prog-ends  { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted2); margin-bottom: 22px; }
+.level-chip {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: rgba(79,195,247,.07); border: 1px solid rgba(79,195,247,.2);
+  border-radius: 14px; padding: 14px 18px;
+}
+.level-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(79,195,247,.14); border: 1px solid rgba(79,195,247,.22); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.level-name-d { font-size: 15px; font-weight: 800; }
+.level-sub-d  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* TRIP HISTORY */
+.trip-list { display: flex; flex-direction: column; gap: 10px; }
+.trip-row {
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(255,255,255,.025); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 16px 20px; transition: all .25s;
+}
+.trip-row:hover { border-color: rgba(79,195,247,.22); background: rgba(79,195,247,.03); }
+.trip-type-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.trip-r-info { flex: 1; }
+.trip-r-name { font-size: 14px; font-weight: 700; }
+.trip-r-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.trip-gain { text-align: right; }
+.trip-gain-num   { font-size: 15px; font-weight: 800; color: var(--accent); }
+.trip-gain-label { font-size: 11px; color: var(--muted2); margin-top: 2px; }
+.trip-status { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 6px; }
+.ts-done { background: rgba(46,204,113,.1); border: 1px solid rgba(46,204,113,.2); color: #2ecc71; }
+.ts-conf { background: rgba(79,195,247,.08); border: 1px solid rgba(79,195,247,.2); color: var(--accent); }
+
+/* PEAK LADDER */
+.mini-ladder { display: flex; flex-direction: column; gap: 4px; }
+.mini-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border-radius: 14px; transition: background .2s;
+}
+.mini-row:hover { background: rgba(79,195,247,.04); }
+.mini-row.active-p { background: rgba(79,195,247,.07); border: 1px solid rgba(79,195,247,.13); }
+.mini-row.locked-p { opacity: .35; }
+.mini-mk { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.mk-d { background: rgba(79,195,247,.1);  border: 1px solid rgba(79,195,247,.2); }
+.mk-a { background: rgba(255,107,0,.12);  border: 1px solid rgba(255,107,0,.24); }
+.mk-l { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
+.mini-info { flex: 1; }
+.mini-name { font-size: 13px; font-weight: 700; }
+.mini-alt  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.mini-badge { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 7px; white-space: nowrap; }
+.mb-d { background: rgba(79,195,247,.08); border: 1px solid rgba(79,195,247,.2); color: var(--accent); }
+.mb-a { background: rgba(255,107,0,.1);   border: 1px solid rgba(255,107,0,.22); color: #FF8C38; }
+.mb-l { color: var(--muted2); font-size: 10px; }
+
+/* CREW */
+.crew-display {
+  display: flex; align-items: center; gap: 18px;
+  background: rgba(255,184,0,.05); border: 1px solid rgba(255,184,0,.14);
+  border-radius: 18px; padding: 20px 22px; margin-bottom: 16px;
+}
+.crew-avi-d { width: 46px; height: 46px; border-radius: 13px; background: rgba(255,184,0,.12); border: 1px solid rgba(255,184,0,.22); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.crew-d-name { font-size: 15px; font-weight: 800; }
+.crew-d-mem  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.crew-d-alt  { margin-left: auto; text-align: right; }
+.crew-d-num  { font-size: 20px; font-weight: 900; color: #FFB800; }
+.crew-d-lbl  { font-size: 11px; color: var(--muted2); margin-top: 2px; }
+.crew-bar-track { height: 3px; background: rgba(255,255,255,.06); border-radius: 100px; overflow: hidden; margin-bottom: 8px; }
+.crew-bar-fill  { height: 100%; background: #FFB800; border-radius: 100px; }
+.crew-rank-note { font-size: 12px; color: var(--muted); }
+.crew-rank-note strong { color: #FFB800; }
+
+@media (max-width: 860px) {
+  .dash-wrap { padding: 36px 20px 80px; }
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .greeting-name { font-size: 34px; }
+  .book-banner { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">ALT<em>I</em>ORA</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html">Expeditions</a></li>
+    <li><a href="index.html#crews">Crews</a></li>
+    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-pill"><span class="dot"></span>39,500 ft</div>
+    <a href="login.html" class="btn-nav-outline">Sign Out</a>
+  </div>
+</nav>
+
+<div class="dash-wrap">
+
+  <div class="greeting fade-in">
+    <div class="greeting-label">Altitude Dashboard</div>
+    <div class="greeting-name">Good morning, Rahul.</div>
+    <div class="greeting-sub">You've earned 39,500 ft of altitude. Summiteer level — keep climbing.</div>
+  </div>
+
+  <!-- BOOK BANNER -->
+  <div class="book-banner fade-in">
+    <div>
+      <div class="book-banner-text">Ready for your next expedition?</div>
+      <div class="book-banner-sub">2026 season — spots filling fast. Every trip adds altitude to your profile.</div>
+    </div>
+    <a href="expeditions.html" class="btn-primary" style="font-size:14px;padding:14px 26px;white-space:nowrap">Browse Expeditions →</a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row fade-in">
+    <div class="stat-card">
+      <div class="stat-label">Total Altitude</div>
+      <div class="stat-value"><em>39,500</em> ft</div>
+      <div class="stat-sub">Your cumulative score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Current Level</div>
+      <div class="stat-value" style="font-size:20px">Summiteer</div>
+      <div class="stat-sub">Top 8% of travelers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Trips Completed</div>
+      <div class="stat-value"><em>3</em></div>
+      <div class="stat-sub">Confirmed expeditions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">To Next Level</div>
+      <div class="stat-value" style="font-size:18px;color:var(--muted)">10,500 ft</div>
+      <div class="stat-sub">to reach Everest Class</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="dash-grid">
+
+    <div class="dash-col">
+
+      <!-- Altitude Tracker -->
+      <div class="d-card fade-in">
+        <div class="card-glow"></div>
+        <div class="d-card-title">Altitude Tracker</div>
+        <div class="alt-row">
+          <div class="alt-big">39,<em>500</em></div>
+          <div class="alt-unit">ft</div>
+        </div>
+        <p class="alt-cmp">You've climbed higher than <strong>Mount Fuji × 3</strong></p>
+        <div class="prog-track"><div class="prog-fill" id="dashProg"></div></div>
+        <div class="prog-ends"><span>Summiteer · 50K ft</span><span>Everest Class · 100K ft</span></div>
+        <div class="level-chip">
+          <div class="level-icon">🏔</div>
+          <div>
+            <div class="level-name-d">Summiteer</div>
+            <div class="level-sub-d">10,500 ft to Everest Class</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trip History -->
+      <div class="d-card fade-in">
+        <div class="d-card-title">Trip History</div>
+        <div class="trip-list">
+          <div class="trip-row">
+            <div class="trip-type-dot" style="background:#4FC3F7"></div>
+            <div class="trip-r-info">
+              <div class="trip-r-name">Spiti Valley Deep Run</div>
+              <div class="trip-r-meta">Sep 2025 · 4×4 Expedition</div>
+            </div>
+            <span class="trip-status ts-done">Completed</span>
+            <div class="trip-gain"><div class="trip-gain-num">+18,380 ft</div><div class="trip-gain-label">altitude</div></div>
+          </div>
+          <div class="trip-row">
+            <div class="trip-type-dot" style="background:#FF8C38"></div>
+            <div class="trip-r-info">
+              <div class="trip-r-name">Manali–Leh Royal Ride</div>
+              <div class="trip-r-meta">Jul 2025 · Bike Expedition</div>
+            </div>
+            <span class="trip-status ts-done">Completed</span>
+            <div class="trip-gain"><div class="trip-gain-num">+17,600 ft</div><div class="trip-gain-label">altitude</div></div>
+          </div>
+          <div class="trip-row">
+            <div class="trip-type-dot" style="background:#2ecc71"></div>
+            <div class="trip-r-info">
+              <div class="trip-r-name">Pin Parvati Pass Trek</div>
+              <div class="trip-r-meta">Aug 2026 · Trek · Upcoming</div>
+            </div>
+            <span class="trip-status ts-conf">Confirmed</span>
+            <div class="trip-gain"><div class="trip-gain-num">+15,400 ft</div><div class="trip-gain-label">on completion</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="dash-col">
+
+      <!-- Peak Ladder -->
+      <div class="d-card fade-in">
+        <div class="d-card-title">Peak Ladder</div>
+        <div class="mini-ladder">
+          <div class="mini-row locked-p">
+            <div class="mini-mk mk-l">🔒</div>
+            <div class="mini-info"><div class="mini-name">Legend</div><div class="mini-alt">200,000 ft · Only 12 worldwide</div></div>
+            <span class="mini-badge mb-l">Lifetime perks</span>
+          </div>
+          <div class="mini-row locked-p">
+            <div class="mini-mk mk-l">🔒</div>
+            <div class="mini-info"><div class="mini-name">Everest Class</div><div class="mini-alt">100,000 ft · 60,500 ft to go</div></div>
+            <span class="mini-badge mb-l">Priority + merch</span>
+          </div>
+          <div class="mini-row active-p">
+            <div class="mini-mk mk-a">🔥</div>
+            <div class="mini-info"><div class="mini-name">Summiteer</div><div class="mini-alt">50,000 ft · Active level</div></div>
+            <span class="mini-badge mb-a">Active</span>
+          </div>
+          <div class="mini-row">
+            <div class="mini-mk mk-d">✓</div>
+            <div class="mini-info"><div class="mini-name">Climber</div><div class="mini-alt">20,000 ft · Unlocked</div></div>
+            <span class="mini-badge mb-d">Unlocked</span>
+          </div>
+          <div class="mini-row">
+            <div class="mini-mk mk-d">✓</div>
+            <div class="mini-info"><div class="mini-name">Explorer</div><div class="mini-alt">0 ft · Starting level</div></div>
+            <span class="mini-badge mb-d">Unlocked</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crew -->
+      <div class="d-card fade-in">
+        <div class="d-card-title">Your Crew</div>
+        <div class="crew-display">
+          <div class="crew-avi-d">🏔</div>
+          <div>
+            <div class="crew-d-name">Frozen Horizon</div>
+            <div class="crew-d-mem">6 core members · Delhi base</div>
+          </div>
+          <div class="crew-d-alt">
+            <div class="crew-d-num">248K</div>
+            <div class="crew-d-lbl">ft total</div>
+          </div>
+        </div>
+        <div class="crew-bar-track"><div class="crew-bar-fill" id="crewBar"></div></div>
+        <div class="crew-rank-note">Currently ranked <strong>#2 on the leaderboard</strong> — 72K ft behind #1</div>
+        <div style="margin-top:20px;display:flex;gap:10px">
+          <a href="index.html#crews" class="btn-accent" style="flex:1;text-align:center">View Leaderboard</a>
+          <a href="expeditions.html" class="btn-accent" style="flex:1;text-align:center">Add Altitude</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-logo">ALT<em>I</em>ORA</div>
+  <ul class="foot-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html">Expeditions</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="login.html">Sign In</a></li>
+  </ul>
+  <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+setTimeout(() => {
+  const p = document.getElementById('dashProg');
+  const c = document.getElementById('crewBar');
+  if (p) p.style.width = '20%';  // 39,500 / (100,000-50,000) within Summiteer band
+  if (c) c.style.width = '77%';
+}, 500);
+</script>
+</body>
+</html>
