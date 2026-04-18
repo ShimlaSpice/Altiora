@@ -336,6 +336,691 @@
   <div class="scroll-hint"><div class="scroll-line"></div>Scroll to ascend</div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     ALTITUDE JOURNEY — Pure SVG/CSS vector descent: peak → plains
+     ═══════════════════════════════════════════════════════════════ -->
+<style>
+
+/* ── Shared journey shell ───────────────────────────────────────── */
+.journey { position: relative; overflow: hidden; }
+
+.jscene {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* SVG canvas behind every scene */
+.jscene-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Content above SVG */
+.jscene-body {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+  padding: 0 24px;
+  max-width: 680px;
+}
+
+/* Shared text styles */
+.j-label {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 3px;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 12px; opacity: .85;
+}
+.j-title {
+  font-size: clamp(30px,5vw,58px); font-weight: 900;
+  letter-spacing: -1.5px; line-height: 1.07; color: #fff;
+  margin-bottom: 16px;
+}
+.j-sub {
+  font-size: 16.5px; color: rgba(168,179,194,.9);
+  line-height: 1.72; font-weight: 400; max-width: 520px; margin: 0 auto;
+}
+.j-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(79,195,247,.1); border: 1px solid rgba(79,195,247,.25);
+  color: var(--accent); font-size: 11.5px; font-weight: 700;
+  padding: 6px 15px; border-radius: 100px; letter-spacing: .4px;
+  margin-bottom: 20px;
+}
+.j-pill-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+/* Edge fades: blend scenes into each other */
+.j-fade-top {
+  position: absolute; top: 0; left: 0; right: 0; height: 130px;
+  background: linear-gradient(to bottom, var(--bg), transparent);
+  z-index: 3; pointer-events: none;
+}
+.j-fade-bot {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 130px;
+  background: linear-gradient(to top, var(--bg), transparent);
+  z-index: 3; pointer-events: none;
+}
+
+/* Content fade-in via scroll */
+.j-reveal {
+  opacity: 0; transform: translateY(22px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.j-reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── Cloud animations (subtle, CSS only) ──────────────────────── */
+@keyframes cloudDrift1 { 0%,100% { transform: translateX(0); } 50% { transform: translateX(18px); } }
+@keyframes cloudDrift2 { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-14px); } }
+@keyframes cloudDrift3 { 0%,100% { transform: translateX(0); } 50% { transform: translateX(10px); } }
+.cloud-drift-1 { animation: cloudDrift1 22s ease-in-out infinite; }
+.cloud-drift-2 { animation: cloudDrift2 28s ease-in-out infinite; }
+.cloud-drift-3 { animation: cloudDrift3 18s ease-in-out infinite; }
+
+/* ── Star twinkle ─────────────────────────────────────────────── */
+@keyframes twinkle { 0%,100%{opacity:.7} 50%{opacity:.15} }
+
+/* ── Progress rail (left edge) ────────────────────────────────── */
+.j-progress {
+  position: fixed; left: 26px; top: 50%; transform: translateY(-50%);
+  z-index: 200; display: flex; flex-direction: column; gap: 9px;
+  opacity: 0; transition: opacity .4s ease; pointer-events: none;
+}
+.j-progress.vis { opacity: 1; }
+.j-pdot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.18);
+  transition: background .3s, transform .3s;
+}
+.j-pdot.on { background: var(--accent); transform: scale(1.5); }
+
+/* ── Booking card ─────────────────────────────────────────────── */
+.j-booking-card {
+  background: rgba(10,16,26,.86);
+  border: 1px solid rgba(79,195,247,.18);
+  border-radius: 28px; padding: 52px 52px;
+  backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(79,195,247,.06);
+  max-width: 600px; width: 100%; text-align: center;
+}
+.j-booking-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
+
+@media (max-width: 860px) {
+  .j-progress { display: none; }
+  .j-booking-card { padding: 36px 22px; }
+  .j-title { font-size: clamp(26px,7vw,42px); }
+}
+</style>
+
+<!-- Fixed progress rail -->
+<div class="j-progress" id="jProgress">
+  <div class="j-pdot on"  data-ji="0"></div>
+  <div class="j-pdot"     data-ji="1"></div>
+  <div class="j-pdot"     data-ji="2"></div>
+  <div class="j-pdot"     data-ji="3"></div>
+  <div class="j-pdot"     data-ji="4"></div>
+</div>
+
+<div class="journey" id="altJourney">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCENE 1 · HIGHEST PEAK · Star-dusted sky, geometric summit
+     ══════════════════════════════════════════════════════════════ -->
+<div class="jscene" data-ji="0">
+  <div class="j-fade-bot"></div>
+
+  <svg class="jscene-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Deep space sky gradient -->
+      <linearGradient id="sk1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#020508"/>
+        <stop offset="40%"  stop-color="#050d1a"/>
+        <stop offset="100%" stop-color="#080c11"/>
+      </linearGradient>
+      <!-- Peak snow highlight -->
+      <linearGradient id="snow1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#d4eaf7" stop-opacity=".95"/>
+        <stop offset="60%" stop-color="#4FC3F7" stop-opacity=".2"/>
+        <stop offset="100%" stop-color="#080c11" stop-opacity="0"/>
+      </linearGradient>
+      <!-- Accent glow radial -->
+      <radialGradient id="pkglow" cx="50%" cy="32%" r="38%">
+        <stop offset="0%"   stop-color="#4FC3F7" stop-opacity=".11"/>
+        <stop offset="100%" stop-color="#4FC3F7" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Star glow -->
+      <radialGradient id="starglow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"  stop-color="#fff" stop-opacity=".9"/>
+        <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- Sky fill -->
+    <rect width="1400" height="900" fill="url(#sk1)"/>
+
+    <!-- Stars scattered -->
+    <g opacity=".85">
+      <circle cx="120"  cy="60"  r="1"   fill="#fff" style="animation:twinkle 3.1s ease-in-out infinite"/>
+      <circle cx="280"  cy="30"  r="1.3" fill="#fff" style="animation:twinkle 4.4s ease-in-out infinite 1s"/>
+      <circle cx="420"  cy="80"  r=".8"  fill="#fff" style="animation:twinkle 2.8s ease-in-out infinite .5s"/>
+      <circle cx="560"  cy="22"  r="1.1" fill="#fff" style="animation:twinkle 5.2s ease-in-out infinite 2s"/>
+      <circle cx="680"  cy="55"  r="1.4" fill="#c8e8f8" style="animation:twinkle 3.7s ease-in-out infinite .3s"/>
+      <circle cx="820"  cy="18"  r=".9"  fill="#fff" style="animation:twinkle 4.1s ease-in-out infinite 1.5s"/>
+      <circle cx="950"  cy="70"  r="1.2" fill="#fff" style="animation:twinkle 3.3s ease-in-out infinite .8s"/>
+      <circle cx="1080" cy="35"  r="1"   fill="#d8f0ff" style="animation:twinkle 4.8s ease-in-out infinite .2s"/>
+      <circle cx="1200" cy="58"  r="1.3" fill="#fff" style="animation:twinkle 2.9s ease-in-out infinite 1.2s"/>
+      <circle cx="1340" cy="26"  r=".8"  fill="#fff" style="animation:twinkle 5.5s ease-in-out infinite .7s"/>
+      <circle cx="200"  cy="140" r=".7"  fill="#fff" style="animation:twinkle 3.6s ease-in-out infinite 2.1s"/>
+      <circle cx="380"  cy="160" r="1"   fill="#fff" style="animation:twinkle 4.2s ease-in-out infinite .4s"/>
+      <circle cx="780"  cy="130" r=".9"  fill="#c8e8f8" style="animation:twinkle 3.8s ease-in-out infinite 1.8s"/>
+      <circle cx="1120" cy="145" r="1.1" fill="#fff" style="animation:twinkle 5.0s ease-in-out infinite .9s"/>
+      <circle cx="1300" cy="110" r=".8"  fill="#fff" style="animation:twinkle 3.4s ease-in-out infinite 1.3s"/>
+    </g>
+
+    <!-- Accent glow behind peak -->
+    <ellipse cx="700" cy="290" rx="520" ry="320" fill="url(#pkglow)"/>
+
+    <!-- Far background ridge layer (darkest, smallest) -->
+    <polygon
+      points="0,900 140,560 230,590 360,490 480,530 580,440 680,470 760,390 840,420 940,360 1060,400 1170,340 1290,380 1400,340 1400,900"
+      fill="#0d1825" opacity=".9"/>
+
+    <!-- Mid mountain range -->
+    <polygon
+      points="0,900 80,640 180,670 320,560 440,610 550,510 660,550 760,460 870,500 980,430 1100,475 1210,415 1330,455 1400,430 1400,900"
+      fill="#0f1f32" opacity=".95"/>
+
+    <!-- PRIMARY PEAK — sharp geometric summit, centred -->
+    <!-- Main peak face (left) -->
+    <polygon points="560,900 700,250 760,900" fill="#12243a"/>
+    <!-- Main peak face (right, slightly lighter) -->
+    <polygon points="700,250 860,900 760,900" fill="#0e1c2e"/>
+    <!-- Snow cap – left face highlight -->
+    <polygon points="700,250 660,330 700,320 700,250" fill="url(#snow1)"/>
+    <!-- Snow cap – right face highlight -->
+    <polygon points="700,250 740,340 700,320 700,250" fill="rgba(200,232,252,.18)"/>
+    <!-- Snow ridge line -->
+    <line x1="700" y1="250" x2="700" y2="340" stroke="rgba(212,234,247,.45)" stroke-width="1"/>
+
+    <!-- Secondary peak left -->
+    <polygon points="340,900 480,420 560,900" fill="#0f1c2c"/>
+    <polygon points="480,420 460,480 490,470 480,420" fill="rgba(200,225,245,.12)"/>
+
+    <!-- Secondary peak right -->
+    <polygon points="840,900 960,455 1060,900" fill="#0f1c2c"/>
+    <polygon points="960,455 945,510 975,500 960,455" fill="rgba(200,225,245,.1)"/>
+
+    <!-- Accent dot at summit -->
+    <circle cx="700" cy="248" r="3" fill="#4FC3F7" opacity=".75"/>
+    <circle cx="700" cy="248" r="8" fill="#4FC3F7" opacity=".12"/>
+
+    <!-- Altitude marker line -->
+    <line x1="700" y1="248" x2="820" y2="200" stroke="rgba(79,195,247,.3)" stroke-width="1" stroke-dasharray="3,5"/>
+    <text x="826" y="204" font-family="Inter,sans-serif" font-size="11" fill="rgba(79,195,247,.55)" font-weight="700" letter-spacing="1">18,379 ft · Spiti</text>
+
+    <!-- Foreground scree / base -->
+    <polygon
+      points="0,900 0,800 200,780 400,810 560,790 700,820 840,795 1000,815 1200,800 1400,810 1400,900"
+      fill="#080c11"/>
+  </svg>
+
+  <div class="jscene-body j-reveal">
+    <div class="j-pill"><span class="j-pill-dot"></span>18,379 ft · The summit</div>
+    <div class="j-label">The highest point</div>
+    <h2 class="j-title">Above the World.<br>Above the Noise.</h2>
+    <p class="j-sub">At this altitude, the sky deepens. The air thins. Everything that doesn't matter — disappears completely.</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCENE 2 · CLOUD LAYER · Soft SVG blobs, mist, diffuse glow
+     ══════════════════════════════════════════════════════════════ -->
+<div class="jscene" data-ji="1">
+  <div class="j-fade-top"></div>
+  <div class="j-fade-bot"></div>
+
+  <svg class="jscene-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="cloudBg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#060e1c"/>
+        <stop offset="45%"  stop-color="#0d1a2e"/>
+        <stop offset="100%" stop-color="#060c14"/>
+      </linearGradient>
+      <!-- Cloud blob gradient: soft white-blue -->
+      <radialGradient id="cb1" cx="50%" cy="40%" r="55%">
+        <stop offset="0%"  stop-color="#d8eef8" stop-opacity=".22"/>
+        <stop offset="70%" stop-color="#a8d4f0" stop-opacity=".06"/>
+        <stop offset="100%" stop-color="#4FC3F7" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="cb2" cx="50%" cy="50%" r="55%">
+        <stop offset="0%"  stop-color="#cce6f6" stop-opacity=".18"/>
+        <stop offset="100%" stop-color="#4FC3F7" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="cb3" cx="50%" cy="45%" r="50%">
+        <stop offset="0%"  stop-color="#e4f2fb" stop-opacity=".14"/>
+        <stop offset="100%" stop-color="#4FC3F7" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="mistyGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"  stop-color="#4FC3F7" stop-opacity=".06"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+      <filter id="cloudBlur">
+        <feGaussianBlur stdDeviation="22"/>
+      </filter>
+    </defs>
+
+    <rect width="1400" height="900" fill="url(#cloudBg)"/>
+
+    <!-- Diffuse ambient glow -->
+    <ellipse cx="700" cy="450" rx="700" ry="350" fill="url(#mistyGlow)"/>
+
+    <!-- Cloud mass 1 — large, left-centre -->
+    <g class="cloud-drift-1" style="transform-origin:300px 380px">
+      <ellipse cx="300" cy="390" rx="280" ry="110" fill="url(#cb1)" filter="url(#cloudBlur)"/>
+      <ellipse cx="340" cy="350" rx="180" ry="80"  fill="url(#cb2)" filter="url(#cloudBlur)"/>
+      <ellipse cx="220" cy="420" rx="200" ry="70"  fill="url(#cb3)" filter="url(#cloudBlur)"/>
+    </g>
+
+    <!-- Cloud mass 2 — right, higher -->
+    <g class="cloud-drift-2" style="transform-origin:1050px 320px">
+      <ellipse cx="1050" cy="320" rx="300" ry="120" fill="url(#cb1)" filter="url(#cloudBlur)"/>
+      <ellipse cx="1100" cy="280" rx="190" ry="85"  fill="url(#cb2)" filter="url(#cloudBlur)"/>
+      <ellipse cx="980"  cy="350" rx="210" ry="75"  fill="url(#cb3)" filter="url(#cloudBlur)"/>
+    </g>
+
+    <!-- Cloud mass 3 — centre, lower band -->
+    <g class="cloud-drift-3" style="transform-origin:700px 560px">
+      <ellipse cx="700" cy="560" rx="400" ry="90"  fill="url(#cb1)" filter="url(#cloudBlur)"/>
+      <ellipse cx="640" cy="530" rx="260" ry="65"  fill="url(#cb2)" filter="url(#cloudBlur)"/>
+      <ellipse cx="780" cy="580" rx="230" ry="55"  fill="url(#cb3)" filter="url(#cloudBlur)"/>
+    </g>
+
+    <!-- Thin wispy streak lines (cloud filaments) -->
+    <g opacity=".12" stroke="#b8ddf0" stroke-width="1" fill="none">
+      <path d="M100,440 Q280,420 460,445 Q620,468 780,438"/>
+      <path d="M500,500 Q680,480 860,508 Q1020,530 1200,495"/>
+      <path d="M0,390   Q150,375 310,398 Q480,422 640,390"/>
+      <path d="M900,350 Q1050,335 1200,358 Q1340,375 1400,352"/>
+    </g>
+
+    <!-- Mountain silhouette faintly visible through cloud (top) -->
+    <polygon
+      points="0,900 200,550 360,590 500,490 620,540 700,430 780,490 900,470 1040,520 1200,465 1400,510 1400,900"
+      fill="#06101c" opacity=".7"/>
+
+    <!-- Foreground cloud floor band -->
+    <ellipse cx="700" cy="820" rx="900" ry="120" fill="rgba(14,26,42,.55)" filter="url(#cloudBlur)"/>
+    <rect x="0" y="870" width="1400" height="30" fill="#060c14"/>
+  </svg>
+
+  <div class="jscene-body j-reveal">
+    <div class="j-pill"><span class="j-pill-dot"></span>10,000 – 14,000 ft</div>
+    <div class="j-label">Through the cloud layer</div>
+    <h2 class="j-title">Pierce the Mist.<br>Find Your Route.</h2>
+    <p class="j-sub">Every Altiora expedition crosses the cloud threshold — the invisible line between ordinary travel and high-altitude life.</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCENE 3 · GREEN HILLS · Layered wave curves, alpine valleys
+     ══════════════════════════════════════════════════════════════ -->
+<div class="jscene" data-ji="2">
+  <div class="j-fade-top"></div>
+  <div class="j-fade-bot"></div>
+
+  <svg class="jscene-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="hillBg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#04100a"/>
+        <stop offset="50%"  stop-color="#06140e"/>
+        <stop offset="100%" stop-color="#040c08"/>
+      </linearGradient>
+      <!-- Hill layer gradients — progressively lighter/greener -->
+      <linearGradient id="hg5" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#081c10"/>
+        <stop offset="100%" stop-color="#040c08"/>
+      </linearGradient>
+      <linearGradient id="hg4" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#0c2814"/>
+        <stop offset="100%" stop-color="#06140a"/>
+      </linearGradient>
+      <linearGradient id="hg3" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#103418"/>
+        <stop offset="100%" stop-color="#071410"/>
+      </linearGradient>
+      <linearGradient id="hg2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#144020"/>
+        <stop offset="100%" stop-color="#081a10"/>
+      </linearGradient>
+      <linearGradient id="hg1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#1a5228"/>
+        <stop offset="100%" stop-color="#0a2014"/>
+      </linearGradient>
+      <!-- Accent ridge glow -->
+      <radialGradient id="hillglow" cx="50%" cy="55%" r="55%">
+        <stop offset="0%"  stop-color="#4FC3F7" stop-opacity=".04"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+    </defs>
+
+    <rect width="1400" height="900" fill="url(#hillBg)"/>
+    <rect width="1400" height="900" fill="url(#hillglow)"/>
+
+    <!-- Layer 5 — furthest, darkest, smallest hills -->
+    <path d="M0,900 Q180,560 360,590 Q540,620 700,545 Q860,470 1040,510 Q1220,550 1400,525 L1400,900 Z"
+          fill="url(#hg5)"/>
+
+    <!-- Layer 4 -->
+    <path d="M0,900 Q120,620 280,640 Q460,665 620,590 Q780,515 960,555 Q1120,590 1280,565 Q1360,552 1400,570 L1400,900 Z"
+          fill="url(#hg4)"/>
+
+    <!-- Layer 3 — mid range -->
+    <path d="M0,900 Q80,660 220,675 Q400,695 560,628 Q720,558 900,600 Q1060,638 1220,610 Q1320,592 1400,615 L1400,900 Z"
+          fill="url(#hg3)"/>
+
+    <!-- Layer 2 — closer, brighter green -->
+    <path d="M0,900 Q60,700 160,710 Q320,725 480,668 Q640,610 820,648 Q980,682 1140,658 Q1280,638 1400,660 L1400,900 Z"
+          fill="url(#hg2)"/>
+
+    <!-- Layer 1 — foreground, richest green -->
+    <path d="M0,900 Q40,740 120,750 Q260,768 400,718 Q560,665 720,698 Q880,730 1040,710 Q1200,692 1400,715 L1400,900 Z"
+          fill="url(#hg1)"/>
+
+    <!-- Subtle ridge accent lines (lighter green highlights) -->
+    <path d="M0,590 Q180,558 360,590 Q540,622 700,545"
+          stroke="rgba(40,140,70,.18)" stroke-width="1.5" fill="none"/>
+    <path d="M700,545 Q860,468 1040,508 Q1220,548 1400,523"
+          stroke="rgba(40,140,70,.14)" stroke-width="1.5" fill="none"/>
+
+    <!-- Valley river thread (faint blue line snaking through hills) -->
+    <path d="M0,800 Q120,778 240,790 Q360,803 480,775 Q600,748 700,762 Q820,778 940,755 Q1060,733 1200,748 Q1320,760 1400,745"
+          stroke="rgba(79,195,247,.14)" stroke-width="1.5" fill="none"/>
+
+    <!-- Small distant peaks peeking above hills -->
+    <polygon points="580,628 620,560 660,628" fill="#0c2418" opacity=".6"/>
+    <polygon points="740,610 776,548 814,610" fill="#0c2418" opacity=".5"/>
+  </svg>
+
+  <div class="jscene-body j-reveal">
+    <div class="j-pill"><span class="j-pill-dot"></span>6,000 – 10,000 ft</div>
+    <div class="j-label">Alpine valleys</div>
+    <h2 class="j-title">Where Green Meets<br>the High Ranges.</h2>
+    <p class="j-sub">The valleys are where journeys begin — ancient, lush, and wild. The mountain roads rise sharply from here.</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCENE 4 · PLAINS + PEOPLE · Flat terrain, 2D explorer figures
+     ══════════════════════════════════════════════════════════════ -->
+<div class="jscene" data-ji="3">
+  <div class="j-fade-top"></div>
+  <div class="j-fade-bot"></div>
+
+  <svg class="jscene-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="plainBg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#070d16"/>
+        <stop offset="55%"  stop-color="#0a1420"/>
+        <stop offset="100%" stop-color="#060c12"/>
+      </linearGradient>
+      <linearGradient id="plainGnd" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#0d1e18"/>
+        <stop offset="100%" stop-color="#060e0a"/>
+      </linearGradient>
+      <linearGradient id="plainHorizon" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#0e1f2e" stop-opacity=".8"/>
+        <stop offset="100%" stop-color="#060c14" stop-opacity="0"/>
+      </linearGradient>
+      <radialGradient id="sunRise" cx="50%" cy="60%" r="45%">
+        <stop offset="0%"  stop-color="#FF6B00" stop-opacity=".07"/>
+        <stop offset="60%" stop-color="#4FC3F7"  stop-opacity=".03"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+    </defs>
+
+    <rect width="1400" height="900" fill="url(#plainBg)"/>
+
+    <!-- Warm horizon glow (pre-dawn / golden hour feel) -->
+    <rect width="1400" height="900" fill="url(#sunRise)"/>
+
+    <!-- Distant mountain silhouette on horizon -->
+    <path d="M0,560 Q200,480 380,510 Q520,530 640,470 Q760,410 900,450 Q1060,495 1200,448 Q1320,408 1400,435 L1400,580 Q0,580 0,560 Z"
+          fill="#08111c" opacity=".8"/>
+
+    <!-- Ground plane — flat plains -->
+    <rect x="0" y="620" width="1400" height="280" fill="url(#plainGnd)"/>
+
+    <!-- Ground texture lines (subtle horizontal bands) -->
+    <g stroke="rgba(79,195,247,.04)" stroke-width="1" fill="none">
+      <line x1="0" y1="640" x2="1400" y2="640"/>
+      <line x1="0" y1="670" x2="1400" y2="670"/>
+      <line x1="0" y1="710" x2="1400" y2="710"/>
+      <line x1="0" y1="760" x2="1400" y2="760"/>
+    </g>
+
+    <!-- Path / trail receding into distance (perspective) -->
+    <path d="M640,900 L700,620 L760,900 Z" fill="rgba(120,160,140,.06)"/>
+    <path d="M670,900 L700,630 L730,900 Z" fill="rgba(120,160,140,.04)"/>
+
+    <!-- ── FIGURE 1 · Walker with backpack · left group ── -->
+    <g transform="translate(280, 560)" opacity=".82">
+      <!-- Body -->
+      <rect x="-5" y="12" width="10" height="22" rx="2" fill="#a8b3c2"/>
+      <!-- Head -->
+      <circle cx="0" cy="8"  r="7" fill="#c8d4e0"/>
+      <!-- Backpack -->
+      <rect x="5"  y="14" width="8" height="15" rx="2" fill="#6b7585"/>
+      <!-- Left arm (swinging forward) -->
+      <line x1="-5" y1="18" x2="-14" y2="30" stroke="#a8b3c2" stroke-width="3" stroke-linecap="round"/>
+      <!-- Right arm -->
+      <line x1="5"  y1="18" x2="12"  y2="26" stroke="#a8b3c2" stroke-width="3" stroke-linecap="round"/>
+      <!-- Left leg -->
+      <line x1="-2" y1="34" x2="-6"  y2="52" stroke="#8a9aaa" stroke-width="3" stroke-linecap="round"/>
+      <!-- Right leg (stride) -->
+      <line x1="2"  y1="34" x2="8"   y2="52" stroke="#8a9aaa" stroke-width="3" stroke-linecap="round"/>
+      <!-- Trekking pole -->
+      <line x1="-14" y1="30" x2="-18" y2="54" stroke="#6b8090" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- ── FIGURE 2 · Smaller walker beside figure 1 ── -->
+    <g transform="translate(310, 572)" opacity=".7">
+      <rect x="-4" y="10" width="8" height="18" rx="2" fill="#8a9aaa"/>
+      <circle cx="0" cy="6" r="6" fill="#a8b8c8"/>
+      <line x1="-4" y1="15" x2="-10" y2="24" stroke="#8a9aaa" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="4"  y1="15" x2="9"   y2="22" stroke="#8a9aaa" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="-1" y1="28" x2="-4"  y2="42" stroke="#7a8a9a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="1"  y1="28" x2="5"   y2="42" stroke="#7a8a9a" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- ── FIGURE 3 · Photographer · centre, crouched ── -->
+    <g transform="translate(700, 575)" opacity=".85">
+      <!-- Crouched body -->
+      <rect x="-6" y="16" width="12" height="18" rx="2" fill="#a8b3c2"/>
+      <!-- Head, slightly tilted toward camera -->
+      <circle cx="0" cy="11" r="7" fill="#c8d4e0"/>
+      <!-- Camera body held up -->
+      <rect x="7" y="7" width="14" height="10" rx="2" fill="#4a5568"/>
+      <rect x="18" y="9" width="5"  height="6"  rx="1" fill="#2d3748"/>
+      <!-- Arms up holding camera -->
+      <line x1="5"  y1="18" x2="10" y2="12" stroke="#a8b3c2" stroke-width="3" stroke-linecap="round"/>
+      <line x1="-6" y1="18" x2="-2" y2="12" stroke="#a8b3c2" stroke-width="3" stroke-linecap="round"/>
+      <!-- Bent legs (crouching) -->
+      <line x1="-3" y1="34" x2="-10" y2="46" stroke="#8a9aaa" stroke-width="3" stroke-linecap="round"/>
+      <line x1="3"  y1="34" x2="10"  y2="46" stroke="#8a9aaa" stroke-width="3" stroke-linecap="round"/>
+      <line x1="-10" y1="46" x2="-6" y2="52" stroke="#8a9aaa" stroke-width="3" stroke-linecap="round"/>
+      <line x1="10"  y1="46" x2="6"  y2="52" stroke="#8a9aaa" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- ── FIGURE 4 · Looking through binoculars · right group ── -->
+    <g transform="translate(1080, 558)" opacity=".8">
+      <rect x="-5" y="14" width="10" height="22" rx="2" fill="#a8b3c2"/>
+      <circle cx="0" cy="9" r="7" fill="#c8d4e0"/>
+      <!-- Binoculars -->
+      <rect x="7"  y="5" width="7"  height="5" rx="1" fill="#4a5568"/>
+      <rect x="14" y="5" width="7"  height="5" rx="1" fill="#4a5568"/>
+      <!-- Arms raised to face -->
+      <line x1="5"  y1="17" x2="10" y2="10" stroke="#a8b3c2" stroke-width="3" stroke-linecap="round"/>
+      <line x1="-5" y1="17" x2="-2" y2="12" stroke="#a8b3c2" stroke-width="3" stroke-linecap="round"/>
+      <!-- Legs standing straight -->
+      <line x1="-2" y1="36" x2="-4" y2="56" stroke="#8a9aaa" stroke-width="3" stroke-linecap="round"/>
+      <line x1="2"  y1="36" x2="5"  y2="56" stroke="#8a9aaa" stroke-width="3" stroke-linecap="round"/>
+      <!-- Backpack suggestion -->
+      <rect x="5" y="16" width="7" height="12" rx="2" fill="#6b7585"/>
+    </g>
+
+    <!-- ── FIGURE 5 · Sitting, resting · right ── -->
+    <g transform="translate(1120, 580)" opacity=".7">
+      <circle cx="0" cy="6" r="6" fill="#a8b8c8"/>
+      <!-- Torso leaning back slightly -->
+      <rect x="-5" y="11" width="10" height="14" rx="2" fill="#8a9aaa"/>
+      <!-- Bent legs in sitting position -->
+      <line x1="-3" y1="25" x2="-14" y2="35" stroke="#7a8a9a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="3"  y1="25" x2="12"  y2="36" stroke="#7a8a9a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="-14" y1="35" x2="-10" y2="42" stroke="#7a8a9a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="12"  y1="36" x2="8"   y2="42" stroke="#7a8a9a" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- One arm resting on knee -->
+      <line x1="-5" y1="16" x2="-12" y2="30" stroke="#8a9aaa" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- Ground shadows under figures -->
+    <ellipse cx="292"  cy="615" rx="22" ry="4" fill="rgba(0,0,0,.25)"/>
+    <ellipse cx="700"  cy="628" rx="20" ry="4" fill="rgba(0,0,0,.22)"/>
+    <ellipse cx="1085" cy="617" rx="22" ry="4" fill="rgba(0,0,0,.2)"/>
+
+    <!-- Distant tiny figures on horizon (sense of scale) -->
+    <g opacity=".3">
+      <rect x="490" y="548" width="3"  height="9"  rx="1" fill="#8a9aaa"/>
+      <circle cx="491.5" cy="546" r="3" fill="#a8b3c2"/>
+      <rect x="510" y="551" width="2.5" height="8" rx="1" fill="#8a9aaa"/>
+      <circle cx="511.5" cy="549" r="2.5" fill="#a8b3c2"/>
+      <rect x="880" y="544" width="3"  height="9"  rx="1" fill="#8a9aaa"/>
+      <circle cx="881.5" cy="542" r="3" fill="#a8b3c2"/>
+    </g>
+  </svg>
+
+  <div class="jscene-body j-reveal">
+    <div class="j-pill"><span class="j-pill-dot"></span>Ground level · Where it begins</div>
+    <div class="j-label">Your starting point</div>
+    <h2 class="j-title">Every Climber<br>Starts at Zero.</h2>
+    <p class="j-sub">The expedition begins the moment you decide. Your altitude score starts at 0 ft. From here, every foot you earn is yours to keep.</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCENE 5 · BOOKING CTA · Dark, grounded, glass card
+     ══════════════════════════════════════════════════════════════ -->
+<div class="jscene" data-ji="4">
+  <div class="j-fade-top"></div>
+
+  <svg class="jscene-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bookBg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#050910"/>
+        <stop offset="100%" stop-color="#080c14"/>
+      </linearGradient>
+      <radialGradient id="bookGlow" cx="50%" cy="50%" r="45%">
+        <stop offset="0%"  stop-color="#4FC3F7" stop-opacity=".07"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+      <radialGradient id="bookOrange" cx="50%" cy="60%" r="40%">
+        <stop offset="0%"  stop-color="#FF6B00" stop-opacity=".06"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+    </defs>
+
+    <rect width="1400" height="900" fill="url(#bookBg)"/>
+    <rect width="1400" height="900" fill="url(#bookGlow)"/>
+    <rect width="1400" height="900" fill="url(#bookOrange)"/>
+
+    <!-- Ultra-faint horizon mountain silhouette -->
+    <path d="M0,700 Q250,600 480,640 Q620,665 700,590 Q780,515 920,555 Q1100,605 1280,560 Q1360,540 1400,565 L1400,900 L0,900 Z"
+          fill="#060e18" opacity=".5"/>
+
+    <!-- Subtle grid lines (premium, technical feel) -->
+    <g stroke="rgba(79,195,247,.03)" stroke-width="1">
+      <line x1="350" y1="0" x2="350" y2="900"/>
+      <line x1="700" y1="0" x2="700" y2="900"/>
+      <line x1="1050" y1="0" x2="1050" y2="900"/>
+      <line x1="0" y1="225" x2="1400" y2="225"/>
+      <line x1="0" y1="450" x2="1400" y2="450"/>
+      <line x1="0" y1="675" x2="1400" y2="675"/>
+    </g>
+
+    <!-- Corner accent marks (frame device) -->
+    <g stroke="rgba(79,195,247,.12)" stroke-width="1.5" fill="none">
+      <path d="M60,60 L60,100 M60,60 L100,60"/>
+      <path d="M1340,60 L1340,100 M1340,60 L1300,60"/>
+      <path d="M60,840 L60,800 M60,840 L100,840"/>
+      <path d="M1340,840 L1340,800 M1340,840 L1300,840"/>
+    </g>
+  </svg>
+
+  <div class="jscene-body j-reveal">
+    <div class="j-booking-card">
+      <div class="j-pill" style="margin-bottom:26px"><span class="j-pill-dot"></span>2026 Season · Limited Seats</div>
+      <h2 class="j-title" style="font-size:clamp(26px,4vw,46px);margin-bottom:14px">Ready to Earn<br>Your Altitude?</h2>
+      <p class="j-sub" style="font-size:15.5px;margin-bottom:0">Your next expedition starts here.<br>Max 10 per crew. Every foot is tracked.</p>
+      <div class="j-booking-actions">
+        <a href="expeditions.html" class="btn-primary" style="font-size:15px;padding:15px 32px">Claim Your Altitude</a>
+        <a href="signup.html"      class="btn-ghost"   style="font-size:14.5px;padding:15px 26px">Create Free Account</a>
+      </div>
+      <p style="margin-top:20px;font-size:12px;color:var(--muted2);letter-spacing:.3px">No commitment · Cancel anytime · Free to join</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /journey -->
+
+<script>
+/* ── Altitude Journey: progress dots + scroll reveal ───────────── */
+(function () {
+  const journey  = document.getElementById('altJourney');
+  const rail     = document.getElementById('jProgress');
+  const dots     = rail ? [...rail.querySelectorAll('.j-pdot')] : [];
+  const scenes   = journey ? [...journey.querySelectorAll('.jscene')] : [];
+  if (!journey || !scenes.length) return;
+
+  /* Show rail while journey is in view */
+  new IntersectionObserver(es => {
+    es.forEach(e => rail && rail.classList.toggle('vis', e.isIntersecting));
+  }, { threshold: 0.02 }).observe(journey);
+
+  /* Active dot */
+  new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const i = parseInt(e.target.dataset.ji, 10);
+      dots.forEach((d, di) => d.classList.toggle('on', di === i));
+    });
+  }, { threshold: 0.45 }).observe
+    ? (() => {
+        const io = new IntersectionObserver(es => {
+          es.forEach(e => {
+            if (!e.isIntersecting) return;
+            const i = parseInt(e.target.dataset.ji, 10);
+            dots.forEach((d, di) => d.classList.toggle('on', di === i));
+          });
+        }, { threshold: 0.45 });
+        scenes.forEach(s => io.observe(s));
+      })() : null;
+
+  /* Scroll reveal for scene bodies */
+  const revealIO = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.2 });
+  journey.querySelectorAll('.j-reveal').forEach(el => revealIO.observe(el));
+})();
+</script>
+
 <!-- ALTITUDE TRACKER -->
 <div class="alt-section fade-in">
   <div class="sec-label">Your altitude</div>
