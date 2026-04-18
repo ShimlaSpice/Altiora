@@ -8,7 +8,7 @@
 <style>
 .trip-hero {
   min-height: 60vh; position: relative; display: flex; align-items: flex-end;
-  padding: 0 56px 64px; overflow: hidden;
+  padding: 0 56px 56px; overflow: hidden;
   background: linear-gradient(160deg,#0d1f35 0%,#1a3050 30%,#0f2040 60%,#081525 100%);
 }
 .trip-hero-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -24,7 +24,7 @@
 .seats-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,112,67,.12); border: 1px solid rgba(255,112,67,.28); color: #ff7043; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 10px; margin-top: 24px; }
 .seats-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #ff7043; animation: pulse 1.4s infinite; }
 
-.trip-body-wrap { display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 56px 56px 100px; align-items: start; }
+.trip-body-wrap { display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 48px 56px 80px; align-items: start; }
 .trip-main { display: flex; flex-direction: column; gap: 40px; }
 
 .info-card { background: var(--card); border: 1px solid var(--border2); border-radius: 24px; padding: 36px; }
@@ -90,7 +90,7 @@
 <body>
 
 <nav class="nav">
-  <img src="assets/logo/altiora-primary.png" alt="Altiora Logo"></a>
+  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="expeditions.html" class="active">Expeditions</a></li>
@@ -290,7 +290,7 @@
 </div>
 
 <footer>
-  <div class="foot-logo">ALT<em>I</em>ORA</div>
+  <div class="foot-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></div>
   <ul class="foot-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="expeditions.html">Expeditions</a></li>
