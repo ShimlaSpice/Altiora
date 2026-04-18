@@ -18,7 +18,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .page-center {
   position: relative; z-index: 1; flex: 1;
   display: flex; align-items: center; justify-content: center;
-  padding: 100px 20px 40px;
+  padding: 88px 20px 48px;
 }
 .auth-card {
   background: rgba(14,21,32,.85); border: 1px solid rgba(79,195,247,.14);
@@ -27,7 +27,8 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(79,195,247,.06);
   animation: fadeUp .5s cubic-bezier(.4,0,.2,1) both;
 }
-.auth-logo { text-align: center; margin-bottom: 8px; font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+.auth-logo { text-align: center; margin-bottom: 20px; font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+.auth-logo img { height: 56px; width: auto; display: block; margin: 0 auto; }
 .auth-logo em { color: var(--accent); font-style: normal; }
 .auth-title { text-align: center; font-size: 28px; font-weight: 800; letter-spacing: -.8px; margin-bottom: 6px; }
 .auth-sub   { text-align: center; font-size: 14px; color: var(--muted); margin-bottom: 32px; line-height: 1.5; }
@@ -98,7 +99,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 </div>
 
 <nav class="nav" style="position:fixed;top:0;left:0;right:0">
-  <img src="assets/logo/altiora-primary.png" alt="Altiora Logo"></a>
+  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="expeditions.html">Expeditions</a></li>
@@ -110,7 +111,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 
 <div class="page-center">
   <div class="auth-card">
-    <div class="auth-logo">ALT<em>I</em>ORA</div>
+    <div class="auth-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('afterbegin','<span>ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA</span>')"></div>
     <h1 class="auth-title">Start your ascent</h1>
     <p class="auth-sub">Create your free account and begin tracking your altitude</p>
 
