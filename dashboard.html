@@ -8,9 +8,9 @@
 <style>
 .dash-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; }
 
-.greeting { margin-bottom: 48px; }
+.greeting { margin-bottom: 40px; }
 .greeting-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
-.greeting-name  { font-size: 44px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; }
+.greeting-name  { font-size: 42px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.05; color: #fff; }
 .greeting-sub   { font-size: 16px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
 
 .book-banner {
@@ -25,9 +25,9 @@
 .stat-card {
   background: var(--card); border: 1px solid var(--border2);
   border-radius: 20px; padding: 26px 22px;
-  transition: transform .3s, border-color .3s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.stat-card:hover { transform: translateY(-3px); border-color: rgba(79,195,247,.22); }
+.stat-card:hover { transform: translateY(-6px); box-shadow: 0 22px 50px rgba(0,0,0,.4); border-color: rgba(79,195,247,.22); }
 .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 10px; }
 .stat-value { font-size: 28px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
 .stat-value em { color: var(--accent); font-style: normal; }
