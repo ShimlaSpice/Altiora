@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Expeditions · Altiora</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.page-hero { padding: 60px 56px 60px; background: linear-gradient(180deg,#0a1828 0%,var(--bg) 100%); }
+.page-hero h1 { font-size: clamp(40px,5vw,64px); font-weight: 900; letter-spacing: -2px; margin-bottom: 14px; }
+.page-hero p  { font-size: 17px; color: var(--muted); max-width: 520px; line-height: 1.7; }
+
+.filter-bar {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  padding: 0 56px 40px;
+}
+.filter-btn {
+  background: rgba(255,255,255,.05); border: 1.5px solid var(--border2);
+  color: var(--muted); padding: 9px 20px; border-radius: 100px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  text-decoration: none; transition: all .2s; display: inline-block;
+}
+.filter-btn:hover, .filter-btn.active { border-color: rgba(79,195,247,.4); color: var(--accent); background: rgba(79,195,247,.06); }
+
+.trips-wrap { padding: 0 56px 80px; }
+.trips-big-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.trip-card {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 24px; overflow: hidden; text-decoration: none; color: var(--text); display: block;
+  transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s, border-color .35s;
+}
+.trip-card:hover { transform: translateY(-8px); box-shadow: 0 28px 60px rgba(0,0,0,.6),0 0 32px rgba(79,195,247,.14); border-color: rgba(79,195,247,.32); }
+.trip-img { height: 220px; position: relative; overflow: hidden; }
+.trip-img-inner { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; transition: transform .5s; }
+.trip-card:hover .trip-img-inner { transform: scale(1.04); }
+.bg-spiti { background: linear-gradient(160deg,#0d1f35,#1a3050 30%,#0f2040 60%,#081525); }
+.bg-leh   { background: linear-gradient(160deg,#1a1030,#2a1845 30%,#1a1035 60%,#0d0820); }
+.bg-pin   { background: linear-gradient(160deg,#1a1020,#2a1525 30%,#1a1020 60%,#0d0810); }
+.bg-kaza  { background: linear-gradient(160deg,#102018,#183028 30%,#0e1a12 60%,#081208); }
+.bg-hanle { background: linear-gradient(160deg,#101828,#182438 30%,#0e1820 60%,#080e14); }
+.bg-bara  { background: linear-gradient(160deg,#201018,#301428 30%,#201018 60%,#10080e); }
+.trip-badge-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+.trip-type  { background: rgba(79,195,247,.15); border: 1px solid rgba(79,195,247,.3); color: var(--accent); font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 8px; letter-spacing: 1px; text-transform: uppercase; }
+.trip-price { color: #fff; font-size: 15px; font-weight: 800; }
+.trip-body  { padding: 26px; }
+.trip-name  { font-size: 18px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
+.trip-specs { display: flex; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+.trip-spec  { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.spec-dot   { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.trip-cta   { display: block; width: 100%; text-align: center; background: transparent; border: 1.5px solid rgba(79,195,247,.28); color: var(--accent); padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 700; text-decoration: none; transition: all .25s; margin-top: 16px; }
+.trip-cta:hover { background: rgba(79,195,247,.08); border-color: var(--accent); }
+
+.alt-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(79,195,247,.08); border: 1px solid rgba(79,195,247,.18); color: var(--accent); font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 8px; margin-bottom: 14px; }
+
+@media (max-width: 900px) {
+  .page-hero, .filter-bar, .trips-wrap { padding-left: 24px; padding-right: 24px; }
+  .trips-big-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html" class="active">Expeditions</a></li>
+    <li><a href="index.html#crews">Crews</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="login.html" class="btn-nav-ghost">Sign In</a>
+    <a href="signup.html" class="btn-nav">Claim Your Altitude</a>
+  </div>
+</nav>
+
+<div class="page-hero fade-in">
+  <div class="sec-label">All Expeditions</div>
+  <h1>Choose Your<br>Next Expedition.</h1>
+  <p>You don't just travel mountains. You earn every foot of altitude.<br>Filter by type, find your match, and claim your spot before it's gone.</p>
+</div>
+
+<div class="filter-bar">
+  <a href="expeditions.html" class="filter-btn active">All Trips</a>
+  <a href="expeditions.html" class="filter-btn">4×4 Expeditions</a>
+  <a href="expeditions.html" class="filter-btn">Bike Expeditions</a>
+  <a href="expeditions.html" class="filter-btn">Treks</a>
+  <a href="expeditions.html" class="filter-btn">Summer 2026</a>
+</div>
+
+<div class="trips-wrap">
+  <div class="trips-big-grid">
+
+    <a href="trip-spiti.html" class="trip-card fade-in">
+      <div class="trip-img bg-spiti">
+        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <polygon points="0,220 100,60 160,90 240,20 300,55 370,10 400,40 400,220" fill="rgba(79,195,247,.05)"/>
+          <polygon points="240,20 220,50 260,45 240,20" fill="rgba(200,230,255,.12)"/>
+          <polygon points="0,220 60,140 140,160 230,110 310,140 400,120 400,220" fill="rgba(13,31,53,.8)"/>
+        </svg>
+        <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">4×4 Expedition</span><span class="trip-price">From ₹28,000</span></div></div>
+      </div>
+      <div class="trip-body">
+        <div class="alt-badge">+18,380 ft altitude</div>
+        <div class="trip-name">Spiti Valley Deep Run</div>
+        <div class="trip-specs">
+          <span class="trip-spec"><span class="spec-dot"></span>9 Days</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Jun–Sep</span>
+        </div>
+        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>Only 3 spots left</div>
+        <div class="trip-cta">View Details →</div>
+      </div>
+    </a>
+
+    <a href="trip-leh.html" class="trip-card fade-in">
+      <div class="trip-img bg-leh">
+        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <polygon points="0,220 80,70 150,100 220,30 290,70 360,20 400,50 400,220" fill="rgba(155,89,182,.06)"/>
+          <polygon points="220,30 200,58 240,55 220,30" fill="rgba(220,200,255,.1)"/>
+          <polygon points="0,220 50,150 130,165 210,130 290,155 370,135 400,145 400,220" fill="rgba(26,16,48,.8)"/>
+        </svg>
+        <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">Bike Expedition</span><span class="trip-price">From ₹22,000</span></div></div>
+      </div>
+      <div class="trip-body">
+        <div class="alt-badge">+17,600 ft altitude</div>
+        <div class="trip-name">Manali–Leh Royal Ride</div>
+        <div class="trip-specs">
+          <span class="trip-spec"><span class="spec-dot"></span>7 Days</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Jul–Aug</span>
+        </div>
+        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>5 spots remaining</div>
+        <div class="trip-cta">View Details →</div>
+      </div>
+    </a>
+
+    <a href="trip-pin.html" class="trip-card fade-in">
+      <div class="trip-img bg-pin">
+        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <polygon points="0,220 90,50 170,80 250,10 320,60 400,30 400,220" fill="rgba(231,76,60,.05)"/>
+          <polygon points="250,10 228,44 272,40 250,10" fill="rgba(230,210,200,.12)"/>
+          <polygon points="0,220 45,165 130,178 215,155 295,170 375,155 400,162 400,220" fill="rgba(26,16,32,.8)"/>
+        </svg>
+        <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">High Altitude Trek</span><span class="trip-price">From ₹18,000</span></div></div>
+      </div>
+      <div class="trip-body">
+        <div class="alt-badge">+15,400 ft altitude</div>
+        <div class="trip-name">Pin Parvati Pass Trek</div>
+        <div class="trip-specs">
+          <span class="trip-spec"><span class="spec-dot"></span>12 Days</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Aug–Sep</span>
+        </div>
+        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>2 spots left — filling fast</div>
+        <div class="trip-cta">View Details →</div>
+      </div>
+    </a>
+
+    <a href="trip-spiti.html" class="trip-card fade-in">
+      <div class="trip-img bg-kaza">
+        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <polygon points="0,220 110,65 180,95 260,25 330,65 400,30 400,220" fill="rgba(46,204,113,.05)"/>
+          <polygon points="260,25 238,55 282,50 260,25" fill="rgba(200,240,210,.1)"/>
+          <polygon points="0,220 55,145 140,162 225,115 305,148 400,125 400,220" fill="rgba(16,32,24,.8)"/>
+        </svg>
+        <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">4×4 Expedition</span><span class="trip-price">From ₹24,000</span></div></div>
+      </div>
+      <div class="trip-body">
+        <div class="alt-badge">+14,900 ft altitude</div>
+        <div class="trip-name">Kaza–Kibber Circuit</div>
+        <div class="trip-specs">
+          <span class="trip-spec"><span class="spec-dot"></span>6 Days</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Jun–Oct</span>
+        </div>
+        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>7 spots left</div>
+        <div class="trip-cta">View Details →</div>
+      </div>
+    </a>
+
+    <a href="trip-leh.html" class="trip-card fade-in">
+      <div class="trip-img bg-hanle">
+        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <polygon points="0,220 95,55 165,85 245,18 315,58 390,22 400,35 400,220" fill="rgba(52,152,219,.06)"/>
+          <polygon points="245,18 222,50 268,46 245,18" fill="rgba(200,220,255,.1)"/>
+          <polygon points="0,220 48,148 133,165 218,122 300,152 390,132 400,140 400,220" fill="rgba(16,24,40,.82)"/>
+        </svg>
+        <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">Bike Expedition</span><span class="trip-price">From ₹26,000</span></div></div>
+      </div>
+      <div class="trip-body">
+        <div class="alt-badge">+16,200 ft altitude</div>
+        <div class="trip-name">Hanle Dark Sky Run</div>
+        <div class="trip-specs">
+          <span class="trip-spec"><span class="spec-dot"></span>8 Days</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Jul–Sep</span>
+        </div>
+        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>4 spots left</div>
+        <div class="trip-cta">View Details →</div>
+      </div>
+    </a>
+
+    <a href="trip-pin.html" class="trip-card fade-in">
+      <div class="trip-img bg-bara">
+        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <polygon points="0,220 85,58 155,88 235,22 305,62 385,25 400,38 400,220" fill="rgba(155,89,182,.07)"/>
+          <polygon points="235,22 212,52 258,48 235,22" fill="rgba(220,200,240,.1)"/>
+          <polygon points="0,220 42,152 127,168 212,128 292,156 380,138 400,146 400,220" fill="rgba(32,16,24,.82)"/>
+        </svg>
+        <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">High Altitude Trek</span><span class="trip-price">From ₹20,000</span></div></div>
+      </div>
+      <div class="trip-body">
+        <div class="alt-badge">+13,800 ft altitude</div>
+        <div class="trip-name">Bara Bhangal Trek</div>
+        <div class="trip-specs">
+          <span class="trip-spec"><span class="spec-dot"></span>10 Days</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Aug–Sep</span>
+        </div>
+        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>6 spots left</div>
+        <div class="trip-cta">View Details →</div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  <div class="foot-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></div>
+  <ul class="foot-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html">Expeditions</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="login.html">Sign In</a></li>
+  </ul>
+  <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
