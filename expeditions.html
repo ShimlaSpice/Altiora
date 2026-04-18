@@ -6,13 +6,13 @@
 <title>Expeditions · Altiora</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.page-hero { padding: 80px 56px 64px; background: linear-gradient(180deg,#0a1828 0%,var(--bg) 100%); }
+.page-hero { padding: 64px 56px 52px; background: linear-gradient(180deg,#0a1828 0%,var(--bg) 100%); }
 .page-hero h1 { font-size: clamp(40px,5vw,64px); font-weight: 900; letter-spacing: -2px; margin-bottom: 14px; }
 .page-hero p  { font-size: 17px; color: var(--muted); max-width: 520px; line-height: 1.7; }
 
 .filter-bar {
   display: flex; gap: 10px; flex-wrap: wrap;
-  padding: 0 56px 48px;
+  padding: 0 56px 40px;
 }
 .filter-btn {
   background: rgba(255,255,255,.05); border: 1.5px solid var(--border2);
@@ -22,7 +22,7 @@
 }
 .filter-btn:hover, .filter-btn.active { border-color: rgba(79,195,247,.4); color: var(--accent); background: rgba(79,195,247,.06); }
 
-.trips-wrap { padding: 0 56px 100px; }
+.trips-wrap { padding: 0 56px 80px; }
 .trips-big-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
 .trip-card {
   background: var(--card); border: 1px solid var(--border2);
@@ -61,8 +61,7 @@
 <body>
 
 <nav class="nav">
-    <a href="index.html" class="nav-logo">
-  <img src="assets/logo/altiora-primary.png" alt="Altiora Logo"></a>
+  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="expeditions.html" class="active">Expeditions</a></li>
@@ -228,7 +227,7 @@
 </div>
 
 <footer>
-  <div class="foot-logo">ALT<em>I</em>ORA</div>
+  <div class="foot-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></div>
   <ul class="foot-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="expeditions.html">Expeditions</a></li>
