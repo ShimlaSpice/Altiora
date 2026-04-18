@@ -10,7 +10,7 @@
 .hero {
   min-height: 100vh; position: relative;
   display: flex; align-items: center; overflow: hidden;
-  padding: 70px 0 60px;
+  padding: 60px 0 60px;
 }
 .hero-bg {
   position: absolute; inset: 0;
@@ -81,7 +81,7 @@
 .scroll-line { width: 28px; height: 1px; background: rgba(255,255,255,.16); }
 
 /* ── ALTITUDE SECTION ────────────────────────────────────────────────────── */
-.alt-section { padding: 96px 56px; background: linear-gradient(180deg,var(--bg) 0%,#0a1220 100%); }
+.alt-section { padding: 72px 56px; background: linear-gradient(180deg,var(--bg) 0%,#0a1220 100%); }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
 .alt-card {
   background: var(--glass); border: 1px solid rgba(79,195,247,.15);
@@ -116,7 +116,7 @@
 .level-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
 /* ── TRIPS SECTION ───────────────────────────────────────────────────────── */
-.trips-section { padding: 96px 56px; background: var(--bg); }
+.trips-section { padding: 72px 56px; background: var(--bg); }
 .trips-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-top: 48px; }
 .trip-card {
   background: var(--card); border: 1px solid var(--border2);
@@ -153,7 +153,7 @@
 .trip-cta:hover { background: rgba(79,195,247,.08); border-color: rgba(79,195,247,.55); }
 
 /* ── PEAKS SECTION ───────────────────────────────────────────────────────── */
-.peaks-section { padding: 96px 56px; background: linear-gradient(180deg,#0a1220 0%,var(--bg) 100%); }
+.peaks-section { padding: 72px 56px; background: linear-gradient(180deg,#0a1220 0%,var(--bg) 100%); }
 .peaks-two { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
 .peak-ladder { display: flex; flex-direction: column; position: relative; }
 .peak-ladder::before { content:''; position:absolute; left:21px; top:22px; bottom:22px; width:1px; background:linear-gradient(180deg,var(--accent),rgba(79,195,247,.06) 80%,transparent); opacity:.22; }
@@ -175,7 +175,7 @@
 .pb-locked { color: var(--muted2); font-size: 10px; }
 
 /* ── CREWS SECTION ───────────────────────────────────────────────────────── */
-.crews-section { padding: 96px 56px; background: var(--bg); }
+.crews-section { padding: 72px 56px; background: var(--bg); }
 .crews-two { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
 .crew-board { display: flex; flex-direction: column; gap: 10px; }
 .crew-card {
@@ -198,7 +198,7 @@
 .crew-alt-label { font-size: 11px; color: var(--muted2); margin-top: 2px; text-align: right; }
 
 /* ── TRUST ───────────────────────────────────────────────────────────────── */
-.trust-section { padding: 96px 56px; background: linear-gradient(180deg,#0a1220 0%,var(--bg) 100%); }
+.trust-section { padding: 72px 56px; background: linear-gradient(180deg,#0a1220 0%,var(--bg) 100%); }
 .trust-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-top: 48px; }
 .trust-card {
   background: var(--card); border: 1px solid var(--border2);
@@ -211,7 +211,7 @@
 .trust-desc  { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
 /* ── TESTIMONIALS ────────────────────────────────────────────────────────── */
-.testi-section { padding: 96px 56px; background: var(--bg); }
+.testi-section { padding: 72px 56px; background: var(--bg); }
 .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 48px; }
 .testi-card {
   background: var(--glass); border: 1px solid var(--border2);
@@ -228,7 +228,7 @@
 .t-level { font-size: 11px; color: var(--accent); margin-top: 2px; letter-spacing: .1px; }
 
 /* ── FINAL CTA ───────────────────────────────────────────────────────────── */
-.final-section { padding: 96px 56px; text-align: center; background: linear-gradient(180deg,#0a1220 0%,#060a0f 100%); }
+.final-section { padding: 72px 56px; text-align: center; background: linear-gradient(180deg,#0a1220 0%,#060a0f 100%); }
 .final-h { font-size: clamp(40px,6vw,72px); font-weight: 900; letter-spacing: -2.5px; line-height: 1.04; margin-bottom: 18px; color: #fff; }
 .final-h em { color: var(--accent); font-style: normal; }
 .final-sub { font-size: 17px; color: var(--muted); margin-bottom: 44px; line-height: 1.65; max-width: 440px; margin-left: auto; margin-right: auto; }
@@ -292,7 +292,7 @@
   <div class="nav-right">
     <div class="nav-pill"><span class="dot"></span>2026 Season Open</div>
     <a href="login.html" class="btn-nav-ghost">Sign In</a>
-    <a href="signup.html" class="btn-nav">Start Your Expedition</a>
+    <a href="signup.html" class="btn-nav">Claim Your Altitude</a>
   </div>
 </nav>
 
@@ -322,9 +322,9 @@
     <div class="hero-eyebrow"><span class="dot"></span>2026 Season · Limited Seats Only</div>
     <h1>Earn Your<span class="blue">Altitude.</span></h1>
     <p class="hero-em">Track every foot you climb. Compete. Earn your altitude.</p>
-    <p class="hero-sub">Premium Spiti &amp; Ladakh Expeditions.<br><strong>Max 10 per group. Every trip updates your score.</strong></p>
+    <p class="hero-sub">You don't just travel mountains. You earn every foot of altitude.<br><strong>Max 10 per group. Every trip updates your score.</strong></p>
     <div class="hero-actions">
-      <a href="expeditions.html" class="btn-primary">View Expeditions</a>
+      <a href="expeditions.html" class="btn-primary">Choose Your Expedition</a>
       <a href="dashboard.html" class="btn-ghost">Check Your Altitude</a>
     </div>
     <div class="hero-kpis">
@@ -605,7 +605,7 @@
   <h2 class="final-h">Start Your <em>Ascent.</em></h2>
   <p class="final-sub">Every legend started at zero feet. What's stopping you?</p>
   <div class="final-btns">
-    <a href="signup.html" class="btn-primary" style="font-size:17px;padding:20px 42px">Start Your Expedition</a>
+    <a href="signup.html" class="btn-primary" style="font-size:17px;padding:20px 42px">Claim Your Altitude</a>
     <a href="expeditions.html" class="btn-ghost">View All Expeditions</a>
   </div>
   <div class="final-urgency"><span class="dot"></span>2026 Himalayan season — 89% full</div>
@@ -617,7 +617,7 @@
     <a href="https://wa.me/919999999999" class="sticky-wa" target="_blank" rel="noopener" title="WhatsApp">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
-    <a href="signup.html" class="sticky-book">Start Your Expedition →</a>
+    <a href="signup.html" class="sticky-book">Claim Your Altitude →</a>
   </div>
 </div>
 
