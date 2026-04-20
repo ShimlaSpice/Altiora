@@ -21,12 +21,11 @@
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
-  line-height: 1.6;
+  background-image: url('assets/bg/altiora-full.png');
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
 }
 
 /* ── NAVBAR ──────────────────────────────────────────────────────────────── */
