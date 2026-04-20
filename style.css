@@ -10,8 +10,8 @@
   --orange:  #FF6B00;
   --orange2: #FF8C38;
   --text:    #F0F4F8;
-  --muted:   #A8B3C2;
-  --muted2:  #7D8898;
+  --muted:   #95A0B0;
+  --muted2:  #6B7585;
   --border:  rgba(79,195,247,0.13);
   --border2: rgba(255,255,255,0.08);
   --glass:   rgba(14,21,32,0.82);
@@ -19,15 +19,8 @@
 }
 
 html { scroll-behavior: smooth; }
-
-/* ── BODY: full-page background image ───────────────────────────────────── */
 body {
-  background-color: #0B0F14;
-  background-image: url('assets/bg/altiora-full.png');
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background: var(--bg);
   color: var(--text);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -36,22 +29,7 @@ body {
   line-height: 1.6;
 }
 
-/* ── GLOBAL OVERLAY: darkens image for readability ───────────────────────── */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(5,10,20,0.55),
-    rgba(5,10,20,0.85)
-  );
-  pointer-events: none;
-  z-index: 0;
-}
-
 /* ── NAVBAR ──────────────────────────────────────────────────────────────── */
-/* z-index 200 already ensures it's above body::before (z-index 0) */
 .nav {
   position: sticky; top: 0; z-index: 200;
   padding: 0 56px;
@@ -90,7 +68,7 @@ body::before {
 .nav-links a.active { color: var(--text); }
 .nav-links a.active::after { transform: scaleX(1); }
 
-.nav-right { display: flex; align-items: center; gap: 20px; }
+.nav-right { display: flex; align-items: center; gap: 14px; }
 
 .nav-pill {
   display: flex; align-items: center; gap: 7px;
@@ -186,47 +164,12 @@ body::before {
 }
 
 /* ── CARD INTERACTIONS (global standard) ────────────────────────────────── */
-/* Task 4: glass card effect for all cards */
-.card {
-  background: rgba(11,15,20,0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.05);
-}
-
 .card-hover {
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 .card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 28px 60px rgba(0,0,0,0.55), 0 0 32px rgba(79,195,247,0.12);
-}
-
-/* ── Task 6: CTA subtext below hero button ───────────────────────────────── */
-.cta-subtext {
-  font-size: 12px;
-  color: #8FA3B0;
-  margin-top: 10px;
-  letter-spacing: 0.3px;
-}
-
-/* ── Task 7: Experiences section tagline ─────────────────────────────────── */
-.section-tagline {
-  text-align: center;
-  font-size: 14px;
-  color: #4FC3F7;
-  margin-bottom: 8px;
-  letter-spacing: 0.6px;
-}
-
-/* ── Task 8: Peak Ladder subtext ─────────────────────────────────────────── */
-.ladder-subtext {
-  text-align: center;
-  font-size: 14px;
-  color: #8FA3B0;
-  margin-top: 10px;
-  margin-bottom: 30px;
-  line-height: 1.6;
+  transform: translateY(-6px);
+  box-shadow: 0 22px 50px rgba(0,0,0,0.4), 0 0 24px rgba(79,195,247,0.08);
 }
 
 /* ── ANIMATIONS ───────────────────────────────────────────────────────────── */
@@ -239,35 +182,12 @@ body::before {
 }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-/* ── Task 3: all sections float above body::before overlay ───────────────── */
-/* position:relative + z-index:1 lifts content above the fixed overlay (z-index:0) */
-/* background:transparent lets the background image show through               */
-section,
-.alt-section,
-.trips-section,
-.peaks-section,
-.crews-section,
-.trust-section,
-.testi-section,
-.final-section {
-  position: relative;
-  z-index: 1;
-  background: transparent !important;
-}
-
-/* Brand statement bar also needs to sit above overlay */
-.brand-bar {
-  position: relative;
-  z-index: 1;
-}
-
 /* ── FOOTER ──────────────────────────────────────────────────────────────── */
 footer {
-  background: rgba(4,7,9,0.92); border-top: 1px solid rgba(255,255,255,0.055);
+  background: #040709; border-top: 1px solid rgba(255,255,255,0.055);
   padding: 36px 56px;
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 20px;
-  position: relative; z-index: 1;
 }
 .foot-logo {
   display: flex; align-items: center;
