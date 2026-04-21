@@ -47,7 +47,7 @@
 .inc-dot.no  { background: #e74c3c; }
 .inc-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
-.booking-card {
+.booking-card { text-align: center;
   background: rgba(12,18,28,0.65); border: 1px solid rgba(79,195,247,0.12);
   border-radius: 24px; padding: 36px; position: sticky; top: 90px;
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
@@ -56,7 +56,7 @@
 .booking-price { font-size: 42px; font-weight: 900; letter-spacing: -2px; margin-bottom: 4px; }
 .booking-price em { color: var(--accent); font-style: normal; }
 .booking-per  { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
-.booking-row  { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 14px; }
+.booking-row  { display: flex; text-align: left; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 14px; }
 .booking-row:last-of-type { border-bottom: none; }
 .booking-label { color: var(--muted); }
 .booking-val   { font-weight: 700; }
@@ -66,7 +66,7 @@
   display: block; width: 100%; text-align: center;
   background: var(--orange); color: #fff; text-decoration: none;
   padding: 16px; border-radius: 13px; font-size: 15.5px; font-weight: 700;
-  margin-top: 24px; transition: all .28s;
+  margin-top: 20px; transition: all .28s;
   box-shadow: 0 8px 28px rgba(255,107,0,.38);
 }
 .btn-book-big:hover { background: var(--orange2); transform: translateY(-2px); box-shadow: 0 14px 40px rgba(255,107,0,.5); }
@@ -77,13 +77,13 @@
   margin-top: 10px; transition: all .25s;
 }
 .btn-wa:hover { background: rgba(37,211,102,.18); border-color: rgba(37,211,102,.45); }
-.booking-guarantee { margin-top: 20px; text-align: center; font-size: 12px; color: var(--muted2); line-height: 1.6; }
+.booking-guarantee { margin-top: 8px; text-align: center; font-size: 12px; color: var(--muted2); line-height: 1.6; }
 
 @media (max-width: 900px) {
   .trip-hero { padding: 0 24px 48px; min-height: 50vh; }
   .trip-body-wrap { grid-template-columns: 1fr; padding: 40px 24px 80px; }
   .inc-grid { grid-template-columns: 1fr; }
-  .booking-card { position: static; }
+  .booking-card { text-align: center; position: static; }
 }
 </style>
 </head>
