@@ -6,7 +6,7 @@
 <title>Expeditions · Altiora</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.page-hero { padding: 64px 56px 52px; background: linear-gradient(180deg,#0a1828 0%,var(--bg) 100%); }
+.page-hero { padding: 60px 56px 60px; background: transparent; }
 .page-hero h1 { font-size: clamp(40px,5vw,64px); font-weight: 900; letter-spacing: -2px; margin-bottom: 14px; }
 .page-hero p  { font-size: 17px; color: var(--muted); max-width: 520px; line-height: 1.7; }
 
@@ -25,11 +25,11 @@
 .trips-wrap { padding: 0 56px 80px; }
 .trips-big-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
 .trip-card {
-  background: var(--card); border: 1px solid var(--border2);
+  background: rgba(12,18,28,0.65); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(79,195,247,0.12);
   border-radius: 24px; overflow: hidden; text-decoration: none; color: var(--text); display: block;
   transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s, border-color .35s;
 }
-.trip-card:hover { transform: translateY(-6px); box-shadow: 0 22px 50px rgba(0,0,0,.5),0 0 24px rgba(79,195,247,.1); border-color: rgba(79,195,247,.28); }
+.trip-card:hover { transform: translateY(-8px); box-shadow: 0 28px 60px rgba(0,0,0,.6),0 0 32px rgba(79,195,247,.14); border-color: rgba(79,195,247,.32); }
 .trip-img { height: 220px; position: relative; overflow: hidden; }
 .trip-img-inner { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; transition: transform .5s; }
 .trip-card:hover .trip-img-inner { transform: scale(1.04); }
@@ -70,14 +70,14 @@
   </ul>
   <div class="nav-right">
     <a href="login.html" class="btn-nav-ghost">Sign In</a>
-    <a href="signup.html" class="btn-nav">Start Your Expedition</a>
+    <a href="signup.html" class="btn-nav">Claim Your Altitude</a>
   </div>
 </nav>
 
 <div class="page-hero fade-in">
   <div class="sec-label">All Expeditions</div>
   <h1>Choose Your<br>Next Expedition.</h1>
-  <p>Every route earns you real altitude points. Filter by type, find your match, and claim your spot before it's gone.</p>
+  <p>You don't just travel mountains. You earn every foot of altitude.<br>Filter by type, find your match, and claim your spot before it's gone.</p>
 </div>
 
 <div class="filter-bar">
@@ -241,5 +241,10 @@
 const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 </script>
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
 </body>
 </html>
