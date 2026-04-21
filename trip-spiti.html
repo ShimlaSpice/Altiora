@@ -9,7 +9,7 @@
 .trip-hero {
   min-height: 60vh; position: relative; display: flex; align-items: flex-end;
   padding: 0 56px 56px; overflow: hidden;
-  background: linear-gradient(160deg,#0d1f35 0%,#1a3050 30%,#0f2040 60%,#081525 100%);
+  background: radial-gradient(800px 400px at 50% 0%, rgba(79,195,247,0.12), transparent 60%), linear-gradient(160deg,#0a1726 0%,#0e2238 40%,#081525 100%);
 }
 .trip-hero-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .trip-hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg,transparent 0%,rgba(8,12,17,.85) 100%); }
@@ -27,7 +27,7 @@
 .trip-body-wrap { display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 48px 56px 80px; align-items: start; }
 .trip-main { display: flex; flex-direction: column; gap: 40px; }
 
-.info-card { background: var(--card); border: 1px solid var(--border2); border-radius: 24px; padding: 36px; }
+.info-card { background: rgba(12,18,28,0.65); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(79,195,247,0.12); border-radius: 24px; padding: 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
 .info-card-title { font-size: 16px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
 .info-card-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; flex-shrink: 0; }
 
@@ -48,10 +48,10 @@
 .inc-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
 .booking-card {
-  background: var(--glass); border: 1px solid rgba(79,195,247,.15);
+  background: rgba(12,18,28,0.65); border: 1px solid rgba(79,195,247,0.12);
   border-radius: 24px; padding: 36px; position: sticky; top: 90px;
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 24px 64px rgba(0,0,0,.45), 0 0 40px rgba(79,195,247,.08);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 .booking-price { font-size: 42px; font-weight: 900; letter-spacing: -2px; margin-bottom: 4px; }
 .booking-price em { color: var(--accent); font-style: normal; }
@@ -99,7 +99,7 @@
   </ul>
   <div class="nav-right">
     <a href="login.html" class="btn-nav-ghost">Sign In</a>
-    <a href="signup.html" class="btn-nav">Start Your Expedition</a>
+    <a href="signup.html" class="btn-nav">Claim Your Altitude</a>
   </div>
 </nav>
 
@@ -304,5 +304,10 @@
 const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 </script>
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
 </body>
 </html>
