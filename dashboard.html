@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Dashboard · Altiora</title>
 <link rel="stylesheet" href="style.css"/>
+<style>body { visibility: hidden; }</style>
 <style>
 .dash-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; }
 
@@ -321,28 +322,30 @@
   <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
 </footer>
 
-<!-- Firebase compat SDKs -->
+<!-- Firebase compat SDKs — MUST load before any auth code -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="firebase.js"></script>
 <script>
-// ── Auth guard — redirect if not logged in ──────────────────────────
+// ── Auth guard — redirect immediately if not logged in ───────────────
 auth.onAuthStateChanged(user => {
   if (!user) {
-    window.location.href = 'login.html';
+    window.location.replace('login.html');
     return;
   }
+  // Reveal page only after auth confirmed
+  document.body.style.visibility = 'visible';
   loadDashboard(user);
 });
 
 // ── Logout ───────────────────────────────────────────────────────────
 document.getElementById('logoutBtn').addEventListener('click', function(e) {
   e.preventDefault();
-  auth.signOut().then(() => { window.location.href = 'index.html'; });
+  auth.signOut().then(() => { window.location.replace('index.html'); });
 });
 
-// ── Load real user data from Firestore ───────────────────────────────
+// ── Level helper ─────────────────────────────────────────────────────
 function getLevel(ft) {
   if (ft >= 200000) return 'Legend';
   if (ft >= 100000) return 'Everest Class';
@@ -351,19 +354,20 @@ function getLevel(ft) {
   return 'Explorer';
 }
 
+// ── Load real user data from Firestore ───────────────────────────────
 function loadDashboard(user) {
   db.collection('users').doc(user.uid).get().then(snap => {
-    const data = snap.exists ? snap.data() : {};
-    const name    = data.name || user.displayName || 'Traveler';
-    const altFt   = data.total_altitude || 0;
-    const level   = getLevel(altFt);
-    const altFmt  = altFt.toLocaleString();
+    const data  = snap.exists ? snap.data() : {};
+    const name  = data.name || user.displayName || 'Traveler';
+    const altFt = data.total_altitude || 0;
+    const level = getLevel(altFt);
+    const altFmt = altFt.toLocaleString();
 
     // Greeting
-    const hour   = new Date().getHours();
-    const salut  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-    const gName  = document.querySelector('.greeting-name');
-    const gSub   = document.querySelector('.greeting-sub');
+    const hour  = new Date().getHours();
+    const salut = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    const gName = document.querySelector('.greeting-name');
+    const gSub  = document.querySelector('.greeting-sub');
     if (gName) gName.textContent = salut + ', ' + name.split(' ')[0] + '.';
     if (gSub)  gSub.textContent  = 'You\'ve earned ' + altFmt + ' ft of altitude. ' + level + ' level — keep climbing.';
 
@@ -374,12 +378,10 @@ function loadDashboard(user) {
     if (statLevel) statLevel.textContent = level;
 
     // Nav pill
-    const navPillText = document.querySelector('.nav-pill');
-    if (navPillText) {
-      navPillText.innerHTML = '<span class="dot"></span>' + altFmt + ' ft';
-    }
+    const navPill = document.querySelector('.nav-pill');
+    if (navPill) navPill.innerHTML = '<span class="dot"></span>' + altFmt + ' ft';
 
-    // Progress bar (within current level band)
+    // Progress bar within current level band
     const bands = [[0,20000],[20000,50000],[50000,100000],[100000,200000]];
     let pct = 100;
     for (const [lo, hi] of bands) {
@@ -393,7 +395,10 @@ function loadDashboard(user) {
     }, 500);
 
   }).catch(() => {
-    // Firestore unavailable — still show basic info from auth
+    // Firestore unavailable — show minimal info from auth object
+    const name = user.displayName || 'Traveler';
+    const gName = document.querySelector('.greeting-name');
+    if (gName) gName.textContent = 'Welcome back, ' + name.split(' ')[0] + '.';
     setTimeout(() => {
       const p = document.getElementById('dashProg');
       const c = document.getElementById('crewBar');
@@ -404,7 +409,9 @@ function loadDashboard(user) {
 }
 
 // ── Scroll reveal ─────────────────────────────────────────────────────
-const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
+const obs = new IntersectionObserver(e => e.forEach(x => {
+  if (x.isIntersecting) x.target.classList.add('visible');
+}), { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 </script>
 </body>
