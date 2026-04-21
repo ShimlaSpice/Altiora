@@ -141,40 +141,56 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   </div>
 </div>
 
-<!-- Firebase compat SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="firebase.js"></script>
 <script>
 // Redirect if already logged in
-auth.onAuthStateChanged(user => { if (user) window.location.href = 'dashboard.html'; });
+auth.onAuthStateChanged(user => { if (user) window.location.replace('dashboard.html'); });
 
 function showError(msg) {
   const el = document.getElementById('authError');
   el.textContent = msg;
+  el.style.color = '#e74c3c';
   el.style.display = 'block';
 }
 function clearError() { document.getElementById('authError').style.display = 'none'; }
 
+function setLoading(btn, loading, defaultText, loadingText) {
+  btn.disabled = loading;
+  btn.textContent = loading ? loadingText : defaultText;
+  btn.style.opacity = loading ? '0.7' : '1';
+}
+
 // Google login
-document.getElementById('googleBtn').addEventListener('click', function() {
+const googleBtn = document.getElementById('googleBtn');
+googleBtn.addEventListener('click', function() {
   clearError();
+  setLoading(googleBtn, true, 'Continue with Google', 'Signing in...');
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
-    .then(() => { window.location.href = 'dashboard.html'; })
-    .catch(err => showError(err.message));
+    .then(() => { window.location.replace('dashboard.html'); })
+    .catch(err => {
+      setLoading(googleBtn, false, 'Continue with Google', 'Signing in...');
+      showError(err.message);
+    });
 });
 
 // Email login
-document.getElementById('emailLoginBtn').addEventListener('click', function() {
+const emailLoginBtn = document.getElementById('emailLoginBtn');
+emailLoginBtn.addEventListener('click', function() {
   clearError();
   const email    = document.getElementById('emailInput').value.trim();
   const password = document.getElementById('passwordInput').value;
   if (!email || !password) { showError('Please enter your email and password.'); return; }
+  setLoading(emailLoginBtn, true, 'Sign In to Altiora', 'Signing in...');
   auth.signInWithEmailAndPassword(email, password)
-    .then(() => { window.location.href = 'dashboard.html'; })
-    .catch(err => showError(err.message));
+    .then(() => { window.location.replace('dashboard.html'); })
+    .catch(err => {
+      setLoading(emailLoginBtn, false, 'Sign In to Altiora', 'Signing in...');
+      showError(err.message);
+    });
 });
 
 // Forgot password
@@ -184,7 +200,12 @@ document.getElementById('forgotBtn').addEventListener('click', function(e) {
   const email = document.getElementById('emailInput').value.trim();
   if (!email) { showError('Enter your email above, then click Forgot Password.'); return; }
   auth.sendPasswordResetEmail(email)
-    .then(() => { showError('Password reset email sent — check your inbox.'); document.getElementById('authError').style.color = '#4FC3F7'; })
+    .then(() => {
+      const el = document.getElementById('authError');
+      el.textContent = 'Password reset email sent — check your inbox.';
+      el.style.color = '#4FC3F7';
+      el.style.display = 'block';
+    })
     .catch(err => showError(err.message));
 });
 </script>
