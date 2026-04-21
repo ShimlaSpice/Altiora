@@ -23,7 +23,7 @@
 
 .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
 .stat-card {
-  background: var(--card); border: 1px solid var(--border2);
+  background: rgba(12,18,28,0.65); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(79,195,247,0.12);
   border-radius: 20px; padding: 26px 22px;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
@@ -37,7 +37,7 @@
 .dash-col  { display: flex; flex-direction: column; gap: 20px; }
 
 .d-card {
-  background: var(--card); border: 1px solid var(--border2);
+  background: rgba(12,18,28,0.65); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(79,195,247,0.12);
   border-radius: 24px; padding: 32px; position: relative; overflow: hidden;
 }
 .d-card-title {
@@ -144,7 +144,7 @@
   </ul>
   <div class="nav-right">
     <div class="nav-pill"><span class="dot"></span>39,500 ft</div>
-    <a href="login.html" class="btn-nav-outline">Sign Out</a>
+    <a href="login.html" class="btn-nav-outline" id="logoutBtn">Sign Out</a>
   </div>
 </nav>
 
@@ -321,15 +321,91 @@
   <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
 </footer>
 
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
 <script>
+// ── Auth guard — redirect if not logged in ──────────────────────────
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+  loadDashboard(user);
+});
+
+// ── Logout ───────────────────────────────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  auth.signOut().then(() => { window.location.href = 'index.html'; });
+});
+
+// ── Load real user data from Firestore ───────────────────────────────
+function getLevel(ft) {
+  if (ft >= 200000) return 'Legend';
+  if (ft >= 100000) return 'Everest Class';
+  if (ft >=  50000) return 'Summiteer';
+  if (ft >=  20000) return 'Climber';
+  return 'Explorer';
+}
+
+function loadDashboard(user) {
+  db.collection('users').doc(user.uid).get().then(snap => {
+    const data = snap.exists ? snap.data() : {};
+    const name    = data.name || user.displayName || 'Traveler';
+    const altFt   = data.total_altitude || 0;
+    const level   = getLevel(altFt);
+    const altFmt  = altFt.toLocaleString();
+
+    // Greeting
+    const hour   = new Date().getHours();
+    const salut  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    const gName  = document.querySelector('.greeting-name');
+    const gSub   = document.querySelector('.greeting-sub');
+    if (gName) gName.textContent = salut + ', ' + name.split(' ')[0] + '.';
+    if (gSub)  gSub.textContent  = 'You\'ve earned ' + altFmt + ' ft of altitude. ' + level + ' level — keep climbing.';
+
+    // Stat cards
+    const statAlt   = document.querySelector('.stat-value em');
+    const statLevel = document.querySelectorAll('.stat-value')[1];
+    if (statAlt)   statAlt.textContent  = altFmt;
+    if (statLevel) statLevel.textContent = level;
+
+    // Nav pill
+    const navPillText = document.querySelector('.nav-pill');
+    if (navPillText) {
+      navPillText.innerHTML = '<span class="dot"></span>' + altFmt + ' ft';
+    }
+
+    // Progress bar (within current level band)
+    const bands = [[0,20000],[20000,50000],[50000,100000],[100000,200000]];
+    let pct = 100;
+    for (const [lo, hi] of bands) {
+      if (altFt < hi) { pct = Math.round((altFt - lo) / (hi - lo) * 100); break; }
+    }
+    setTimeout(() => {
+      const p = document.getElementById('dashProg');
+      if (p) p.style.width = pct + '%';
+      const c = document.getElementById('crewBar');
+      if (c) c.style.width = '77%';
+    }, 500);
+
+  }).catch(() => {
+    // Firestore unavailable — still show basic info from auth
+    setTimeout(() => {
+      const p = document.getElementById('dashProg');
+      const c = document.getElementById('crewBar');
+      if (p) p.style.width = '20%';
+      if (c) c.style.width = '77%';
+    }, 500);
+  });
+}
+
+// ── Scroll reveal ─────────────────────────────────────────────────────
 const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
-setTimeout(() => {
-  const p = document.getElementById('dashProg');
-  const c = document.getElementById('crewBar');
-  if (p) p.style.width = '20%';  // 39,500 / (100,000-50,000) within Summiteer band
-  if (c) c.style.width = '77%';
-}, 500);
 </script>
 </body>
 </html>
