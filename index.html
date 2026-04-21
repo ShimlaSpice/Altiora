@@ -9,94 +9,47 @@
 /* ── HERO ────────────────────────────────────────────────────────────────── */
 .hero {
   min-height: 100vh; position: relative;
-  display: flex; align-items: center; overflow: hidden;
-  padding: 70px 0 60px;
+  display: flex; align-items: flex-end; overflow: hidden;
+  padding: 0 0 80px;
+  /* No background — inherits body gradient */
 }
-.hero-bg {
-  position: absolute; inset: 0;
-  background: linear-gradient(160deg,#060e1a 0%,#0a1828 50%,#060e14 100%);
-}
-.hero-glow {
-  position: absolute; top: -15%; left: 40%;
-  width: 900px; height: 700px;
-  background: radial-gradient(ellipse,rgba(79,195,247,0.08) 0%,transparent 65%);
-  pointer-events: none;
-}
-.hero-mountains {
-  position: absolute; bottom: 0; left: 0; width: 100%; height: 58%; opacity: 1;
-}
-.hero-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg,rgba(8,12,17,.82) 0%,rgba(8,12,17,.22) 55%,transparent 100%);
-}
-.hero-content {
-  position: relative; z-index: 3;
-  padding: 0 56px; max-width: 840px;
-}
+.hero-bg    { display: none; } /* replaced by body gradient */
+.hero-glow  { position: absolute; top: -15%; left: 40%; width: 900px; height: 700px; background: radial-gradient(ellipse,rgba(79,195,247,0.10) 0%,transparent 65%); pointer-events: none; }
+.hero-mountains { position: absolute; bottom: 0; left: 0; width: 100%; height: 58%; }
+.hero-overlay   { position: absolute; inset: 0; background: linear-gradient(90deg,rgba(6,14,26,.85) 0%,rgba(6,14,26,.30) 55%,transparent 100%); }
+.hero-content   { position: relative; z-index: 3; padding: 0 56px; max-width: 840px; }
+
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 9px;
   background: rgba(79,195,247,.07); border: 1px solid rgba(79,195,247,.2);
   border-radius: 100px; padding: 7px 18px; margin-bottom: 28px;
-  font-size: 11.5px; font-weight: 700; color: var(--accent);
-  letter-spacing: 1.2px; text-transform: uppercase;
+  font-size: 11.5px; font-weight: 700; color: var(--accent); letter-spacing: 1.2px; text-transform: uppercase;
 }
 .hero-eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; flex-shrink: 0; }
-
-.hero h1 {
-  font-size: clamp(56px,8.5vw,102px); font-weight: 900;
-  line-height: 1.03; letter-spacing: -1.5px; margin-bottom: 20px;
-  color: #FFFFFF;
-}
+.hero h1 { font-size: clamp(56px,8.5vw,102px); font-weight: 900; line-height: 1.03; letter-spacing: -1.5px; margin-bottom: 20px; color: #FFF; }
 .hero h1 .blue { color: var(--accent); display: block; }
-
-.hero-em {
-  font-size: clamp(15px,1.6vw,18px); color: rgba(220,232,245,0.82);
-  font-weight: 600; letter-spacing: 0.1px; margin-bottom: 14px;
-  line-height: 1.5;
-}
-.hero-sub {
-  font-size: clamp(14px,1.5vw,16.5px); color: var(--muted);
-  line-height: 1.72; margin-bottom: 40px; max-width: 480px; font-weight: 400;
-}
-.hero-sub strong { color: rgba(255,255,255,.85); font-weight: 600; }
-
+.hero-sub { font-size: clamp(15px,1.5vw,18px); color: var(--muted); line-height: 1.72; margin-bottom: 40px; max-width: 480px; font-weight: 400; }
 .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
-
-.hero-kpis {
-  display: flex; gap: 0; margin-top: 52px; padding-top: 30px;
-  border-top: 1px solid rgba(255,255,255,.07);
-}
+.hero-kpis { display: flex; gap: 0; margin-top: 52px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,.07); }
 .kpi { flex: 1; padding: 0 28px 0 0; }
 .kpi:first-child { padding-left: 0; }
 .kpi + .kpi { border-left: 1px solid rgba(255,255,255,.07); padding-left: 28px; }
 .kpi-num { font-size: 28px; font-weight: 900; letter-spacing: -0.8px; color: #fff; }
 .kpi-num em { color: var(--accent); font-style: normal; }
 .kpi-label { font-size: 12px; color: var(--muted); margin-top: 5px; letter-spacing: .2px; font-weight: 500; }
-
-.scroll-hint {
-  position: absolute; bottom: 36px; left: 56px;
-  display: flex; align-items: center; gap: 10px;
-  font-size: 10.5px; color: var(--muted2); letter-spacing: 1.2px; text-transform: uppercase; font-weight: 600;
-}
+.scroll-hint { position: absolute; bottom: 36px; left: 56px; display: flex; align-items: center; gap: 10px; font-size: 10.5px; color: var(--muted2); letter-spacing: 1.2px; text-transform: uppercase; font-weight: 600; }
 .scroll-line { width: 28px; height: 1px; background: rgba(255,255,255,.16); }
 
 /* ── ALTITUDE SECTION ────────────────────────────────────────────────────── */
-.alt-section { padding: 96px 56px; background: linear-gradient(180deg,var(--bg) 0%,#0a1220 100%); }
+.alt-section { padding: 72px 56px; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
 .alt-card {
-  background: var(--glass); border: 1px solid rgba(79,195,247,.15);
   border-radius: 26px; padding: 44px; position: relative; overflow: hidden;
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: var(--shadow), 0 0 40px rgba(79,195,247,.09);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  /* Uses .glass via HTML class */
 }
 .alt-card:hover { transform: translateY(-6px); box-shadow: 0 22px 50px rgba(0,0,0,.55), 0 0 50px rgba(79,195,247,.14); }
-.alt-card::before {
-  content: ''; position: absolute; top: -60px; right: -60px;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle,rgba(79,195,247,.09) 0%,transparent 70%);
-  pointer-events: none;
-}
+.alt-card::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: radial-gradient(circle,rgba(79,195,247,.09) 0%,transparent 70%); pointer-events: none; }
 .alt-num-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
 .alt-big { font-size: 76px; font-weight: 900; letter-spacing: -4px; line-height: 1; color: #fff; }
 .alt-big em { color: var(--accent); font-style: normal; }
@@ -105,30 +58,29 @@
 .alt-compare strong { color: var(--accent); font-weight: 600; }
 .prog-track { height: 5px; background: rgba(255,255,255,.06); border-radius: 100px; overflow: hidden; margin-bottom: 10px; }
 .prog-fill  { height: 100%; background: linear-gradient(90deg,rgba(79,195,247,.55),var(--accent)); border-radius: 100px; width: 0; transition: width 1.8s cubic-bezier(.4,0,.2,1); }
-.prog-ends  { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted2); margin-bottom: 22px; letter-spacing: 0.1px; }
-.level-chip {
-  display: inline-flex; align-items: center; gap: 12px;
-  background: rgba(79,195,247,.07); border: 1px solid rgba(79,195,247,.18);
-  border-radius: 13px; padding: 13px 18px;
-}
+.prog-ends  { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted2); margin-bottom: 22px; }
+.level-chip { display: inline-flex; align-items: center; gap: 12px; background: rgba(79,195,247,.07); border: 1px solid rgba(79,195,247,.18); border-radius: 13px; padding: 13px 18px; }
 .level-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(79,195,247,.13); border: 1px solid rgba(79,195,247,.22); display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .level-name { font-size: 15px; font-weight: 800; color: #fff; }
 .level-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
-/* ── TRIPS SECTION ───────────────────────────────────────────────────────── */
-.trips-section { padding: 96px 56px; background: var(--bg); }
-.trips-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-top: 48px; }
+/* ── TRIPS / EXPERIENCES ─────────────────────────────────────────────────── */
+.trips-section { padding: 72px 56px; }
+.trips-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-top: 48px;
+  /* Glass container wrapping all experience cards */
+  background: rgba(12,18,28,0.50);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(79,195,247,0.10);
+  border-radius: 20px; padding: 20px;
+}
 .trip-card {
-  background: var(--card); border: 1px solid var(--border2);
+  background: rgba(14,21,32,0.70); border: 1px solid rgba(255,255,255,0.07);
   border-radius: 22px; overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   text-decoration: none; color: var(--text); display: block;
 }
-.trip-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 22px 50px rgba(0,0,0,.5), 0 0 24px rgba(79,195,247,.1);
-  border-color: rgba(79,195,247,.28);
-}
+.trip-card:hover { transform: translateY(-6px); box-shadow: 0 22px 50px rgba(0,0,0,.5), 0 0 24px rgba(79,195,247,.1); border-color: rgba(79,195,247,.28); }
 .trip-img { height: 214px; position: relative; overflow: hidden; }
 .trip-img-inner { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; transition: transform .45s ease; }
 .trip-card:hover .trip-img-inner { transform: scale(1.04); }
@@ -136,27 +88,29 @@
 .bg-leh   { background: linear-gradient(160deg,#1a1030 0%,#2a1845 30%,#1a1035 60%,#0d0820 100%); }
 .bg-pin   { background: linear-gradient(160deg,#1a1020 0%,#2a1525 30%,#1a1020 60%,#0d0810 100%); }
 .trip-badge-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
-.trip-type { background: rgba(79,195,247,.14); border: 1px solid rgba(79,195,247,.28); color: var(--accent); font-size: 9.5px; font-weight: 700; padding: 5px 11px; border-radius: 7px; letter-spacing: 1px; text-transform: uppercase; }
+.trip-type  { background: rgba(79,195,247,.14); border: 1px solid rgba(79,195,247,.28); color: var(--accent); font-size: 9.5px; font-weight: 700; padding: 5px 11px; border-radius: 7px; letter-spacing: 1px; text-transform: uppercase; }
 .trip-price { color: #fff; font-size: 14.5px; font-weight: 800; }
-.trip-body { padding: 24px; }
-.trip-name { font-size: 18px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 12px; color: #fff; }
+.trip-body  { padding: 24px; }
+.trip-name  { font-size: 18px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 12px; color: #fff; }
 .trip-specs { display: flex; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
-.trip-spec { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
-.spec-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-.trip-cta {
-  display: block; width: 100%; text-align: center;
-  background: transparent; border: 1.5px solid rgba(79,195,247,.24); color: var(--accent);
-  padding: 12px; border-radius: 11px; font-size: 13.5px; font-weight: 700;
-  text-decoration: none; transition: all .22s ease; margin-top: 16px;
-  letter-spacing: 0.1px;
-}
+.trip-spec  { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.spec-dot   { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.trip-cta { display: block; width: 100%; text-align: center; background: transparent; border: 1.5px solid rgba(79,195,247,.24); color: var(--accent); padding: 12px; border-radius: 11px; font-size: 13.5px; font-weight: 700; text-decoration: none; transition: all .22s ease; margin-top: 16px; }
 .trip-cta:hover { background: rgba(79,195,247,.08); border-color: rgba(79,195,247,.55); }
 
-/* ── PEAKS SECTION ───────────────────────────────────────────────────────── */
-.peaks-section { padding: 96px 56px; background: linear-gradient(180deg,#0a1220 0%,var(--bg) 100%); }
+/* ── PEAK LADDER ─────────────────────────────────────────────────────────── */
+.peaks-section { padding: 72px 56px; }
 .peaks-two { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
-.peak-ladder { display: flex; flex-direction: column; position: relative; }
-.peak-ladder::before { content:''; position:absolute; left:21px; top:22px; bottom:22px; width:1px; background:linear-gradient(180deg,var(--accent),rgba(79,195,247,.06) 80%,transparent); opacity:.22; }
+.peak-ladder {
+  display: flex; flex-direction: column; position: relative;
+  /* Glass panel via inline styles — same system */
+  background: rgba(12,18,28,0.65);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(79,195,247,0.12);
+  border-radius: 20px; padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.peak-ladder::before { content:''; position:absolute; left:37px; top:22px; bottom:22px; width:1px; background:linear-gradient(180deg,var(--accent),rgba(79,195,247,.06) 80%,transparent); opacity:.22; }
 .peak-row { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 16px; margin-bottom: 4px; transition: background .2s ease; }
 .peak-row:hover { background: rgba(79,195,247,.04); }
 .peak-row.active-p { background: rgba(79,195,247,.07); border: 1px solid rgba(79,195,247,.13); }
@@ -174,17 +128,19 @@
 .pb-legend { background:rgba(255,184,0,.1);    border:1px solid rgba(255,184,0,.22); color:#FFB800; }
 .pb-locked { color: var(--muted2); font-size: 10px; }
 
-/* ── CREWS SECTION ───────────────────────────────────────────────────────── */
-.crews-section { padding: 96px 56px; background: var(--bg); }
+/* ── CREWS ───────────────────────────────────────────────────────────────── */
+.crews-section { padding: 72px 56px; }
 .crews-two { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
 .crew-board { display: flex; flex-direction: column; gap: 10px; }
 .crew-card {
   display: flex; align-items: center; gap: 16px;
-  background: var(--card); border: 1px solid var(--border2);
+  background: rgba(12,18,28,0.65);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(79,195,247,0.12);
   border-radius: 18px; padding: 18px 22px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease, background 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
 }
-.crew-card:hover { border-color: rgba(79,195,247,.22); background: var(--card2); transform: translateX(4px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+.crew-card:hover { border-color: rgba(79,195,247,.28); transform: translateX(4px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
 .crew-rank { font-size: 24px; font-weight: 900; width: 32px; text-align: center; flex-shrink: 0; color: rgba(255,255,255,.1); }
 .crew-rank.gold   { color: #FFB800; }
 .crew-rank.silver { color: #9CA3AF; }
@@ -198,74 +154,59 @@
 .crew-alt-label { font-size: 11px; color: var(--muted2); margin-top: 2px; text-align: right; }
 
 /* ── TRUST ───────────────────────────────────────────────────────────────── */
-.trust-section { padding: 96px 56px; background: linear-gradient(180deg,#0a1220 0%,var(--bg) 100%); }
+.trust-section { padding: 72px 56px; }
 .trust-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-top: 48px; }
 .trust-card {
-  background: var(--card); border: 1px solid var(--border2);
+  background: rgba(12,18,28,0.65);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(79,195,247,0.10);
   border-radius: 22px; padding: 28px 24px;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.trust-card:hover { border-color: rgba(79,195,247,.22); transform: translateY(-6px); box-shadow: 0 22px 50px rgba(0,0,0,.4); }
+.trust-card:hover { border-color: rgba(79,195,247,.25); transform: translateY(-6px); box-shadow: 0 22px 50px rgba(0,0,0,.45); }
 .trust-icon { width: 48px; height: 48px; border-radius: 13px; background: rgba(79,195,247,.08); border: 1px solid rgba(79,195,247,.14); display: flex; align-items: center; justify-content: center; font-size: 21px; margin-bottom: 16px; }
 .trust-title { font-size: 14.5px; font-weight: 800; margin-bottom: 8px; color: #fff; letter-spacing: -.1px; }
 .trust-desc  { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
 /* ── TESTIMONIALS ────────────────────────────────────────────────────────── */
-.testi-section { padding: 96px 56px; background: var(--bg); }
+.testi-section { padding: 72px 56px; }
 .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 48px; }
 .testi-card {
-  background: var(--glass); border: 1px solid var(--border2);
+  background: rgba(12,18,28,0.65);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(79,195,247,0.10);
   border-radius: 22px; padding: 30px;
-  backdrop-filter: blur(12px);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.testi-card:hover { transform: translateY(-6px); border-color: rgba(79,195,247,.16); box-shadow: 0 22px 50px rgba(0,0,0,.4); }
-.testi-stars { color: #FFB800; font-size: 12.5px; letter-spacing: 3px; margin-bottom: 16px; }
-.testi-quote { font-size: 14.5px; color: var(--muted); line-height: 1.8; font-style: italic; margin-bottom: 20px; }
+.testi-card:hover { transform: translateY(-6px); border-color: rgba(79,195,247,.22); box-shadow: 0 22px 50px rgba(0,0,0,.45); }
+.testi-stars  { color: #FFB800; font-size: 12.5px; letter-spacing: 3px; margin-bottom: 16px; }
+.testi-quote  { font-size: 14.5px; color: var(--muted); line-height: 1.8; font-style: italic; margin-bottom: 20px; }
 .testi-author { display: flex; align-items: center; gap: 12px; }
-.testi-avi { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+.testi-avi    { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
 .t-name  { font-size: 13.5px; font-weight: 700; color: #fff; }
-.t-level { font-size: 11px; color: var(--accent); margin-top: 2px; letter-spacing: .1px; }
+.t-level { font-size: 11px; color: var(--accent); margin-top: 2px; }
 
 /* ── FINAL CTA ───────────────────────────────────────────────────────────── */
-.final-section { padding: 96px 56px; text-align: center; background: linear-gradient(180deg,#0a1220 0%,#060a0f 100%); }
-.final-h { font-size: clamp(40px,6vw,72px); font-weight: 900; letter-spacing: -2.5px; line-height: 1.04; margin-bottom: 18px; color: #fff; }
+.final-section { padding: 72px 56px; text-align: center; }
+.final-h   { font-size: clamp(40px,6vw,72px); font-weight: 900; letter-spacing: -2.5px; line-height: 1.04; margin-bottom: 18px; color: #fff; }
 .final-h em { color: var(--accent); font-style: normal; }
-.final-sub { font-size: 17px; color: var(--muted); margin-bottom: 44px; line-height: 1.65; max-width: 440px; margin-left: auto; margin-right: auto; }
+.final-sub  { font-size: 17px; color: var(--muted); margin-bottom: 44px; line-height: 1.65; max-width: 440px; margin-left: auto; margin-right: auto; }
 .final-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 .final-urgency { margin-top: 26px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: #ff6b3d; font-weight: 600; }
 .final-urgency .dot { width: 6px; height: 6px; border-radius: 50%; background: #ff6b3d; animation: pulse 1.5s infinite; }
 
 /* ── STICKY BAR ──────────────────────────────────────────────────────────── */
-.sticky-bar {
-  position: sticky; bottom: 0; z-index: 150;
-  display: flex; justify-content: flex-end; pointer-events: none;
-}
-.sticky-inner {
-  margin: 0 56px 22px auto;
-  display: flex; align-items: center; gap: 10px;
-  pointer-events: all;
-  opacity: 0; transform: translateY(10px);
-  transition: opacity .35s ease, transform .35s ease;
-}
+.sticky-bar { position: sticky; bottom: 0; z-index: 150; display: flex; justify-content: flex-end; pointer-events: none; }
+.sticky-inner { margin: 0 56px 22px auto; display: flex; align-items: center; gap: 10px; pointer-events: all; opacity: 0; transform: translateY(10px); transition: opacity .35s ease, transform .35s ease; }
 .sticky-inner.show { opacity: 1; transform: translateY(0); }
-.sticky-wa {
-  width: 48px; height: 48px; background: #25D366; border: none; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 6px 20px rgba(37,211,102,.4); cursor: pointer; text-decoration: none;
-  transition: all .22s ease; flex-shrink: 0;
-}
+.sticky-wa { width: 48px; height: 48px; background: #25D366; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(37,211,102,.4); cursor: pointer; text-decoration: none; transition: all .22s ease; flex-shrink: 0; }
 .sticky-wa:hover { transform: scale(1.08); box-shadow: 0 10px 28px rgba(37,211,102,.55); }
-.sticky-book {
-  background: var(--orange); color: #fff; text-decoration: none;
-  padding: 13px 26px; border-radius: 12px; font-size: 14px; font-weight: 700;
-  box-shadow: 0 6px 24px rgba(255,107,0,.4); transition: all .22s ease; display: inline-block;
-}
+.sticky-book { background: var(--orange); color: #fff; text-decoration: none; padding: 13px 26px; border-radius: 12px; font-size: 14px; font-weight: 700; box-shadow: 0 6px 24px rgba(255,107,0,.4); transition: all .22s ease; display: inline-block; }
 .sticky-book:hover { background: var(--orange2); transform: translateY(-2px); }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .hero { padding: 48px 0 40px; }
+  .hero { padding: 0 0 48px; }
   .hero-content { padding: 0 24px; }
   .hero h1 { letter-spacing: -1px; }
   .hero-kpis { flex-direction: column; gap: 20px; }
@@ -292,7 +233,7 @@
   <div class="nav-right">
     <div class="nav-pill"><span class="dot"></span>2026 Season Open</div>
     <a href="login.html" class="btn-nav-ghost">Sign In</a>
-    <a href="signup.html" class="btn-nav">Start Your Expedition</a>
+    <a href="signup.html" class="btn-nav">Claim Your Altitude</a>
   </div>
 </nav>
 
@@ -315,17 +256,19 @@
     <polygon points="0,500 60,380 180,400 320,350 460,380 600,330 720,370 860,340 980,375 1100,345 1220,370 1340,355 1400,365 1400,500" fill="url(#mg3)"/>
     <line x1="760" y1="42" x2="760" y2="500" stroke="rgba(79,195,247,.07)" stroke-width="1" stroke-dasharray="4,8"/>
     <circle cx="760" cy="40" r="3" fill="rgba(79,195,247,.65)"/>
-    <text x="772" y="46" font-family="Inter,sans-serif" font-size="11" fill="rgba(79,195,247,.5)" font-weight="600">18,379 ft · Spiti</text>
+    <text x="772" y="46" font-family="Inter,sans-serif" font-size="11" fill="rgba(79,195,247,.55)" font-weight="700" letter-spacing="1">Altiora Peak · 18,379 ft</text>
   </svg>
   <div class="hero-overlay"></div>
   <div class="hero-content fade-in">
     <div class="hero-eyebrow"><span class="dot"></span>2026 Season · Limited Seats Only</div>
     <h1>Earn Your<span class="blue">Altitude.</span></h1>
-    <p class="hero-em">Track every foot you climb. Compete. Earn your altitude.</p>
-    <p class="hero-sub">Premium Spiti &amp; Ladakh Expeditions.<br><strong>Max 10 per group. Every trip updates your score.</strong></p>
+    <p class="hero-sub">You don't just travel mountains.<br>You earn every foot of altitude.</p>
     <div class="hero-actions">
-      <a href="expeditions.html" class="btn-primary">View Expeditions</a>
-      <a href="dashboard.html" class="btn-ghost">Check Your Altitude</a>
+      <div>
+        <a href="signup.html" class="btn-primary">Claim Your Altitude</a>
+        <p class="cta-subtext">Free to join · Only 3 spots left this season</p>
+      </div>
+      <a href="expeditions.html" class="btn-ghost">View Expeditions</a>
     </div>
     <div class="hero-kpis">
       <div class="kpi"><div class="kpi-num">4,<em>200</em>+</div><div class="kpi-label">Travelers ascended</div></div>
@@ -335,6 +278,11 @@
   </div>
   <div class="scroll-hint"><div class="scroll-line"></div>Scroll to ascend</div>
 </section>
+
+<!-- BRAND STATEMENT -->
+<div class="brand-bar" style="text-align:center;padding:28px 56px;border-bottom:1px solid rgba(255,255,255,.04)">
+  <p style="font-size:13px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:rgba(168,179,194,.45)">Not a trip.&nbsp;&nbsp;A climb.</p>
+</div>
 
 <!-- ALTITUDE TRACKER -->
 <div class="alt-section fade-in">
@@ -348,7 +296,7 @@
       </div>
     </div>
     <div>
-      <div class="alt-card">
+      <div class="alt-card glass">
         <div class="alt-num-row">
           <div class="alt-big">39,<em>500</em></div>
           <div class="alt-unit">ft</div>
@@ -370,9 +318,10 @@
 
 <!-- TRIPS -->
 <section class="trips-section fade-in" id="trips">
-  <div class="sec-label">Expeditions</div>
-  <h2 class="sec-title">Choose Your Battle.</h2>
-  <p class="sec-sub">Curated for altitude gain, terrain, and transformation. No filler trips — every route earns real feet.</p>
+  <p class="section-tagline">Earn altitude on every route</p>
+  <div class="sec-label">Experiences</div>
+  <h2 class="sec-title">Choose Your Path.</h2>
+  <p class="sec-sub">Four ways to earn altitude. Every route tracked, every foot counted.</p>
   <div class="trips-grid">
 
     <a href="trip-spiti.html" class="trip-card">
@@ -468,10 +417,12 @@
 <!-- PEAK LADDER -->
 <section class="peaks-section fade-in">
   <div class="sec-label">Peak Ladder</div>
+  <p class="ladder-subtext">Every trip adds to your altitude. Climb higher. Unlock rewards.</p>
   <div class="peaks-two">
     <div>
       <h2 class="sec-title">How High<br>Will You Go?</h2>
-      <p class="sec-sub">Every expedition compounds your altitude. Climb the ranks, unlock elite rewards, and chase the only title that matters — Legend.</p>
+      <p class="sec-sub">Every trip adds to your altitude. Climb higher. Unlock rewards.</p>
+      <p class="sec-sub" style="margin-top:16px;font-size:14px">Five tiers. One goal. The only leaderboard that matters is the one measured in feet.</p>
       <div style="margin-top:36px;display:flex;gap:12px;flex-wrap:wrap">
         <a href="signup.html" class="btn-primary">Start Climbing</a>
         <a href="dashboard.html" class="btn-ghost">My Progress</a>
@@ -603,10 +554,10 @@
 <section class="final-section fade-in">
   <div class="sec-label" style="text-align:center">The ascent starts now</div>
   <h2 class="final-h">Start Your <em>Ascent.</em></h2>
-  <p class="final-sub">Every legend started at zero feet. What's stopping you?</p>
+  <p class="final-sub">The mountains are waiting.</p>
   <div class="final-btns">
-    <a href="signup.html" class="btn-primary" style="font-size:17px;padding:20px 42px">Start Your Expedition</a>
-    <a href="expeditions.html" class="btn-ghost">View All Expeditions</a>
+    <a href="signup.html" class="btn-primary" style="font-size:17px;padding:20px 42px">Claim Your Altitude</a>
+    <a href="expeditions.html" class="btn-ghost">View Expeditions</a>
   </div>
   <div class="final-urgency"><span class="dot"></span>2026 Himalayan season — 89% full</div>
 </section>
@@ -617,7 +568,7 @@
     <a href="https://wa.me/919999999999" class="sticky-wa" target="_blank" rel="noopener" title="WhatsApp">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
-    <a href="signup.html" class="sticky-book">Start Your Expedition →</a>
+    <a href="signup.html" class="sticky-book">Claim Your Altitude →</a>
   </div>
 </div>
 
@@ -633,6 +584,11 @@
   <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
 </footer>
 
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
 <script>
 // Scroll animations
 const observer = new IntersectionObserver(entries => {
@@ -648,6 +604,23 @@ const si = document.getElementById('stickyInner');
 window.addEventListener('scroll', () => {
   si.classList.toggle('show', window.scrollY > 500);
 }, { passive: true });
+
+// Auth-aware nav: swap "Sign In" / "Claim Your Altitude" for logged-in state
+auth.onAuthStateChanged(user => {
+  if (!user) return;
+  // Replace nav-right contents with Dashboard link + logout
+  const navRight = document.querySelector('.nav-right');
+  if (navRight) {
+    navRight.innerHTML = `
+      <div class="nav-pill"><span class="dot"></span>${(user.displayName || 'Traveler').split(' ')[0]}</div>
+      <a href="dashboard.html" class="btn-nav">Dashboard</a>
+      <button class="btn-nav-ghost" id="navLogout" style="background:none;border:none;cursor:pointer;font-family:inherit">Sign Out</button>
+    `;
+    document.getElementById('navLogout').addEventListener('click', () => {
+      auth.signOut().then(() => window.location.reload());
+    });
+  }
+});
 </script>
 </body>
 </html>
