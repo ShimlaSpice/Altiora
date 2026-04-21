@@ -162,7 +162,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 <script src="firebase.js"></script>
 <script>
 // Redirect if already logged in
-auth.onAuthStateChanged(user => { if (user) window.location.href = 'dashboard.html'; });
+auth.onAuthStateChanged(user => { if (user) window.location.replace('dashboard.html'); });
 
 function showError(msg) {
   const el = document.getElementById('authError');
@@ -171,6 +171,12 @@ function showError(msg) {
   el.style.display = 'block';
 }
 function clearError() { document.getElementById('authError').style.display = 'none'; }
+
+function setLoading(btn, loading, defaultText, loadingText) {
+  btn.disabled = loading;
+  btn.textContent = loading ? loadingText : defaultText;
+  btn.style.opacity = loading ? '0.7' : '1';
+}
 
 // Password strength meter
 const pw     = document.getElementById('pwInput');
@@ -192,8 +198,10 @@ pw.addEventListener('input', () => {
 });
 
 // Google signup
-document.getElementById('googleBtn').addEventListener('click', function() {
+const googleBtn = document.getElementById('googleBtn');
+googleBtn.addEventListener('click', function() {
   clearError();
+  setLoading(googleBtn, true, 'Sign up with Google', 'Creating account...');
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
     .then(result => {
@@ -206,12 +214,16 @@ document.getElementById('googleBtn').addEventListener('click', function() {
         created_at:     firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
     })
-    .then(() => { window.location.href = 'dashboard.html'; })
-    .catch(err => showError(err.message));
+    .then(() => { window.location.replace('dashboard.html'); })
+    .catch(err => {
+      setLoading(googleBtn, false, 'Sign up with Google', 'Creating account...');
+      showError(err.message);
+    });
 });
 
 // Email signup
-document.getElementById('signupBtn').addEventListener('click', function() {
+const signupBtn = document.getElementById('signupBtn');
+signupBtn.addEventListener('click', function() {
   clearError();
   const name     = document.getElementById('nameInput').value.trim();
   const email    = document.getElementById('emailInput').value.trim();
@@ -220,6 +232,7 @@ document.getElementById('signupBtn').addEventListener('click', function() {
   if (!email)              { showError('Please enter your email.'); return; }
   if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
 
+  setLoading(signupBtn, true, 'Create My Account', 'Creating account...');
   auth.createUserWithEmailAndPassword(email, password)
     .then(result => {
       const user = result.user;
@@ -234,8 +247,11 @@ document.getElementById('signupBtn').addEventListener('click', function() {
         })
       ]);
     })
-    .then(() => { window.location.href = 'dashboard.html'; })
-    .catch(err => showError(err.message));
+    .then(() => { window.location.replace('dashboard.html'); })
+    .catch(err => {
+      setLoading(signupBtn, false, 'Create My Account', 'Creating account...');
+      showError(err.message);
+    });
 });
 </script>
 </body>
