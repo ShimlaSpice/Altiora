@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>My Crew · Altiora</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.crew-wrap{max-width:1100px;margin:0 auto;padding:44px 40px 72px}
+.c-card{background:rgba(12,18,28,.65);border:1px solid rgba(79,195,247,.12);border-radius:20px;padding:22px;margin-bottom:16px}
+.c-title{font-size:16px;font-weight:800;margin-bottom:10px}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora"></a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="crew.html" class="active">My Crew</a></li>
+    <li><a href="signup.html">Profile</a></li>
+  </ul>
+</nav>
+<div class="crew-wrap">
+  <div class="c-card"><div class="c-title">Crew Members</div><div id="crew-members">No data available</div></div>
+  <div class="c-card"><div class="c-title">Planned Trips</div><div id="crew-trips">No data available</div></div>
+  <div class="c-card"><div class="c-title">Shared Messages</div><div style="display:flex;gap:10px;margin-bottom:10px"><input id="crew-msg" placeholder="Write a message" style="flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text)"><button class="btn-nav-outline" id="send-msg">Send</button></div><div id="crew-messages">No data available</div></div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script>
+auth.onAuthStateChanged(user=>{if(!user){location.href='login.html';return;} db.collection('users').doc(user.uid).get().then(s=>{const d=s.data()||{}; const crewId=d.crewId||user.uid; loadCrew(crewId,user);});});
+function loadCrew(crewId,user){
+  db.collection('users').get().then(snap=>{let html=''; snap.forEach(doc=>{const u=doc.data(); if(u.crewId===crewId){html += `<div style="padding:6px 0">${u.email||'User'} · ${Number(u.altitude||0).toLocaleString('en-IN')} ft</div>`;}}); document.getElementById('crew-members').innerHTML = html||'No data available';}).catch(err=>console.error('Firestore error:',err));
+  db.collection('bookings').get().then(snap=>{let html=''; snap.forEach(doc=>{const b=doc.data(); if((b.status||'')==='pending' && (b.crewId===crewId || b.userId===user.uid)){html += `<div style="padding:6px 0">${b.tripName||b.tripId||'Trip'} · ${b.startDate||'Date TBD'}</div>`;}}); document.getElementById('crew-trips').innerHTML=html||'No data available';}).catch(err=>console.error('Firestore error:',err));
+  db.collection('crewMessages').get().then(snap=>{let html=''; snap.forEach(doc=>{const m=doc.data(); if(m.crewId===crewId){html += `<div style="padding:6px 0">${m.message||''}</div>`;}}); document.getElementById('crew-messages').innerHTML=html||'No data available';}).catch(err=>console.error('Firestore error:',err));
+  document.getElementById('send-msg').onclick=()=>{const message=(document.getElementById('crew-msg').value||'').trim(); if(!message)return; db.collection('crewMessages').add({crewId,userId:user.uid,message,createdAt:new Date()}).then(()=>{document.getElementById('crew-msg').value=''; loadCrew(crewId,user);}).catch(err=>console.error('Firestore error:',err));};
+}
+</script>
+</body>
+</html>

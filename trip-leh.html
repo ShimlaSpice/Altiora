@@ -285,6 +285,8 @@
       </a>
 
       <div class="booking-guarantee">🔒 Secure booking · Full refund 30 days before trip · No hidden charges</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;margin-top:10px">Minimum 5 participants required. Trip may be rescheduled or repriced.</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;margin-top:6px">Cancel within 24 hrs → full refund · Cancel within 7 days → 50% refund</div>
     </div>
   </div>
 </div>
@@ -308,12 +310,18 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 // Upsert user profile on auth state
 auth.onAuthStateChanged(user => {
   if (user) {
-    db.collection('users').doc(user.uid).set({
-      email:     user.email,
-      name:      user.displayName || user.email.split('@')[0],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      altitude:  0
-    }, { merge: true });
+    db.collection('users').doc(user.uid).get().then(snap => {
+      if (!snap.exists) {
+        return db.collection('users').doc(user.uid).set({
+          email: user.email,
+          createdAt: new Date(),
+          altitude: 0,
+          totalTrips: 0,
+          role: 'user',
+          crewId: user.uid
+        });
+      }
+    });
   }
 });
 
@@ -331,21 +339,44 @@ function createBooking(e) {
   btn.style.opacity = '0.7';
   btn.style.pointerEvents = 'none';
 
+  db.collection('users').doc(user.uid).get().then(userSnap => {
+    const userData = userSnap.data() || {};
+    const crewId = userData.crewId || user.uid;
+    return db.collection('users').get().then(usersSnap => {
+      let crewSize = 0;
+      usersSnap.forEach(doc => {
+        const u = doc.data();
+        if ((u.crewId || doc.id) === crewId) crewSize += 1;
+      });
+      return { crewId, crewSize };
+    });
+  }).then(({ crewId, crewSize }) => {
+  const bookingId = 'BK-' + Date.now();
+
   db.collection('bookings').add({
-    userId:    user.uid,
+    bookingId: bookingId,
+    userId: user.uid,
     userEmail: user.email,
-    trip:      'Manali–Leh Royal Ride',
-    price:     22000,
-    altitude:  17600,
-    status:    'pending',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    name: user.displayName || (user.email || '').split('@')[0],
+    phone: user.phoneNumber || '',
+    tripId: 'manali-leh-royal-ride',
+    tripName: 'Manali–Leh Royal Ride',
+    startDate: '2026-07-12',
+    endDate: '2026-07-18',
+    price: crewSize >= 4 ? 19800 : 22000,
+    status: 'pending',
+    paymentStatus: 'pending',
+    crewId: crewId,
+    cancellationPolicy: '<24 hrs full refund | >15 days full refund | >7 days 50% | <7 days credit',
+    createdAt: new Date()
   }).then(() => {
     btn.textContent = '✓ Request Submitted!';
     btn.style.background = '#2ecc71';
     btn.style.boxShadow  = '0 8px 28px rgba(46,204,113,.38)';
     setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+  });
   }).catch(err => {
-    console.error('Booking error:', err);
+    console.error('Firestore error:', err);
     btn.textContent = 'Reserve Your Spot →';
     btn.style.opacity = '1';
     btn.style.pointerEvents = 'auto';
