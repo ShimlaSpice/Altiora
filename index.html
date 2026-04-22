@@ -265,10 +265,8 @@
     <p class="hero-sub">You don't just travel mountains.<br>You earn every foot of altitude.</p>
     <div class="hero-actions">
       <div>
-        <a href="signup.html" class="btn-primary">Claim Your Altitude <br> Free to join · Only 3 spots left this season </a>
-        <!-- <h2 class="cta-subtext">Free to join · Only 3 spots left this season</h2> testing hidden content -->
-        
-        
+        <a href="signup.html" class="btn-primary">Claim Your Altitude</a>
+        <p class="cta-subtext">Free to join · Only 3 spots left this season</p>
       </div>
       <a href="expeditions.html" class="btn-ghost">View Expeditions</a>
     </div>
@@ -586,11 +584,6 @@
   <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
 </footer>
 
-<!-- Firebase compat SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="firebase.js"></script>
 <script>
 // Scroll animations
 const observer = new IntersectionObserver(entries => {
@@ -606,23 +599,6 @@ const si = document.getElementById('stickyInner');
 window.addEventListener('scroll', () => {
   si.classList.toggle('show', window.scrollY > 500);
 }, { passive: true });
-
-// Auth-aware nav: swap "Sign In" / "Claim Your Altitude" for logged-in state
-auth.onAuthStateChanged(user => {
-  if (!user) return;
-  // Replace nav-right contents with Dashboard link + logout
-  const navRight = document.querySelector('.nav-right');
-  if (navRight) {
-    navRight.innerHTML = `
-      <div class="nav-pill"><span class="dot"></span>${(user.displayName || 'Traveler').split(' ')[0]}</div>
-      <a href="dashboard.html" class="btn-nav">Dashboard</a>
-      <button class="btn-nav-ghost" id="navLogout" style="background:none;border:none;cursor:pointer;font-family:inherit">Sign Out</button>
-    `;
-    document.getElementById('navLogout').addEventListener('click', () => {
-      auth.signOut().then(() => window.location.reload());
-    });
-  }
-});
 </script>
 </body>
 </html>
