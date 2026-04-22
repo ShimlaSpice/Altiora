@@ -11,6 +11,14 @@
  *  - Transforms use translateY only (compositor-friendly)
  *  - Parallax disabled on mobile (< 768px) and prefers-reduced-motion
  *  - IntersectionObserver handles reveal + progress (no scroll listener needed for those)
+ *
+ * Bug fixes vs original:
+ *  - FIX 1: lastScroll reset on resize so parallax recalculates after mobile/desktop switch
+ *  - FIX 2: dotIO threshold lowered to 0.3 so fast scrolls still register dot updates
+ *  - FIX 3: Rail observer uses rootMargin instead of tiny threshold to correctly
+ *           show/hide the rail when the journey section enters/leaves the viewport
+ *  - FIX 4: Guard against missing data-ji attribute on scene elements
+ *  - FIX 5: Removed unnecessary { passive: true } on resize (resize has no cancelable default)
  */
 
 (function () {
@@ -21,19 +29,19 @@
   const MOBILE_BREAKPOINT = 768;
 
   /* ── Detect environment ──────────────────────────────────────────── */
-  const isMobile = () => window.innerWidth < MOBILE_BREAKPOINT;
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const parallaxEnabled = () => !isMobile() && !prefersReducedMotion;
+  const isMobile          = () => window.innerWidth < MOBILE_BREAKPOINT;
+  const prefersReduced    = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const parallaxEnabled   = () => !isMobile() && !prefersReduced;
 
   /* ── Element refs ────────────────────────────────────────────────── */
-  const journey = document.getElementById('altJourney');
-  const rail    = document.getElementById('jProgress');
+  const journey   = document.getElementById('altJourney');
+  const rail      = document.getElementById('jProgress');
 
-  if (!journey) return; // Nothing to do if journey doesn't exist
+  if (!journey) return; // Nothing to do if journey doesn't exist on this page
 
-  const scenes  = [...journey.querySelectorAll('.jscene')];
+  const scenes    = [...journey.querySelectorAll('.jscene')];
   const svgLayers = scenes.map(s => s.querySelector('.jscene-svg'));
-  const dots    = rail ? [...rail.querySelectorAll('.j-pdot')] : [];
+  const dots      = rail ? [...rail.querySelectorAll('.j-pdot')] : [];
 
   /* ── 1. PARALLAX via rAF ─────────────────────────────────────────── */
   let rafId      = null;
@@ -45,25 +53,24 @@
    */
   function applyParallax() {
     if (!parallaxEnabled()) {
-      // Ensure no stale transform lingers if viewport is resized to mobile
+      // Clear any stale transform if we've switched to mobile
       svgLayers.forEach(svg => { if (svg) svg.style.transform = ''; });
       return;
     }
 
     const scrollY = window.scrollY;
-    if (scrollY === lastScroll) return; // Nothing changed
+    if (scrollY === lastScroll) return; // Nothing changed — skip work
     lastScroll = scrollY;
 
-    // Batch: read all bounding rects first
+    // Batch reads first, then batch writes — avoids layout thrashing
     const rects = scenes.map(s => s.getBoundingClientRect());
 
-    // Batch: write transforms
     scenes.forEach((scene, i) => {
       const svg = svgLayers[i];
       if (!svg) return;
 
       const rect   = rects[i];
-      const center = rect.top + rect.height / 2; // Distance of scene centre from viewport top
+      const center = rect.top + rect.height / 2;
       const offset = (window.innerHeight / 2 - center) * PARALLAX_STRENGTH;
 
       svg.style.transform = `translateY(${offset.toFixed(2)}px)`;
@@ -71,51 +78,63 @@
   }
 
   function onScroll() {
-    if (rafId) return; // Already scheduled
+    if (rafId) return; // Already scheduled — don't stack rAF calls
     rafId = requestAnimationFrame(() => {
       applyParallax();
       rafId = null;
     });
   }
 
-  // Initial application + listener
+  // Run once on load, then listen for scroll
   applyParallax();
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  // Re-evaluate on resize (mobile/desktop switch)
+  // FIX 1: Reset lastScroll on resize so parallax fully recalculates
+  // after a mobile ↔ desktop viewport switch
   window.addEventListener('resize', () => {
+    lastScroll = -1; // Force recalculation on next scroll/rAF
     if (!parallaxEnabled()) {
       svgLayers.forEach(svg => { if (svg) svg.style.transform = ''; });
     } else {
       applyParallax();
     }
-  }, { passive: true });
+  });
 
-  /* ── 2. PROGRESS RAIL — show while journey is in viewport ──────── */
+  /* ── 2. PROGRESS RAIL ────────────────────────────────────────────── */
   if (rail) {
+    // FIX 2: Use rootMargin instead of a tiny threshold for a tall multi-scene
+    // journey container. The original threshold: 0.02 is unreliable on elements
+    // that span 500vh — the element is almost always partially intersecting.
+    // rootMargin: '0px' with threshold: 0 fires cleanly on entry/exit.
     new IntersectionObserver(
       entries => entries.forEach(e => rail.classList.toggle('vis', e.isIntersecting)),
-      { threshold: 0.02 }
+      { threshold: 0, rootMargin: '0px' }
     ).observe(journey);
 
-    // Update active dot for whichever scene is most visible
+    // FIX 3: Lowered threshold from 0.45 → 0.3 so dots still update
+    // when a user scrolls quickly through a scene (45% may never be reached)
+    // FIX 4: Guard against scenes missing the data-ji attribute
     const dotIO = new IntersectionObserver(
       entries => {
         entries.forEach(e => {
           if (!e.isIntersecting) return;
-          const idx = parseInt(e.target.dataset.ji, 10);
+          const raw = e.target.dataset.ji;
+          if (raw === undefined || raw === '') return; // FIX 4: skip elements without data-ji
+          const idx = parseInt(raw, 10);
           if (isNaN(idx)) return;
           dots.forEach((d, di) => d.classList.toggle('on', di === idx));
         });
       },
-      { threshold: 0.45 }
+      { threshold: 0.3 } // FIX 3: was 0.45
     );
     scenes.forEach(s => dotIO.observe(s));
   }
 
   /* ── 3. SCROLL REVEAL for .j-reveal elements ─────────────────────── */
   const revealIO = new IntersectionObserver(
-    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    entries => entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    }),
     { threshold: 0.2 }
   );
   journey.querySelectorAll('.j-reveal').forEach(el => revealIO.observe(el));
