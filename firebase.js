@@ -19,4 +19,6 @@ if (!firebase.apps.length) {
 
 // Convenience globals used across all pages
 const auth = firebase.auth();
-const db   = firebase.firestore();
+const db = firebase.firestore();
+window.auth = auth;
+window.db = db;
