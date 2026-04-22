@@ -6,7 +6,9 @@
 <title>Admin · Altiora</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.admin-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; }
+.admin-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; position:relative; z-index:1; }
+body{background:linear-gradient(180deg,#0b1d2a 0%,#12344d 40%,#1e6f5c 100%);color:#f8fbff;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 15% 0%,rgba(79,195,247,.2),transparent 35%),linear-gradient(180deg,rgba(255,255,255,.08),transparent 35%);}
 .admin-top { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
 .admin-title { font-size: 36px; font-weight: 900; letter-spacing: -1.2px; margin: 0; }
 .admin-nav { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
@@ -77,7 +79,7 @@
   <div id="admin-content" style="display:none">
     <div class="admin-top">
       <h1 class="admin-title">Altiora Admin Panel</h1>
-      <button class="btn-nav" onclick="exportDataPlaceholder()">Export Data</button>
+      <div style="display:flex;gap:8px"><button class="btn-nav" onclick="exportDataPlaceholder()">Export Data</button><button class="btn-nav-outline" onclick="downloadCSV()">Download CSV</button></div>
     </div>
 
     <div class="admin-nav">
@@ -203,6 +205,33 @@ function exportDataPlaceholder() {
   alert('Export Data feature will be added soon.');
 }
 
+
+function downloadCSV() {
+  const rows = [['bookingId','userEmail','tripId','tripName','status','paymentStatus','price']];
+  db.collection("bookings").get().then(snap => {
+    snap.forEach(doc => {
+      const b = doc.data();
+      rows.push([b.bookingId||'', b.userEmail||'', b.tripId||'', b.tripName||'', b.status||'', b.paymentStatus||'', b.price||0]);
+    });
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'altiora-bookings.csv';
+    a.click();
+  }).catch(err => console.error("Firestore error:", err));
+}
+
+function saveMonthlyReport(bookings) {
+  const now = new Date();
+  const month = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const totalBookings = bookings.length;
+  const totalRevenue = bookings.reduce((sum,b)=> (b.paymentStatus==='paid'? sum+Number(b.price||0):sum),0);
+  db.collection("reports").doc(month).set({ month, totalBookings, totalRevenue, createdAt: new Date() }, { merge: true }).catch(err => {
+    console.error("Firestore error:", err);
+  });
+}
+
 function formatDate(ts) {
   if (!ts || !ts.toDate) return '—';
   return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -226,6 +255,7 @@ function loadAdminData() {
     renderBookings(bookings);
     renderUsers(users, bookings);
     renderTrips(trips);
+    saveMonthlyReport(bookings);
   }).catch(err => {
     console.error("Firestore error:", err);
   });

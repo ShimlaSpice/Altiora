@@ -6,7 +6,11 @@
 <title>Dashboard · Altiora</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.dash-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; }
+.dash-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; position:relative; z-index:1; }
+body{background:linear-gradient(180deg,#0b1d2a 0%,#12344d 40%,#1e6f5c 100%);color:#f8fbff;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 20% 10%,rgba(79,195,247,.2),transparent 40%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.12),transparent 35%);}
+.d-card,.stat-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);}
+.btn-accent,.btn-primary{box-shadow:0 0 20px rgba(79,195,247,.25);}
 
 .greeting { margin-bottom: 40px; }
 .greeting-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
@@ -155,6 +159,21 @@
     <div class="greeting-sub" id="greetingSub"></div>
   </div>
 
+
+  <div class="d-card fade-in" style="margin-bottom:20px">
+    <div class="d-card-title">Profile</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+      <div><div class="stat-label">Name</div><div class="stat-sub" id="profileName">—</div></div>
+      <div><div class="stat-label">Phone</div><div class="stat-sub" id="profilePhone">—</div></div>
+      <div>
+        <div class="stat-label">Emergency Contact</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="emergencyInput" placeholder="Add contact" style="flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;padding:8px;color:var(--text)">
+          <button class="btn-nav-outline" id="saveEmergencyBtn" style="padding:8px 10px">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- BOOK BANNER -->
   <div class="book-banner fade-in">
     <div>
@@ -283,7 +302,7 @@
 
   <div class="d-card fade-in" style="margin-top:20px">
     <div class="d-card-title">Upcoming Trips Calendar</div>
-    <div id="calendar-list" style="font-size:13px;color:var(--muted)">No data available</div>
+    <div id="calendar-list" style="font-size:13px;color:var(--muted);display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:250px;overflow:auto">No data available</div>
   </div>
 
   <!-- MY BOOKINGS — loaded live from Firestore -->
@@ -308,6 +327,7 @@
     <div class="d-card-title">My Crew</div>
     <div style="font-size:13px;color:var(--muted)">Your crewId: <span id="crewIdValue">—</span></div>
     <div id="crew-summary" style="font-size:13px;color:var(--muted);margin-top:8px">No data available</div>
+    <div style="margin-top:8px;display:flex;gap:8px"><input id="crewNameInput" placeholder="Set crew name" style="flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;padding:8px;color:var(--text)"><button class="btn-nav-outline" id="setCrewNameBtn" style="padding:8px 10px">Set</button></div>
     <div style="margin-top:10px;display:flex;gap:10px">
       <input id="joinCrewInput" placeholder="Enter crewId" style="flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text)">
       <button class="btn-nav-outline" id="joinCrewBtn" style="padding:10px 14px">Join Crew</button>
@@ -360,6 +380,9 @@ auth.onAuthStateChanged(user => {
 });
 
 // ── Logout ───────────────────────────────────────────────────────────
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) logoutBtn.textContent = 'Sign Out';
+
 document.getElementById('logoutBtn').addEventListener('click', function(e) {
   e.preventDefault();
   auth.signOut().then(() => { window.location.href = 'index.html'; });
@@ -389,7 +412,25 @@ function loadDashboard(user) {
     const gName = document.querySelector('.greeting-name');
     const gSub  = document.querySelector('.greeting-sub');
     if (gName) gName.textContent = emailName ? (salut + ', ' + emailName + '.') : salut + '.';
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn && emailName) logoutBtn.textContent = emailName;
     if (gSub)  gSub.textContent  = 'You\'ve earned ' + altFmt + ' ft of altitude. ' + level + ' level — keep climbing.';
+
+
+    const profileName = document.getElementById('profileName');
+    const profilePhone = document.getElementById('profilePhone');
+    const emergencyInput = document.getElementById('emergencyInput');
+    if (profileName) profileName.textContent = data.name || emailName || '—';
+    if (profilePhone) profilePhone.textContent = data.phone || user.phoneNumber || '—';
+    if (emergencyInput) emergencyInput.value = data.emergencyContact || '';
+    const saveEmergencyBtn = document.getElementById('saveEmergencyBtn');
+    if (saveEmergencyBtn) saveEmergencyBtn.onclick = () => updateEmergency(user.uid);
+    const setCrewNameBtn = document.getElementById('setCrewNameBtn');
+    if (setCrewNameBtn) setCrewNameBtn.onclick = () => {
+      const crewName = (document.getElementById('crewNameInput').value || '').trim();
+      if (!crewName) return;
+      db.collection('users').doc(user.uid).update({ crewName }).then(() => loadCrewSummary(data.crewId || user.uid));
+    };
 
     // Stat cards
     const statAlt   = document.getElementById('statAltitude');
@@ -524,6 +565,13 @@ function loadBookings(user) {
 }
 
 
+function updateEmergency(uid) {
+  const value = (document.getElementById("emergencyInput").value || "").trim();
+  db.collection("users").doc(uid).update({ emergencyContact: value }).catch(err => {
+    console.error("Firestore error:", err);
+  });
+}
+
 function loadCrewSummary(crewId) {
   const crewSummary = document.getElementById('crew-summary');
   if (!crewSummary || !crewId) return;
@@ -531,17 +579,20 @@ function loadCrewSummary(crewId) {
     const members = [];
     let altitude = 0;
     let crewName = 'Crew';
+    let upcoming = 0;
     snap.forEach(doc => {
       const u = doc.data();
       if (u.crewId === crewId) {
         members.push(u);
         altitude += Number(u.altitude || 0);
+        if (Number(u.totalTrips || 0) > 0) upcoming += Number(u.totalTrips || 0);
+        if (u.crewName) crewName = u.crewName;
       }
       if (doc.id === crewId) {
         crewName = u.email ? u.email.split('@')[0] + "'s Crew" : 'Crew';
       }
     });
-    crewSummary.textContent = `${crewName} · ${members.length} members · ${altitude.toLocaleString('en-IN')} ft combined altitude`;
+    crewSummary.textContent = `${crewName} · ${members.length} members · ${altitude.toLocaleString('en-IN')} ft combined altitude · ${upcoming} upcoming trips`;
   }).catch(err => {
     console.error('Firestore error:', err);
     crewSummary.textContent = 'No data available';
