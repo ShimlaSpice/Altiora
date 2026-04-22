@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Dashboard · Altiora</title>
 <link rel="stylesheet" href="style.css"/>
-<style>body { visibility: hidden; }</style>
 <style>
 .dash-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; }
 
@@ -309,6 +308,15 @@
 
     </div>
   </div>
+
+  <!-- MY BOOKINGS — loaded live from Firestore -->
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">My Bookings</div>
+    <div id="booking-list">
+      <div style="font-size:13px;color:var(--muted2);padding:8px 0">Loading your bookings…</div>
+    </div>
+  </div>
+
 </div>
 
 <footer>
@@ -322,27 +330,35 @@
   <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
 </footer>
 
-<!-- Firebase compat SDKs — MUST load before any auth code -->
+<!-- Firebase compat SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="firebase.js"></script>
 <script>
-// ── Auth guard — redirect immediately if not logged in ───────────────
+// ── Auth guard — redirect if not logged in ──────────────────────────
 auth.onAuthStateChanged(user => {
   if (!user) {
-    window.location.replace('login.html');
+    window.location.href = 'login.html';
     return;
   }
-  // Reveal page only after auth confirmed
-  document.body.style.visibility = 'visible';
+
+  // Upsert user profile on every login (Step 3)
+  db.collection('users').doc(user.uid).set({
+    email:      user.email,
+    name:       user.displayName || user.email.split('@')[0],
+    createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
+    altitude:   0
+  }, { merge: true });
+
   loadDashboard(user);
+  loadBookings(user);
 });
 
 // ── Logout ───────────────────────────────────────────────────────────
 document.getElementById('logoutBtn').addEventListener('click', function(e) {
   e.preventDefault();
-  auth.signOut().then(() => { window.location.replace('index.html'); });
+  auth.signOut().then(() => { window.location.href = 'index.html'; });
 });
 
 // ── Level helper ─────────────────────────────────────────────────────
@@ -354,13 +370,13 @@ function getLevel(ft) {
   return 'Explorer';
 }
 
-// ── Load real user data from Firestore ───────────────────────────────
+// ── Load user profile from Firestore ─────────────────────────────────
 function loadDashboard(user) {
   db.collection('users').doc(user.uid).get().then(snap => {
-    const data  = snap.exists ? snap.data() : {};
-    const name  = data.name || user.displayName || 'Traveler';
-    const altFt = data.total_altitude || 0;
-    const level = getLevel(altFt);
+    const data   = snap.exists ? snap.data() : {};
+    const name   = data.name || user.displayName || 'Traveler';
+    const altFt  = data.total_altitude || data.altitude || 0;
+    const level  = getLevel(altFt);
     const altFmt = altFt.toLocaleString();
 
     // Greeting
@@ -374,7 +390,7 @@ function loadDashboard(user) {
     // Stat cards
     const statAlt   = document.querySelector('.stat-value em');
     const statLevel = document.querySelectorAll('.stat-value')[1];
-    if (statAlt)   statAlt.textContent  = altFmt;
+    if (statAlt)   statAlt.textContent   = altFmt;
     if (statLevel) statLevel.textContent = level;
 
     // Nav pill
@@ -395,10 +411,6 @@ function loadDashboard(user) {
     }, 500);
 
   }).catch(() => {
-    // Firestore unavailable — show minimal info from auth object
-    const name = user.displayName || 'Traveler';
-    const gName = document.querySelector('.greeting-name');
-    if (gName) gName.textContent = 'Welcome back, ' + name.split(' ')[0] + '.';
     setTimeout(() => {
       const p = document.getElementById('dashProg');
       const c = document.getElementById('crewBar');
@@ -408,10 +420,52 @@ function loadDashboard(user) {
   });
 }
 
+// ── Load user bookings from Firestore (Step 6) ────────────────────────
+function loadBookings(user) {
+  const container = document.getElementById('booking-list');
+  if (!container) return;
+
+  db.collection('bookings')
+    .where('userId', '==', user.uid)
+    .orderBy('createdAt', 'desc')
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        container.innerHTML = '<div style="font-size:13px;color:var(--muted2);padding:8px 0">No bookings yet. <a href="expeditions.html" style="color:var(--accent);font-weight:600">Browse expeditions →</a></div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      snapshot.forEach(doc => {
+        const b      = doc.data();
+        const date   = b.createdAt ? new Date(b.createdAt.toDate()).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '—';
+        const status = b.status || 'pending';
+        const statusClass = status === 'confirmed' ? 'ts-done' : status === 'cancelled' ? '' : 'ts-conf';
+        const statusColor = status === 'cancelled' ? 'color:#e74c3c;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);' : '';
+
+        container.innerHTML += `
+          <div class="trip-row">
+            <div class="trip-type-dot" style="background:var(--accent)"></div>
+            <div class="trip-r-info">
+              <div class="trip-r-name">${b.trip}</div>
+              <div class="trip-r-meta">Booked on ${date}</div>
+            </div>
+            <span class="trip-status ${statusClass}" style="${statusColor}text-transform:capitalize">${status}</span>
+            <div class="trip-gain">
+              <div class="trip-gain-num">₹${Number(b.price).toLocaleString('en-IN')}</div>
+              <div class="trip-gain-label">per person</div>
+            </div>
+          </div>`;
+      });
+    })
+    .catch(err => {
+      console.error('Error loading bookings:', err);
+      container.innerHTML = '<div style="font-size:13px;color:var(--muted2);padding:8px 0">Could not load bookings. Please refresh.</div>';
+    });
+}
+
 // ── Scroll reveal ─────────────────────────────────────────────────────
-const obs = new IntersectionObserver(e => e.forEach(x => {
-  if (x.isIntersecting) x.target.classList.add('visible');
-}), { threshold: 0.1 });
+const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 </script>
 </body>
