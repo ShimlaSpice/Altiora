@@ -323,7 +323,8 @@ auth.onAuthStateChanged(user => {
         email: user.email,
         createdAt: new Date(),
         altitude: 0,
-        totalTrips: 0
+        totalTrips: 0,
+        role: 'user'
       });
     }
   });
@@ -455,7 +456,7 @@ function loadBookings(user) {
           <div class="trip-row">
             <div class="trip-type-dot" style="background:var(--accent)"></div>
             <div class="trip-r-info">
-              <div class="trip-r-name">${b.trip || ''}</div>
+              <div class="trip-r-name">${b.tripName || b.trip || ''}</div>
               <div class="trip-r-meta">Booked on ${date}</div>
             </div>
             <span class="trip-status ${statusClass}" style="${statusColor}text-transform:capitalize">${status}</span>

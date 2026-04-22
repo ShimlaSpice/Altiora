@@ -314,7 +314,8 @@ auth.onAuthStateChanged(user => {
           email: user.email,
           createdAt: new Date(),
           altitude: 0,
-          totalTrips: 0
+          totalTrips: 0,
+          role: 'user'
         });
       }
     });
@@ -336,20 +337,21 @@ function createBooking(e) {
   btn.style.pointerEvents = 'none';
 
   db.collection('bookings').add({
-    userId:    user.uid,
+    userId: user.uid,
     userEmail: user.email,
-    trip:      'Pin Parvati Pass Trek',
-    price:     18000,
-    altitude:  15400,
-    status:    'pending',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    tripId: 'pin-parvati-pass-trek',
+    tripName: 'Pin Parvati Pass Trek',
+    price: 18000,
+    status: 'pending',
+    paymentStatus: 'pending',
+    createdAt: new Date()
   }).then(() => {
     btn.textContent = '✓ Request Submitted!';
     btn.style.background = '#2ecc71';
     btn.style.boxShadow  = '0 8px 28px rgba(46,204,113,.38)';
     setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
   }).catch(err => {
-    console.error('Booking error:', err);
+    console.error('Firestore error:', err);
     btn.textContent = 'Reserve Your Spot →';
     btn.style.opacity = '1';
     btn.style.pointerEvents = 'auto';

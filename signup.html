@@ -210,7 +210,8 @@ googleBtn.addEventListener('click', function() {
         email: user.email,
         createdAt: new Date(),
         altitude: 0,
-        totalTrips: 0
+        totalTrips: 0,
+        role: 'user'
       });
     })
     .then(() => { window.location.replace('dashboard.html'); })
@@ -241,7 +242,8 @@ signupBtn.addEventListener('click', function() {
           email: user.email,
           createdAt: new Date(),
           altitude: 0,
-          totalTrips: 0
+          totalTrips: 0,
+          role: 'user'
         })
       ]);
     })
