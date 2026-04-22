@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin · Altiora</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.admin-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; }
+.admin-title { font-size: 40px; font-weight: 900; letter-spacing: -1.2px; margin-bottom: 24px; }
+#admin-bookings { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.card {
+  background: rgba(12,18,28,0.65);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(79,195,247,0.12);
+  border-radius: 20px;
+  padding: 20px 22px;
+}
+.card-row { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; }
+.card-label { font-size: 11px; color: var(--muted2); text-transform: uppercase; letter-spacing: .6px; }
+.card-val { font-size: 14px; font-weight: 600; margin-top: 4px; word-break: break-word; }
+.empty-state { font-size: 14px; color: var(--muted); }
+@media (max-width: 900px) {
+  .admin-wrap { padding: 36px 20px 80px; }
+  .card-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html">Expeditions</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="admin.html" class="active">Admin</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="login.html" class="btn-nav-outline" id="logoutBtn">Sign Out</a>
+  </div>
+</nav>
+
+<div class="admin-wrap">
+  <h1 class="admin-title">Altiora Admin Panel</h1>
+  <div id="admin-bookings"></div>
+</div>
+
+<footer>
+  <div class="foot-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></div>
+  <ul class="foot-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html">Expeditions</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="login.html">Sign In</a></li>
+  </ul>
+  <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
+</footer>
+
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script>
+const adminContainer = document.getElementById('admin-bookings');
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  if (user.email !== "YOUR_EMAIL_HERE") {
+    window.location.href = "index.html";
+    return;
+  }
+
+  loadAllBookings();
+});
+
+function loadAllBookings() {
+  db.collection("bookings")
+    .orderBy("createdAt", "desc")
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        adminContainer.innerHTML = '<div class="card"><div class="empty-state">No bookings yet.</div></div>';
+        return;
+      }
+
+      adminContainer.innerHTML = '';
+      snapshot.forEach(doc => {
+        const booking = doc.data();
+        const createdAt = booking.createdAt && booking.createdAt.toDate
+          ? booking.createdAt.toDate().toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+          : '—';
+
+        adminContainer.innerHTML += `
+          <div class="card">
+            <div class="card-row">
+              <div><div class="card-label">User Email</div><div class="card-val">${booking.userEmail || ''}</div></div>
+              <div><div class="card-label">Trip Name</div><div class="card-val">${booking.trip || ''}</div></div>
+              <div><div class="card-label">Price</div><div class="card-val">₹${Number(booking.price || 0).toLocaleString('en-IN')}</div></div>
+              <div><div class="card-label">Status</div><div class="card-val" style="text-transform:capitalize">${booking.status || ''}</div></div>
+              <div><div class="card-label">Date</div><div class="card-val">${createdAt}</div></div>
+            </div>
+          </div>`;
+      });
+    })
+    .catch(() => {
+      adminContainer.innerHTML = '<div class="card"><div class="empty-state">No bookings yet.</div></div>';
+    });
+}
+
+document.getElementById('logoutBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  auth.signOut().then(() => { window.location.href = 'index.html'; });
+});
+</script>
+</body>
+</html>
