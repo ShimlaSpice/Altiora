@@ -6,7 +6,11 @@
 <title>Dashboard · Altiora</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.dash-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; }
+.dash-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; position:relative; z-index:1; }
+body{background:linear-gradient(180deg,#0b1d2a 0%,#12344d 40%,#1e6f5c 100%);color:#f8fbff;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 20% 10%,rgba(79,195,247,.2),transparent 40%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.12),transparent 35%);}
+.d-card,.stat-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);}
+.btn-accent,.btn-primary{box-shadow:0 0 20px rgba(79,195,247,.25);}
 
 .greeting { margin-bottom: 40px; }
 .greeting-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
@@ -137,13 +141,12 @@
 <nav class="nav">
   <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
   <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="expeditions.html">Expeditions</a></li>
-    <li><a href="index.html#crews">Crews</a></li>
     <li><a href="dashboard.html" class="active">Dashboard</a></li>
+    <li><a href="crew.html">My Crew</a></li>
+    <li><a href="signup.html">Profile</a></li>
   </ul>
   <div class="nav-right">
-    <div class="nav-pill"><span class="dot"></span>39,500 ft</div>
+    <div class="nav-pill"><span class="dot"></span>—</div>
     <a href="login.html" class="btn-nav-outline" id="logoutBtn">Sign Out</a>
   </div>
 </nav>
@@ -152,10 +155,25 @@
 
   <div class="greeting fade-in">
     <div class="greeting-label">Altitude Dashboard</div>
-    <div class="greeting-name">Good morning, Rahul.</div>
-    <div class="greeting-sub">You've earned 39,500 ft of altitude. Summiteer level — keep climbing.</div>
+    <div class="greeting-name" id="greetingName"></div>
+    <div class="greeting-sub" id="greetingSub"></div>
   </div>
 
+
+  <div class="d-card fade-in" style="margin-bottom:20px">
+    <div class="d-card-title">Profile</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+      <div><div class="stat-label">Name</div><div class="stat-sub" id="profileName">—</div></div>
+      <div><div class="stat-label">Phone</div><div class="stat-sub" id="profilePhone">—</div></div>
+      <div>
+        <div class="stat-label">Emergency Contact</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="emergencyInput" placeholder="Add contact" style="flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;padding:8px;color:var(--text)">
+          <button class="btn-nav-outline" id="saveEmergencyBtn" style="padding:8px 10px">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- BOOK BANNER -->
   <div class="book-banner fade-in">
     <div>
@@ -169,23 +187,23 @@
   <div class="stats-row fade-in">
     <div class="stat-card">
       <div class="stat-label">Total Altitude</div>
-      <div class="stat-value"><em>39,500</em> ft</div>
+      <div class="stat-value"><em id="statAltitude"></em> ft</div>
       <div class="stat-sub">Your cumulative score</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Current Level</div>
-      <div class="stat-value" style="font-size:20px">Summiteer</div>
-      <div class="stat-sub">Top 8% of travelers</div>
+      <div class="stat-value" style="font-size:20px" id="statLevel"></div>
+      <div class="stat-sub">Based on your altitude progress</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Trips Completed</div>
-      <div class="stat-value"><em>3</em></div>
+      <div class="stat-value"><em id="statTrips"></em></div>
       <div class="stat-sub">Confirmed expeditions</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">To Next Level</div>
-      <div class="stat-value" style="font-size:18px;color:var(--muted)">10,500 ft</div>
-      <div class="stat-sub">to reach Everest Class</div>
+      <div class="stat-value" style="font-size:18px;color:var(--muted)" id="statToNext"></div>
+      <div class="stat-sub" id="toNextSub"></div>
     </div>
   </div>
 
@@ -199,17 +217,17 @@
         <div class="card-glow"></div>
         <div class="d-card-title">Altitude Tracker</div>
         <div class="alt-row">
-          <div class="alt-big">39,<em>500</em></div>
+          <div class="alt-big" id="altBig"></div>
           <div class="alt-unit">ft</div>
         </div>
-        <p class="alt-cmp">You've climbed higher than <strong>Mount Fuji × 3</strong></p>
+        <p class="alt-cmp" id="altCompare"></p>
         <div class="prog-track"><div class="prog-fill" id="dashProg"></div></div>
-        <div class="prog-ends"><span>Summiteer · 50K ft</span><span>Everest Class · 100K ft</span></div>
+        <div class="prog-ends"><span id="progressCurrent"></span><span id="progressNext"></span></div>
         <div class="level-chip">
           <div class="level-icon">🏔</div>
           <div>
-            <div class="level-name-d">Summiteer</div>
-            <div class="level-sub-d">10,500 ft to Everest Class</div>
+            <div class="level-name-d" id="levelName"></div>
+            <div class="level-sub-d" id="levelSub"></div>
           </div>
         </div>
       </div>
@@ -217,35 +235,8 @@
       <!-- Trip History -->
       <div class="d-card fade-in">
         <div class="d-card-title">Trip History</div>
-        <div class="trip-list">
-          <div class="trip-row">
-            <div class="trip-type-dot" style="background:#4FC3F7"></div>
-            <div class="trip-r-info">
-              <div class="trip-r-name">Spiti Valley Deep Run</div>
-              <div class="trip-r-meta">Sep 2025 · 4×4 Expedition</div>
-            </div>
-            <span class="trip-status ts-done">Completed</span>
-            <div class="trip-gain"><div class="trip-gain-num">+18,380 ft</div><div class="trip-gain-label">altitude</div></div>
-          </div>
-          <div class="trip-row">
-            <div class="trip-type-dot" style="background:#FF8C38"></div>
-            <div class="trip-r-info">
-              <div class="trip-r-name">Manali–Leh Royal Ride</div>
-              <div class="trip-r-meta">Jul 2025 · Bike Expedition</div>
-            </div>
-            <span class="trip-status ts-done">Completed</span>
-            <div class="trip-gain"><div class="trip-gain-num">+17,600 ft</div><div class="trip-gain-label">altitude</div></div>
-          </div>
-          <div class="trip-row">
-            <div class="trip-type-dot" style="background:#2ecc71"></div>
-            <div class="trip-r-info">
-              <div class="trip-r-name">Pin Parvati Pass Trek</div>
-              <div class="trip-r-meta">Aug 2026 · Trek · Upcoming</div>
-            </div>
-            <span class="trip-status ts-conf">Confirmed</span>
-            <div class="trip-gain"><div class="trip-gain-num">+15,400 ft</div><div class="trip-gain-label">on completion</div></div>
-          </div>
-        </div>
+        <div class="trip-list" id="tripHistoryList">
+          <div style="font-size:13px;color:var(--muted2);padding:8px 0">No expeditions yet. Your journey starts now.</div>
       </div>
 
     </div>
@@ -290,16 +281,16 @@
         <div class="crew-display">
           <div class="crew-avi-d">🏔</div>
           <div>
-            <div class="crew-d-name">Frozen Horizon</div>
-            <div class="crew-d-mem">6 core members · Delhi base</div>
+            <div class="crew-d-name">Crew</div>
+            <div class="crew-d-mem">No crew data available</div>
           </div>
           <div class="crew-d-alt">
-            <div class="crew-d-num">248K</div>
+            <div class="crew-d-num">—</div>
             <div class="crew-d-lbl">ft total</div>
           </div>
         </div>
         <div class="crew-bar-track"><div class="crew-bar-fill" id="crewBar"></div></div>
-        <div class="crew-rank-note">Currently ranked <strong>#2 on the leaderboard</strong> — 72K ft behind #1</div>
+        <div class="crew-rank-note">Crew ranking data will appear when available.</div>
         <div style="margin-top:20px;display:flex;gap:10px">
           <a href="index.html#crews" class="btn-accent" style="flex:1;text-align:center">View Leaderboard</a>
           <a href="expeditions.html" class="btn-accent" style="flex:1;text-align:center">Add Altitude</a>
@@ -307,6 +298,11 @@
       </div>
 
     </div>
+  </div>
+
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">Upcoming Trips Calendar</div>
+    <div id="calendar-list" style="font-size:13px;color:var(--muted);display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:250px;overflow:auto">No data available</div>
   </div>
 
   <!-- MY BOOKINGS — loaded live from Firestore -->
@@ -317,6 +313,27 @@
     </div>
   </div>
 
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">Trip Requirements</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.7">Government ID, medical fitness, and emergency contact are required before departure.</div>
+  </div>
+
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">Weather Update</div>
+    <div id="weather-update" style="font-size:13px;color:var(--muted);line-height:1.7">No data available</div>
+  </div>
+
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">My Crew</div>
+    <div style="font-size:13px;color:var(--muted)">Your crewId: <span id="crewIdValue">—</span></div>
+    <div id="crew-summary" style="font-size:13px;color:var(--muted);margin-top:8px">No data available</div>
+    <div style="margin-top:8px;display:flex;gap:8px"><input id="crewNameInput" placeholder="Set crew name" style="flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;padding:8px;color:var(--text)"><button class="btn-nav-outline" id="setCrewNameBtn" style="padding:8px 10px">Set</button></div>
+    <div style="margin-top:10px;display:flex;gap:10px">
+      <input id="joinCrewInput" placeholder="Enter crewId" style="flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text)">
+      <button class="btn-nav-outline" id="joinCrewBtn" style="padding:10px 14px">Join Crew</button>
+    </div>
+    <div style="margin-top:12px"><a href="crew.html" class="btn-nav-outline" style="text-decoration:none">Open Crew Page</a></div>
+  </div>
 </div>
 
 <footer>
@@ -344,18 +361,28 @@ auth.onAuthStateChanged(user => {
   }
 
   // Upsert user profile on every login (Step 3)
-  db.collection('users').doc(user.uid).set({
-    email:      user.email,
-    name:       user.displayName || user.email.split('@')[0],
-    createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
-    altitude:   0
-  }, { merge: true });
+  db.collection('users').doc(user.uid).get().then(snap => {
+    if (!snap.exists) {
+      return db.collection('users').doc(user.uid).set({
+        email: user.email,
+        createdAt: new Date(),
+        altitude: 0,
+        totalTrips: 0,
+        role: 'user',
+          crewId: user.uid
+      });
+    }
+  });
 
   loadDashboard(user);
   loadBookings(user);
+  loadCalendar();
 });
 
 // ── Logout ───────────────────────────────────────────────────────────
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) logoutBtn.textContent = 'Sign Out';
+
 document.getElementById('logoutBtn').addEventListener('click', function(e) {
   e.preventDefault();
   auth.signOut().then(() => { window.location.href = 'index.html'; });
@@ -374,8 +401,8 @@ function getLevel(ft) {
 function loadDashboard(user) {
   db.collection('users').doc(user.uid).get().then(snap => {
     const data   = snap.exists ? snap.data() : {};
-    const name   = data.name || user.displayName || 'Traveler';
-    const altFt  = data.total_altitude || data.altitude || 0;
+    const emailName = (data.email || '').split('@')[0];
+    const altFt  = Number(data.altitude || 0);
     const level  = getLevel(altFt);
     const altFmt = altFt.toLocaleString();
 
@@ -384,18 +411,78 @@ function loadDashboard(user) {
     const salut = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
     const gName = document.querySelector('.greeting-name');
     const gSub  = document.querySelector('.greeting-sub');
-    if (gName) gName.textContent = salut + ', ' + name.split(' ')[0] + '.';
+    if (gName) gName.textContent = emailName ? (salut + ', ' + emailName + '.') : salut + '.';
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn && emailName) logoutBtn.textContent = emailName;
     if (gSub)  gSub.textContent  = 'You\'ve earned ' + altFmt + ' ft of altitude. ' + level + ' level — keep climbing.';
 
+
+    const profileName = document.getElementById('profileName');
+    const profilePhone = document.getElementById('profilePhone');
+    const emergencyInput = document.getElementById('emergencyInput');
+    if (profileName) profileName.textContent = data.name || emailName || '—';
+    if (profilePhone) profilePhone.textContent = data.phone || user.phoneNumber || '—';
+    if (emergencyInput) emergencyInput.value = data.emergencyContact || '';
+    const saveEmergencyBtn = document.getElementById('saveEmergencyBtn');
+    if (saveEmergencyBtn) saveEmergencyBtn.onclick = () => updateEmergency(user.uid);
+    const setCrewNameBtn = document.getElementById('setCrewNameBtn');
+    if (setCrewNameBtn) setCrewNameBtn.onclick = () => {
+      const crewName = (document.getElementById('crewNameInput').value || '').trim();
+      if (!crewName) return;
+      db.collection('users').doc(user.uid).update({ crewName }).then(() => loadCrewSummary(data.crewId || user.uid));
+    };
+
     // Stat cards
-    const statAlt   = document.querySelector('.stat-value em');
-    const statLevel = document.querySelectorAll('.stat-value')[1];
+    const statAlt   = document.getElementById('statAltitude');
+    const statLevel = document.getElementById('statLevel');
+    const statTrips = document.getElementById('statTrips');
+    const statToNext = document.getElementById('statToNext');
+    const toNextSub = document.getElementById('toNextSub');
     if (statAlt)   statAlt.textContent   = altFmt;
     if (statLevel) statLevel.textContent = level;
+    if (statTrips) statTrips.textContent = String(Number(data.totalTrips || 0));
+    const nextTargets = { 'Explorer': 20000, 'Climber': 50000, 'Summiteer': 100000, 'Everest Class': 200000, 'Legend': 200000 };
+    const nextTarget = nextTargets[level];
+    const toNext = level === 'Legend' ? 0 : Math.max(nextTarget - altFt, 0);
+    if (statToNext) statToNext.textContent = toNext.toLocaleString() + ' ft';
+    if (toNextSub) toNextSub.textContent = level === 'Legend' ? 'Top altitude tier reached' : 'to reach ' + (level === 'Explorer' ? 'Climber' : level === 'Climber' ? 'Summiteer' : level === 'Summiteer' ? 'Everest Class' : 'Legend');
+
+    const crewIdValue = document.getElementById('crewIdValue');
+    if (crewIdValue) crewIdValue.textContent = data.crewId || user.uid;
+    const joinCrewBtn = document.getElementById('joinCrewBtn');
+    if (joinCrewBtn) {
+      joinCrewBtn.onclick = () => {
+        const newCrew = (document.getElementById('joinCrewInput').value || '').trim();
+        if (!newCrew) return;
+        db.collection('users').doc(user.uid).update({ crewId: newCrew }).then(() => {
+          if (crewIdValue) crewIdValue.textContent = newCrew;
+        }).then(() => loadCrewSummary(newCrew)).catch(err => console.error('Firestore error:', err));
+      };
+    }
+    loadCrewSummary(data.crewId || user.uid);
 
     // Nav pill
     const navPill = document.querySelector('.nav-pill');
     if (navPill) navPill.innerHTML = '<span class="dot"></span>' + altFmt + ' ft';
+
+    // Altitude tracker
+
+
+    const altBig = document.getElementById('altBig');
+    const altCompare = document.getElementById('altCompare');
+    const progressCurrent = document.getElementById('progressCurrent');
+    const progressNext = document.getElementById('progressNext');
+    const levelName = document.getElementById('levelName');
+    const levelSub = document.getElementById('levelSub');
+    if (altBig) altBig.textContent = altFmt;
+    if (altCompare) {
+      altCompare.textContent = altFt === 0 ? '0 ft · Start your climb' : altFmt + ' ft climbed';
+    }
+    if (progressCurrent) progressCurrent.textContent = level + ' · ' + altFmt + ' ft';
+    const nextLabelMap = { 'Explorer': 'Climber · 20K ft', 'Climber': 'Summiteer · 50K ft', 'Summiteer': 'Everest Class · 100K ft', 'Everest Class': 'Legend · 200K ft', 'Legend': 'Legend · Max level' };
+    if (progressNext) progressNext.textContent = nextLabelMap[level] || 'Climber · 20K ft';
+    if (levelName) levelName.textContent = level;
+    if (levelSub) levelSub.textContent = level === 'Legend' ? 'Top altitude tier reached' : toNext.toLocaleString() + ' ft to ' + (nextLabelMap[level] || '').split(' · ')[0];
 
     // Progress bar within current level band
     const bands = [[0,20000],[20000,50000],[50000,100000],[100000,200000]];
@@ -407,16 +494,14 @@ function loadDashboard(user) {
       const p = document.getElementById('dashProg');
       if (p) p.style.width = pct + '%';
       const c = document.getElementById('crewBar');
-      if (c) c.style.width = '77%';
+      if (c) c.style.width = '0%';
     }, 500);
 
   }).catch(() => {
-    setTimeout(() => {
-      const p = document.getElementById('dashProg');
-      const c = document.getElementById('crewBar');
-      if (p) p.style.width = '20%';
-      if (c) c.style.width = '77%';
-    }, 500);
+    const p = document.getElementById('dashProg');
+    const c = document.getElementById('crewBar');
+    if (p) p.style.width = '0%';
+    if (c) c.style.width = '0%';
   });
 }
 
@@ -431,37 +516,118 @@ function loadBookings(user) {
     .get()
     .then(snapshot => {
       if (snapshot.empty) {
-        container.innerHTML = '<div style="font-size:13px;color:var(--muted2);padding:8px 0">No bookings yet. <a href="expeditions.html" style="color:var(--accent);font-weight:600">Browse expeditions →</a></div>';
+        const emptyState = '<div style="font-size:13px;color:var(--muted2);padding:8px 0">No expeditions yet. Your journey starts now.</div>';
+        container.innerHTML = emptyState;
+        const tripHistory = document.getElementById('tripHistoryList');
+        if (tripHistory) tripHistory.innerHTML = emptyState;
+        const weather = document.getElementById('weather-update');
+        if (weather) weather.textContent = 'No data available';
         return;
       }
 
       container.innerHTML = '';
+      const tripHistory = document.getElementById('tripHistoryList');
+      if (tripHistory) tripHistory.innerHTML = '';
+      let weatherSet = false;
       snapshot.forEach(doc => {
         const b      = doc.data();
-        const date   = b.createdAt ? new Date(b.createdAt.toDate()).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '—';
+        if (!weatherSet) {
+          const weather = document.getElementById('weather-update');
+          if (weather) weather.textContent = (b.location || "Mountain conditions pending for " + (b.tripName || b.trip || "your trip"));
+          weatherSet = true;
+        }
+        const date   = b.createdAt ? new Date(b.createdAt.toDate()).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
         const status = b.status || 'pending';
         const statusClass = status === 'confirmed' ? 'ts-done' : status === 'cancelled' ? '' : 'ts-conf';
         const statusColor = status === 'cancelled' ? 'color:#e74c3c;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);' : '';
 
-        container.innerHTML += `
+        const bookingHtml = `
           <div class="trip-row">
             <div class="trip-type-dot" style="background:var(--accent)"></div>
             <div class="trip-r-info">
-              <div class="trip-r-name">${b.trip}</div>
-              <div class="trip-r-meta">Booked on ${date}</div>
+              <div class="trip-r-name">${b.tripName || b.trip || ''}</div>
+              <div class="trip-r-meta">${b.tripId || '—'} · ${b.startDate || '—'} → ${b.endDate || '—'} · ${b.paymentStatus || 'pending'} · ${getDaysLeft(b.startDate)}</div>
             </div>
             <span class="trip-status ${statusClass}" style="${statusColor}text-transform:capitalize">${status}</span>
             <div class="trip-gain">
-              <div class="trip-gain-num">₹${Number(b.price).toLocaleString('en-IN')}</div>
+              <div class="trip-gain-num">₹${Number(b.price || 0).toLocaleString('en-IN')}</div>
               <div class="trip-gain-label">per person</div>
             </div>
           </div>`;
+        container.innerHTML += bookingHtml;
+        if (tripHistory) tripHistory.innerHTML += bookingHtml.replace('Booked on', 'Date');
       });
     })
     .catch(err => {
       console.error('Error loading bookings:', err);
       container.innerHTML = '<div style="font-size:13px;color:var(--muted2);padding:8px 0">Could not load bookings. Please refresh.</div>';
     });
+}
+
+
+function updateEmergency(uid) {
+  const value = (document.getElementById("emergencyInput").value || "").trim();
+  db.collection("users").doc(uid).update({ emergencyContact: value }).catch(err => {
+    console.error("Firestore error:", err);
+  });
+}
+
+function loadCrewSummary(crewId) {
+  const crewSummary = document.getElementById('crew-summary');
+  if (!crewSummary || !crewId) return;
+  db.collection('users').get().then(snap => {
+    const members = [];
+    let altitude = 0;
+    let crewName = 'Crew';
+    let upcoming = 0;
+    snap.forEach(doc => {
+      const u = doc.data();
+      if (u.crewId === crewId) {
+        members.push(u);
+        altitude += Number(u.altitude || 0);
+        if (Number(u.totalTrips || 0) > 0) upcoming += Number(u.totalTrips || 0);
+        if (u.crewName) crewName = u.crewName;
+      }
+      if (doc.id === crewId) {
+        crewName = u.email ? u.email.split('@')[0] + "'s Crew" : 'Crew';
+      }
+    });
+    crewSummary.textContent = `${crewName} · ${members.length} members · ${altitude.toLocaleString('en-IN')} ft combined altitude · ${upcoming} upcoming trips`;
+  }).catch(err => {
+    console.error('Firestore error:', err);
+    crewSummary.textContent = 'No data available';
+  });
+}
+
+function getDaysLeft(startDate) {
+  if (!startDate) return 'No start date';
+  const today = new Date();
+  const start = new Date(startDate);
+  const diff = Math.ceil((start - today) / (1000 * 60 * 60 * 24));
+  if (isNaN(diff)) return 'No start date';
+  return diff >= 0 ? diff + ' days left' : 'Started';
+}
+
+function loadCalendar() {
+  const calendar = document.getElementById('calendar-list');
+  if (!calendar) return;
+  db.collection('trips').get().then(snap => {
+    if (snap.empty) {
+      calendar.textContent = 'No data available';
+      return;
+    }
+    let html = '';
+    const trips = [];
+    snap.forEach(doc => trips.push(doc.data()));
+    trips.sort((a,b) => new Date(a.startDate || 0) - new Date(b.startDate || 0));
+    trips.slice(0,5).forEach(t => {
+      html += `<div style="padding:6px 0;border-bottom:1px solid var(--border2)">${t.name || 'Trip'} · ${t.startDate || 'Date TBD'}</div>`;
+    });
+    calendar.innerHTML = html;
+  }).catch(err => {
+    console.error('Firestore error:', err);
+    calendar.textContent = 'No data available';
+  });
 }
 
 // ── Scroll reveal ─────────────────────────────────────────────────────

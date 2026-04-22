@@ -207,12 +207,13 @@ googleBtn.addEventListener('click', function() {
     .then(result => {
       const user = result.user;
       return db.collection('users').doc(user.uid).set({
-        name:           user.displayName || 'Altiora Traveler',
-        email:          user.email,
-        total_altitude: 0,
-        level:          'Explorer',
-        created_at:     firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+        email: user.email,
+        createdAt: new Date(),
+        altitude: 0,
+        totalTrips: 0,
+        role: 'user',
+          crewId: user.uid
+      });
     })
     .then(() => { window.location.replace('dashboard.html'); })
     .catch(err => {
@@ -239,11 +240,12 @@ signupBtn.addEventListener('click', function() {
       return Promise.all([
         user.updateProfile({ displayName: name }),
         db.collection('users').doc(user.uid).set({
-          name,
-          email,
-          total_altitude: 0,
-          level:          'Explorer',
-          created_at:     firebase.firestore.FieldValue.serverTimestamp()
+          email: user.email,
+          createdAt: new Date(),
+          altitude: 0,
+          totalTrips: 0,
+          role: 'user',
+          crewId: user.uid
         })
       ]);
     })
