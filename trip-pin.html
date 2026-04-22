@@ -47,7 +47,7 @@
 .inc-dot.no  { background: #e74c3c; }
 .inc-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
-.booking-card { text-align: center;
+.booking-card {
   background: rgba(12,18,28,0.65); border: 1px solid rgba(79,195,247,0.12);
   border-radius: 24px; padding: 36px; position: sticky; top: 90px;
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
@@ -56,7 +56,7 @@
 .booking-price { font-size: 42px; font-weight: 900; letter-spacing: -2px; margin-bottom: 4px; }
 .booking-price em { color: var(--accent); font-style: normal; }
 .booking-per  { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
-.booking-row  { display: flex; text-align: left; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 14px; }
+.booking-row  { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 14px; }
 .booking-row:last-of-type { border-bottom: none; }
 .booking-label { color: var(--muted); }
 .booking-val   { font-weight: 700; }
@@ -66,7 +66,7 @@
   display: block; width: 100%; text-align: center;
   background: var(--orange); color: #fff; text-decoration: none;
   padding: 16px; border-radius: 13px; font-size: 15.5px; font-weight: 700;
-  margin-top: 20px; transition: all .28s;
+  margin-top: 24px; transition: all .28s;
   box-shadow: 0 8px 28px rgba(255,107,0,.38);
 }
 .btn-book-big:hover { background: var(--orange2); transform: translateY(-2px); box-shadow: 0 14px 40px rgba(255,107,0,.5); }
@@ -77,13 +77,13 @@
   margin-top: 10px; transition: all .25s;
 }
 .btn-wa:hover { background: rgba(37,211,102,.18); border-color: rgba(37,211,102,.45); }
-.booking-guarantee { margin-top: 8px; text-align: center; font-size: 12px; color: var(--muted2); line-height: 1.6; }
+.booking-guarantee { margin-top: 20px; text-align: center; font-size: 12px; color: var(--muted2); line-height: 1.6; }
 
 @media (max-width: 900px) {
   .trip-hero { padding: 0 24px 48px; min-height: 50vh; }
   .trip-body-wrap { grid-template-columns: 1fr; padding: 40px 24px 80px; }
   .inc-grid { grid-template-columns: 1fr; }
-  .booking-card { text-align: center; position: static; }
+  .booking-card { position: static; }
 }
 </style>
 </head>
@@ -277,7 +277,7 @@
         <span class="booking-val warn">3 of 10 remaining</span>
       </div>
 
-      <a href="signup.html" class="btn-book-big">Book This Expedition →</a>
+      <a href="signup.html" class="btn-book-big" id="bookBtn" onclick="createBooking(event)">Reserve Your Spot →</a>
 
       <a href="https://wa.me/919999999999?text=Hi%2C%20I%27m%20interested%20in%20the%20Spiti%20Valley%20Deep%20Run" class="btn-wa" target="_blank" rel="noopener">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -301,8 +301,57 @@
 </footer>
 
 <script>
+// Scroll reveal
 const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// Upsert user profile on auth state
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.collection('users').doc(user.uid).set({
+      email:     user.email,
+      name:      user.displayName || user.email.split('@')[0],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      altitude:  0
+    }, { merge: true });
+  }
+});
+
+// Create booking in Firestore
+function createBooking(e) {
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const btn = document.getElementById('bookBtn');
+  btn.textContent = 'Submitting…';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
+
+  db.collection('bookings').add({
+    userId:    user.uid,
+    userEmail: user.email,
+    trip:      'Pin Parvati Pass Trek',
+    price:     18000,
+    altitude:  15400,
+    status:    'pending',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    btn.textContent = '✓ Request Submitted!';
+    btn.style.background = '#2ecc71';
+    btn.style.boxShadow  = '0 8px 28px rgba(46,204,113,.38)';
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+  }).catch(err => {
+    console.error('Booking error:', err);
+    btn.textContent = 'Reserve Your Spot →';
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+    alert('Could not submit booking. Please try again.');
+  });
+}
 </script>
 <!-- Firebase compat SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
