@@ -43,8 +43,20 @@
 </nav>
 
 <div class="admin-wrap">
-  <h1 class="admin-title">Altiora Admin Panel</h1>
-  <div id="admin-bookings"></div>
+  <div id="admin-login" class="card" style="display:none;max-width:420px">
+    <div class="card-row" style="grid-template-columns:1fr;gap:10px">
+      <input id="admin-user" placeholder="Username" />
+      <input id="admin-pass" type="password" placeholder="Password" />
+      <button class="btn-nav" onclick="adminLogin()">Login</button>
+    </div>
+  </div>
+  <div id="admin-content" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px">
+      <h1 class="admin-title" style="margin-bottom:0">Altiora Admin Panel</h1>
+      <button class="btn-nav-outline" onclick="adminLogout()">Logout</button>
+    </div>
+    <div id="admin-bookings"></div>
+  </div>
 </div>
 
 <footer>
@@ -65,20 +77,34 @@
 <script src="firebase.js"></script>
 <script>
 const adminContainer = document.getElementById('admin-bookings');
+const adminLoginPanel = document.getElementById('admin-login');
+const adminContent = document.getElementById('admin-content');
 
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = 'login.html';
-    return;
-  }
-
-  if (user.email !== "YOUR_EMAIL_HERE") {
-    window.location.href = "index.html";
-    return;
-  }
-
+if (localStorage.getItem("isAdmin") !== "true") {
+  adminLoginPanel.style.display = 'block';
+  adminContent.style.display = 'none';
+} else {
+  adminLoginPanel.style.display = 'none';
+  adminContent.style.display = 'block';
   loadAllBookings();
-});
+}
+
+function adminLogin() {
+  const user = document.getElementById("admin-user").value;
+  const pass = document.getElementById("admin-pass").value;
+
+  if (user === "Admin" && pass === "Altiora") {
+    localStorage.setItem("isAdmin", "true");
+    location.reload();
+  } else {
+    alert("Invalid credentials");
+  }
+}
+
+function adminLogout() {
+  localStorage.removeItem("isAdmin");
+  window.location.href = "index.html";
+}
 
 function loadAllBookings() {
   db.collection("bookings")
@@ -116,7 +142,7 @@ function loadAllBookings() {
 
 document.getElementById('logoutBtn').addEventListener('click', function(e) {
   e.preventDefault();
-  auth.signOut().then(() => { window.location.href = 'index.html'; });
+  adminLogout();
 });
 </script>
 </body>
