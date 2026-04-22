@@ -282,6 +282,36 @@
     </div>
   </div>
 
+  <div class="dash-grid" style="margin-top:20px">
+    <div class="d-card fade-in">
+      <div class="d-card-title">Trip Requirements</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7">Government ID, medical fitness, and emergency contact are required before departure.</div>
+    </div>
+    <div class="d-card fade-in">
+      <div class="d-card-title">Weather Update</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7">Mountain weather can shift quickly. Keep buffer days and layered clothing ready.</div>
+    </div>
+  </div>
+
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">Equipment Needed</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.7">Thermal layers, waterproof gloves, trekking shoes, hydration pack, and headlamp.</div>
+  </div>
+
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">Upcoming Trips Calendar</div>
+    <div id="calendar-list" style="font-size:13px;color:var(--muted)">No data available</div>
+  </div>
+
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">Crew System</div>
+    <div style="font-size:13px;color:var(--muted)">Your crewId: <span id="crewIdValue">—</span></div>
+    <div style="margin-top:10px;display:flex;gap:10px">
+      <input id="joinCrewInput" placeholder="Enter crewId" style="flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text)">
+      <button class="btn-nav-outline" id="joinCrewBtn" style="padding:10px 14px">Join Crew</button>
+    </div>
+  </div>
+
   <!-- MY BOOKINGS — loaded live from Firestore -->
   <div class="d-card fade-in" style="margin-top:20px">
     <div class="d-card-title">My Bookings</div>
@@ -324,13 +354,15 @@ auth.onAuthStateChanged(user => {
         createdAt: new Date(),
         altitude: 0,
         totalTrips: 0,
-        role: 'user'
+        role: 'user',
+          crewId: user.uid
       });
     }
   });
 
   loadDashboard(user);
   loadBookings(user);
+  loadCalendar();
 });
 
 // ── Logout ───────────────────────────────────────────────────────────
@@ -379,6 +411,19 @@ function loadDashboard(user) {
     const toNext = level === 'Legend' ? 0 : Math.max(nextTarget - altFt, 0);
     if (statToNext) statToNext.textContent = toNext.toLocaleString() + ' ft';
     if (toNextSub) toNextSub.textContent = level === 'Legend' ? 'Top altitude tier reached' : 'to reach ' + (level === 'Explorer' ? 'Climber' : level === 'Climber' ? 'Summiteer' : level === 'Summiteer' ? 'Everest Class' : 'Legend');
+
+    const crewIdValue = document.getElementById('crewIdValue');
+    if (crewIdValue) crewIdValue.textContent = data.crewId || user.uid;
+    const joinCrewBtn = document.getElementById('joinCrewBtn');
+    if (joinCrewBtn) {
+      joinCrewBtn.onclick = () => {
+        const newCrew = (document.getElementById('joinCrewInput').value || '').trim();
+        if (!newCrew) return;
+        db.collection('users').doc(user.uid).update({ crewId: newCrew }).then(() => {
+          if (crewIdValue) crewIdValue.textContent = newCrew;
+        }).catch(err => console.error('Firestore error:', err));
+      };
+    }
 
     // Nav pill
     const navPill = document.querySelector('.nav-pill');
@@ -457,7 +502,7 @@ function loadBookings(user) {
             <div class="trip-type-dot" style="background:var(--accent)"></div>
             <div class="trip-r-info">
               <div class="trip-r-name">${b.tripName || b.trip || ''}</div>
-              <div class="trip-r-meta">Booked on ${date}</div>
+              <div class="trip-r-meta">${b.startDate || '—'} → ${b.endDate || '—'} · ${b.paymentStatus || 'pending'} · ${getDaysLeft(b.startDate)}</div>
             </div>
             <span class="trip-status ${statusClass}" style="${statusColor}text-transform:capitalize">${status}</span>
             <div class="trip-gain">
@@ -473,6 +518,36 @@ function loadBookings(user) {
       console.error('Error loading bookings:', err);
       container.innerHTML = '<div style="font-size:13px;color:var(--muted2);padding:8px 0">Could not load bookings. Please refresh.</div>';
     });
+}
+
+
+function getDaysLeft(startDate) {
+  if (!startDate) return 'No start date';
+  const today = new Date();
+  const start = new Date(startDate);
+  const diff = Math.ceil((start - today) / (1000 * 60 * 60 * 24));
+  if (isNaN(diff)) return 'No start date';
+  return diff >= 0 ? diff + ' days left' : 'Started';
+}
+
+function loadCalendar() {
+  const calendar = document.getElementById('calendar-list');
+  if (!calendar) return;
+  db.collection('trips').get().then(snap => {
+    if (snap.empty) {
+      calendar.textContent = 'No data available';
+      return;
+    }
+    let html = '';
+    snap.forEach(doc => {
+      const t = doc.data();
+      html += `<div style="padding:6px 0;border-bottom:1px solid var(--border2)">${t.name || 'Trip'} · ${t.startDate || 'Date TBD'}</div>`;
+    });
+    calendar.innerHTML = html;
+  }).catch(err => {
+    console.error('Firestore error:', err);
+    calendar.textContent = 'No data available';
+  });
 }
 
 // ── Scroll reveal ─────────────────────────────────────────────────────

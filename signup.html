@@ -211,7 +211,8 @@ googleBtn.addEventListener('click', function() {
         createdAt: new Date(),
         altitude: 0,
         totalTrips: 0,
-        role: 'user'
+        role: 'user',
+          crewId: user.uid
       });
     })
     .then(() => { window.location.replace('dashboard.html'); })
@@ -243,7 +244,8 @@ signupBtn.addEventListener('click', function() {
           createdAt: new Date(),
           altitude: 0,
           totalTrips: 0,
-          role: 'user'
+          role: 'user',
+          crewId: user.uid
         })
       ]);
     })

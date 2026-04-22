@@ -40,8 +40,13 @@
   color: #111;
 }
 .light-mode .card {
-  background: #ffffff;
+  background: #fff;
+  color: #111;
   border: 1px solid #ddd;
+}
+.light-mode p,
+.light-mode span {
+  color: #333;
 }
 
 @media (max-width: 900px) {
@@ -122,6 +127,8 @@
           <input id="trip-price" type="number" placeholder="Price" min="0" />
           <input id="trip-seats" type="number" placeholder="Total Seats" min="1" value="10" />
           <input id="trip-duration" placeholder="Duration" />
+          <input id="trip-start-date" type="date" placeholder="Start Date" />
+          <input id="trip-end-date" type="date" placeholder="End Date" />
           <input id="trip-location" placeholder="Location" />
           <textarea id="trip-description" placeholder="Description"></textarea>
         </div>
@@ -287,10 +294,10 @@ function renderBookings(bookings) {
           <div><div class="label">Date</div><div class="value">${formatDate(b.createdAt)}</div></div>
         </div>
         <div class="actions">
-          <button class="btn-nav-outline" onclick="updateBookingStatus('${b.id}','approved')">Approve</button>
-          <button class="btn-nav-outline" onclick="updateBookingStatus('${b.id}','rejected')">Reject</button>
-          <button class="btn-nav-outline" onclick="updatePaymentStatus('${b.id}','paid')">Mark Paid</button>
-          <button class="btn-nav-outline" onclick="updatePaymentStatus('${b.id}','pending')">Mark Pending</button>
+          <button class="btn-nav-outline" onclick="updateStatus('${b.id}','approved')">Approve</button>
+          <button class="btn-nav-outline" onclick="updateStatus('${b.id}','rejected')">Reject</button>
+          <button class="btn-nav-outline" onclick="updatePayment('${b.id}','paid')">Mark Paid</button>
+          <button class="btn-nav-outline" onclick="updatePayment('${b.id}','pending')">Mark Pending</button>
         </div>
       </div>`;
   });
@@ -331,7 +338,8 @@ function renderTrips(trips) {
           <div><div class="label">Name</div><div class="value">${t.name || ''}</div></div>
           <div><div class="label">Price</div><div class="value">₹${Number(t.price || 0).toLocaleString('en-IN')}</div></div>
           <div><div class="label">Total Seats</div><div class="value">${Number(t.totalSeats || 10)}</div></div>
-          <div><div class="label">Duration</div><div class="value">${t.duration || '—'}</div></div>
+          <div><div class="label">Start Date</div><div class="value">${t.startDate || '—'}</div></div>
+          <div><div class="label">End Date</div><div class="value">${t.endDate || '—'}</div></div>
           <div><div class="label">Location</div><div class="value">${t.location || '—'}</div></div>
           <div><div class="label">Created</div><div class="value">${formatDate(t.createdAt)}</div></div>
         </div>
@@ -347,6 +355,8 @@ function createTrip() {
   const price = Number(document.getElementById('trip-price').value || 0);
   const totalSeats = Number(document.getElementById('trip-seats').value || 10);
   const duration = (document.getElementById('trip-duration').value || '').trim();
+  const startDate = (document.getElementById('trip-start-date').value || '').trim();
+  const endDate = (document.getElementById('trip-end-date').value || '').trim();
   const location = (document.getElementById('trip-location').value || '').trim();
   const description = (document.getElementById('trip-description').value || '').trim();
 
@@ -362,6 +372,8 @@ function createTrip() {
     name,
     price,
     totalSeats,
+    startDate,
+    endDate,
     duration,
     location,
     description,
@@ -371,6 +383,8 @@ function createTrip() {
     document.getElementById('trip-price').value = '';
     document.getElementById('trip-seats').value = '10';
     document.getElementById('trip-duration').value = '';
+    document.getElementById('trip-start-date').value = '';
+    document.getElementById('trip-end-date').value = '';
     document.getElementById('trip-location').value = '';
     document.getElementById('trip-description').value = '';
     loadAdminData();
@@ -386,14 +400,14 @@ function deleteTrip(id) {
   });
 }
 
-function updateBookingStatus(bookingId, status) {
-  db.collection('bookings').doc(bookingId).update({ status }).then(loadAdminData).catch(err => {
+function updateStatus(id, status) {
+  db.collection('bookings').doc(id).update({ status }).then(loadAdminData).catch(err => {
     console.error("Firestore error:", err);
   });
 }
 
-function updatePaymentStatus(bookingId, paymentStatus) {
-  db.collection('bookings').doc(bookingId).update({ paymentStatus }).then(loadAdminData).catch(err => {
+function updatePayment(id, value) {
+  db.collection('bookings').doc(id).update({ paymentStatus: value }).then(loadAdminData).catch(err => {
     console.error("Firestore error:", err);
   });
 }

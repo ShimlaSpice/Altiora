@@ -285,6 +285,8 @@
       </a>
 
       <div class="booking-guarantee">🔒 Secure booking · Full refund 30 days before trip · No hidden charges</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;margin-top:10px">Minimum 5 participants required. Trip may be rescheduled or repriced.</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;margin-top:6px">Cancel within 24 hrs → full refund · Cancel within 7 days → 50% refund</div>
     </div>
   </div>
 </div>
@@ -316,7 +318,8 @@ auth.onAuthStateChanged(user => {
           createdAt: new Date(),
           altitude: 0,
           totalTrips: 0,
-          role: 'user'
+          role: 'user',
+          crewId: user.uid
         });
       }
     });
@@ -342,6 +345,8 @@ function createBooking(e) {
     userEmail: user.email,
     tripId: 'spiti-valley-deep-run',
     tripName: 'Spiti Valley Deep Run',
+    startDate: '2026-09-10',
+    endDate: '2026-09-18',
     price: 28000,
     status: 'pending',
     paymentStatus: 'pending',
