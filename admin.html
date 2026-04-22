@@ -7,8 +7,13 @@
 <link rel="stylesheet" href="style.css"/>
 <style>
 .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; }
-.admin-title { font-size: 40px; font-weight: 900; letter-spacing: -1.2px; margin-bottom: 24px; }
-#admin-bookings { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.admin-top { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+.admin-title { font-size: 36px; font-weight: 900; letter-spacing: -1.2px; margin: 0; }
+.admin-nav { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+.admin-nav a { text-decoration:none; }
+.section { margin-top: 18px; }
+.section-title { font-size: 18px; font-weight: 800; margin: 0 0 12px; }
+.grid-2 { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:14px; }
 .card {
   background: rgba(12,18,28,0.65);
   backdrop-filter: blur(18px);
@@ -17,58 +22,100 @@
   border-radius: 20px;
   padding: 20px 22px;
 }
-.card-row { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; }
-.card-label { font-size: 11px; color: var(--muted2); text-transform: uppercase; letter-spacing: .6px; }
-.card-val { font-size: 14px; font-weight: 600; margin-top: 4px; word-break: break-word; }
+.metric-num { font-size: 30px; font-weight: 900; margin-top: 6px; }
+.row-list { display:grid; grid-template-columns: 1fr; gap:12px; }
+.row-grid { display:grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap:10px; }
+.row-grid-3 { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px; }
+.row-grid-5 { display:grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap:10px; }
+.label { font-size: 11px; color: var(--muted2); text-transform: uppercase; letter-spacing: .6px; }
+.value { font-size: 14px; font-weight: 600; margin-top: 4px; word-break: break-word; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
 .empty-state { font-size: 14px; color: var(--muted); }
+.form-row { display:grid; grid-template-columns: 1fr 180px auto; gap:10px; }
 @media (max-width: 900px) {
   .admin-wrap { padding: 36px 20px 80px; }
-  .card-row { grid-template-columns: 1fr; }
+  .grid-2, .row-grid, .row-grid-3, .row-grid-5, .form-row { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
-  <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="expeditions.html">Expeditions</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="admin.html" class="active">Admin</a></li>
-  </ul>
+  <a href="admin.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
   <div class="nav-right">
-    <a href="login.html" class="btn-nav-outline" id="logoutBtn">Sign Out</a>
+    <button class="btn-nav-outline" onclick="adminLogout()">Logout</button>
   </div>
 </nav>
 
 <div class="admin-wrap">
   <div id="admin-login" class="card" style="display:none;max-width:420px">
-    <div class="card-row" style="grid-template-columns:1fr;gap:10px">
+    <div class="row-list">
       <input id="admin-user" placeholder="Username" />
       <input id="admin-pass" type="password" placeholder="Password" />
       <button class="btn-nav" onclick="adminLogin()">Login</button>
     </div>
   </div>
+
   <div id="admin-content" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px">
-      <h1 class="admin-title" style="margin-bottom:0">Altiora Admin Panel</h1>
-      <button class="btn-nav-outline" onclick="adminLogout()">Logout</button>
+    <div class="admin-top">
+      <h1 class="admin-title">Altiora Admin Panel</h1>
+      <button class="btn-nav" onclick="exportDataPlaceholder()">Export Data</button>
     </div>
-    <div id="admin-bookings"></div>
+
+    <div class="admin-nav">
+      <a class="btn-nav-outline" href="#admin-home">Home</a>
+      <a class="btn-nav-outline" href="#admin-dashboard">Dashboard</a>
+      <a class="btn-nav-outline" href="#admin-bookings">Bookings</a>
+      <a class="btn-nav-outline" href="#admin-trips">Trips</a>
+      <a class="btn-nav-outline" href="#admin-users">Users</a>
+    </div>
+
+    <section id="admin-home" class="section card">
+      <div class="section-title">Home</div>
+      <div class="empty-state">Internal admin system for Altiora operations.</div>
+    </section>
+
+    <section id="admin-dashboard" class="section">
+      <div class="section-title">Dashboard</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="label">Total Bookings</div>
+          <div class="metric-num" id="totalBookings">0</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Revenue (Paid)</div>
+          <div class="metric-num" id="totalRevenue">₹0</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="section-title" style="font-size:16px;margin-bottom:10px">Trip-wise Stats</div>
+        <div id="tripStatsList" class="row-list"></div>
+      </div>
+    </section>
+
+    <section id="admin-bookings" class="section">
+      <div class="section-title">Bookings</div>
+      <div id="bookingsList" class="row-list"></div>
+    </section>
+
+    <section id="admin-users" class="section">
+      <div class="section-title">Users</div>
+      <div id="usersList" class="row-list"></div>
+    </section>
+
+    <section id="admin-trips" class="section">
+      <div class="section-title">Trips</div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="form-row">
+          <input id="trip-name" placeholder="Trip name" />
+          <input id="trip-price" type="number" placeholder="Price" min="0" />
+          <button class="btn-nav" onclick="createTrip()">Create Trip</button>
+        </div>
+      </div>
+      <div id="tripsList" class="row-list"></div>
+    </section>
   </div>
 </div>
-
-<footer>
-  <div class="foot-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></div>
-  <ul class="foot-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="expeditions.html">Expeditions</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="login.html">Sign In</a></li>
-  </ul>
-  <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
-</footer>
 
 <!-- Firebase compat SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -76,7 +123,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="firebase.js"></script>
 <script>
-const adminContainer = document.getElementById('admin-bookings');
 const adminLoginPanel = document.getElementById('admin-login');
 const adminContent = document.getElementById('admin-content');
 
@@ -86,7 +132,7 @@ if (localStorage.getItem("isAdmin") !== "true") {
 } else {
   adminLoginPanel.style.display = 'none';
   adminContent.style.display = 'block';
-  loadAllBookings();
+  loadAdminData();
 }
 
 function adminLogin() {
@@ -106,44 +152,185 @@ function adminLogout() {
   window.location.href = "index.html";
 }
 
-function loadAllBookings() {
-  db.collection("bookings")
-    .orderBy("createdAt", "desc")
-    .get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        adminContainer.innerHTML = '<div class="card"><div class="empty-state">No bookings yet.</div></div>';
-        return;
-      }
-
-      adminContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const booking = doc.data();
-        const createdAt = booking.createdAt && booking.createdAt.toDate
-          ? booking.createdAt.toDate().toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-          : '—';
-
-        adminContainer.innerHTML += `
-          <div class="card">
-            <div class="card-row">
-              <div><div class="card-label">User Email</div><div class="card-val">${booking.userEmail || ''}</div></div>
-              <div><div class="card-label">Trip Name</div><div class="card-val">${booking.trip || ''}</div></div>
-              <div><div class="card-label">Price</div><div class="card-val">₹${Number(booking.price || 0).toLocaleString('en-IN')}</div></div>
-              <div><div class="card-label">Status</div><div class="card-val" style="text-transform:capitalize">${booking.status || ''}</div></div>
-              <div><div class="card-label">Date</div><div class="card-val">${createdAt}</div></div>
-            </div>
-          </div>`;
-      });
-    })
-    .catch(() => {
-      adminContainer.innerHTML = '<div class="card"><div class="empty-state">No bookings yet.</div></div>';
-    });
+function exportDataPlaceholder() {
+  alert('Export Data feature will be added soon.');
 }
 
-document.getElementById('logoutBtn').addEventListener('click', function(e) {
-  e.preventDefault();
-  adminLogout();
-});
+function formatDate(ts) {
+  if (!ts || !ts.toDate) return '—';
+  return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function loadAdminData() {
+  Promise.all([
+    db.collection('bookings').orderBy('createdAt', 'desc').get(),
+    db.collection('users').get(),
+    db.collection('trips').orderBy('createdAt', 'desc').get()
+  ]).then(([bookingSnap, userSnap, tripSnap]) => {
+    const bookings = bookingSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const users = userSnap.docs.map(d => d.data());
+    const trips = tripSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    renderDashboard(bookings);
+    renderBookings(bookings);
+    renderUsers(users);
+    renderTrips(trips);
+  }).catch(err => {
+    console.error('Admin load error:', err);
+  });
+}
+
+function renderDashboard(bookings) {
+  const totalBookings = bookings.length;
+  const totalRevenue = bookings.reduce((sum, b) => {
+    if ((b.paymentStatus || '').toLowerCase() === 'paid') return sum + Number(b.price || 0);
+    return sum;
+  }, 0);
+
+  document.getElementById('totalBookings').textContent = totalBookings;
+  document.getElementById('totalRevenue').textContent = '₹' + totalRevenue.toLocaleString('en-IN');
+
+  const tripStatsMap = {};
+  bookings.forEach(b => {
+    const tripName = b.trip || 'Unnamed Trip';
+    if (!tripStatsMap[tripName]) {
+      tripStatsMap[tripName] = { bookings: 0, revenue: 0 };
+    }
+    tripStatsMap[tripName].bookings += 1;
+    if ((b.paymentStatus || '').toLowerCase() === 'paid') {
+      tripStatsMap[tripName].revenue += Number(b.price || 0);
+    }
+  });
+
+  const tripStatsList = document.getElementById('tripStatsList');
+  const entries = Object.entries(tripStatsMap);
+  if (!entries.length) {
+    tripStatsList.innerHTML = '<div class="empty-state">No bookings yet</div>';
+    return;
+  }
+
+  tripStatsList.innerHTML = '';
+  entries.forEach(([tripName, stat]) => {
+    const seatsLeft = Math.max(10 - stat.bookings, 0);
+    const status = seatsLeft > 0 ? 'Active' : 'Full';
+    tripStatsList.innerHTML += `
+      <div class="card">
+        <div class="row-grid-5">
+          <div><div class="label">Trip</div><div class="value">${tripName}</div></div>
+          <div><div class="label">Total Bookings</div><div class="value">${stat.bookings}</div></div>
+          <div><div class="label">Total Revenue</div><div class="value">₹${stat.revenue.toLocaleString('en-IN')}</div></div>
+          <div><div class="label">Seats Left</div><div class="value">${seatsLeft}</div></div>
+          <div><div class="label">Status</div><div class="value">${status}</div></div>
+        </div>
+      </div>`;
+  });
+}
+
+function renderBookings(bookings) {
+  const list = document.getElementById('bookingsList');
+  if (!bookings.length) {
+    list.innerHTML = '<div class="card"><div class="empty-state">No bookings yet</div></div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  bookings.forEach(b => {
+    list.innerHTML += `
+      <div class="card">
+        <div class="row-grid">
+          <div><div class="label">User Email</div><div class="value">${b.userEmail || ''}</div></div>
+          <div><div class="label">Trip</div><div class="value">${b.trip || ''}</div></div>
+          <div><div class="label">Price</div><div class="value">₹${Number(b.price || 0).toLocaleString('en-IN')}</div></div>
+          <div><div class="label">Status</div><div class="value" style="text-transform:capitalize">${b.status || ''}</div></div>
+          <div><div class="label">Payment Status</div><div class="value" style="text-transform:capitalize">${b.paymentStatus || 'pending'}</div></div>
+          <div><div class="label">Date</div><div class="value">${formatDate(b.createdAt)}</div></div>
+        </div>
+        <div class="actions">
+          <button class="btn-nav-outline" onclick="updateBookingStatus('${b.id}','approved')">Approve</button>
+          <button class="btn-nav-outline" onclick="updateBookingStatus('${b.id}','rejected')">Reject</button>
+          <button class="btn-nav-outline" onclick="updatePaymentStatus('${b.id}','paid')">Mark Paid</button>
+          <button class="btn-nav-outline" onclick="updatePaymentStatus('${b.id}','pending')">Mark Pending</button>
+        </div>
+      </div>`;
+  });
+}
+
+function renderUsers(users) {
+  const list = document.getElementById('usersList');
+  if (!users.length) {
+    list.innerHTML = '<div class="card"><div class="empty-state">No users yet</div></div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  users.forEach(u => {
+    list.innerHTML += `
+      <div class="card">
+        <div class="row-grid-3">
+          <div><div class="label">Email</div><div class="value">${u.email || ''}</div></div>
+          <div><div class="label">Total Trips</div><div class="value">${Number(u.totalTrips || 0)}</div></div>
+          <div><div class="label">Altitude</div><div class="value">${Number(u.altitude || 0).toLocaleString('en-IN')} ft</div></div>
+        </div>
+      </div>`;
+  });
+}
+
+function renderTrips(trips) {
+  const list = document.getElementById('tripsList');
+  if (!trips.length) {
+    list.innerHTML = '<div class="card"><div class="empty-state">No trips yet</div></div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  trips.forEach(t => {
+    list.innerHTML += `
+      <div class="card">
+        <div class="row-grid">
+          <div><div class="label">Name</div><div class="value">${t.name || ''}</div></div>
+          <div><div class="label">Price</div><div class="value">₹${Number(t.price || 0).toLocaleString('en-IN')}</div></div>
+          <div><div class="label">Total Seats</div><div class="value">${Number(t.totalSeats || 10)}</div></div>
+          <div><div class="label">Created</div><div class="value">${formatDate(t.createdAt)}</div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>`;
+  });
+}
+
+function createTrip() {
+  const nameInput = document.getElementById('trip-name');
+  const priceInput = document.getElementById('trip-price');
+  const name = (nameInput.value || '').trim();
+  const price = Number(priceInput.value || 0);
+
+  if (!name) {
+    alert('Please enter a trip name.');
+    return;
+  }
+
+  db.collection('trips').add({
+    name,
+    price,
+    totalSeats: 10,
+    createdAt: new Date()
+  }).then(() => {
+    nameInput.value = '';
+    priceInput.value = '';
+    loadAdminData();
+  }).catch(err => {
+    console.error('Create trip failed:', err);
+    alert('Could not create trip.');
+  });
+}
+
+function updateBookingStatus(bookingId, status) {
+  db.collection('bookings').doc(bookingId).update({ status }).then(loadAdminData);
+}
+
+function updatePaymentStatus(bookingId, paymentStatus) {
+  db.collection('bookings').doc(bookingId).update({ paymentStatus }).then(loadAdminData);
+}
 </script>
 </body>
 </html>
