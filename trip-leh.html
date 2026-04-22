@@ -339,22 +339,42 @@ function createBooking(e) {
   btn.style.opacity = '0.7';
   btn.style.pointerEvents = 'none';
 
+  db.collection('users').doc(user.uid).get().then(userSnap => {
+    const userData = userSnap.data() || {};
+    const crewId = userData.crewId || user.uid;
+    return db.collection('users').get().then(usersSnap => {
+      let crewSize = 0;
+      usersSnap.forEach(doc => {
+        const u = doc.data();
+        if ((u.crewId || doc.id) === crewId) crewSize += 1;
+      });
+      return { crewId, crewSize };
+    });
+  }).then(({ crewId, crewSize }) => {
+  const bookingId = 'BK-' + Date.now();
+
   db.collection('bookings').add({
+    bookingId: bookingId,
     userId: user.uid,
     userEmail: user.email,
+    name: user.displayName || (user.email || '').split('@')[0],
+    phone: user.phoneNumber || '',
     tripId: 'manali-leh-royal-ride',
     tripName: 'Manali–Leh Royal Ride',
     startDate: '2026-07-12',
     endDate: '2026-07-18',
-    price: 22000,
+    price: crewSize >= 4 ? 19800 : 22000,
     status: 'pending',
     paymentStatus: 'pending',
+    crewId: crewId,
+    cancellationPolicy: '<24 hrs full refund | >15 days full refund | >7 days 50% | <7 days credit',
     createdAt: new Date()
   }).then(() => {
     btn.textContent = '✓ Request Submitted!';
     btn.style.background = '#2ecc71';
     btn.style.boxShadow  = '0 8px 28px rgba(46,204,113,.38)';
     setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+  });
   }).catch(err => {
     console.error('Firestore error:', err);
     btn.textContent = 'Reserve Your Spot →';

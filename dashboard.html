@@ -137,10 +137,9 @@
 <nav class="nav">
   <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
   <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="expeditions.html">Expeditions</a></li>
-    <li><a href="index.html#crews">Crews</a></li>
     <li><a href="dashboard.html" class="active">Dashboard</a></li>
+    <li><a href="crew.html">My Crew</a></li>
+    <li><a href="signup.html">Profile</a></li>
   </ul>
   <div class="nav-right">
     <div class="nav-pill"><span class="dot"></span>—</div>
@@ -282,34 +281,9 @@
     </div>
   </div>
 
-  <div class="dash-grid" style="margin-top:20px">
-    <div class="d-card fade-in">
-      <div class="d-card-title">Trip Requirements</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.7">Government ID, medical fitness, and emergency contact are required before departure.</div>
-    </div>
-    <div class="d-card fade-in">
-      <div class="d-card-title">Weather Update</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.7">Mountain weather can shift quickly. Keep buffer days and layered clothing ready.</div>
-    </div>
-  </div>
-
-  <div class="d-card fade-in" style="margin-top:20px">
-    <div class="d-card-title">Equipment Needed</div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.7">Thermal layers, waterproof gloves, trekking shoes, hydration pack, and headlamp.</div>
-  </div>
-
   <div class="d-card fade-in" style="margin-top:20px">
     <div class="d-card-title">Upcoming Trips Calendar</div>
     <div id="calendar-list" style="font-size:13px;color:var(--muted)">No data available</div>
-  </div>
-
-  <div class="d-card fade-in" style="margin-top:20px">
-    <div class="d-card-title">Crew System</div>
-    <div style="font-size:13px;color:var(--muted)">Your crewId: <span id="crewIdValue">—</span></div>
-    <div style="margin-top:10px;display:flex;gap:10px">
-      <input id="joinCrewInput" placeholder="Enter crewId" style="flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text)">
-      <button class="btn-nav-outline" id="joinCrewBtn" style="padding:10px 14px">Join Crew</button>
-    </div>
   </div>
 
   <!-- MY BOOKINGS — loaded live from Firestore -->
@@ -320,6 +294,26 @@
     </div>
   </div>
 
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">Trip Requirements</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.7">Government ID, medical fitness, and emergency contact are required before departure.</div>
+  </div>
+
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">Weather Update</div>
+    <div id="weather-update" style="font-size:13px;color:var(--muted);line-height:1.7">No data available</div>
+  </div>
+
+  <div class="d-card fade-in" style="margin-top:20px">
+    <div class="d-card-title">My Crew</div>
+    <div style="font-size:13px;color:var(--muted)">Your crewId: <span id="crewIdValue">—</span></div>
+    <div id="crew-summary" style="font-size:13px;color:var(--muted);margin-top:8px">No data available</div>
+    <div style="margin-top:10px;display:flex;gap:10px">
+      <input id="joinCrewInput" placeholder="Enter crewId" style="flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text)">
+      <button class="btn-nav-outline" id="joinCrewBtn" style="padding:10px 14px">Join Crew</button>
+    </div>
+    <div style="margin-top:12px"><a href="crew.html" class="btn-nav-outline" style="text-decoration:none">Open Crew Page</a></div>
+  </div>
 </div>
 
 <footer>
@@ -421,9 +415,10 @@ function loadDashboard(user) {
         if (!newCrew) return;
         db.collection('users').doc(user.uid).update({ crewId: newCrew }).then(() => {
           if (crewIdValue) crewIdValue.textContent = newCrew;
-        }).catch(err => console.error('Firestore error:', err));
+        }).then(() => loadCrewSummary(newCrew)).catch(err => console.error('Firestore error:', err));
       };
     }
+    loadCrewSummary(data.crewId || user.uid);
 
     // Nav pill
     const navPill = document.querySelector('.nav-pill');
@@ -484,14 +479,22 @@ function loadBookings(user) {
         container.innerHTML = emptyState;
         const tripHistory = document.getElementById('tripHistoryList');
         if (tripHistory) tripHistory.innerHTML = emptyState;
+        const weather = document.getElementById('weather-update');
+        if (weather) weather.textContent = 'No data available';
         return;
       }
 
       container.innerHTML = '';
       const tripHistory = document.getElementById('tripHistoryList');
       if (tripHistory) tripHistory.innerHTML = '';
+      let weatherSet = false;
       snapshot.forEach(doc => {
         const b      = doc.data();
+        if (!weatherSet) {
+          const weather = document.getElementById('weather-update');
+          if (weather) weather.textContent = (b.location || "Mountain conditions pending for " + (b.tripName || b.trip || "your trip"));
+          weatherSet = true;
+        }
         const date   = b.createdAt ? new Date(b.createdAt.toDate()).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
         const status = b.status || 'pending';
         const statusClass = status === 'confirmed' ? 'ts-done' : status === 'cancelled' ? '' : 'ts-conf';
@@ -502,7 +505,7 @@ function loadBookings(user) {
             <div class="trip-type-dot" style="background:var(--accent)"></div>
             <div class="trip-r-info">
               <div class="trip-r-name">${b.tripName || b.trip || ''}</div>
-              <div class="trip-r-meta">${b.startDate || '—'} → ${b.endDate || '—'} · ${b.paymentStatus || 'pending'} · ${getDaysLeft(b.startDate)}</div>
+              <div class="trip-r-meta">${b.tripId || '—'} · ${b.startDate || '—'} → ${b.endDate || '—'} · ${b.paymentStatus || 'pending'} · ${getDaysLeft(b.startDate)}</div>
             </div>
             <span class="trip-status ${statusClass}" style="${statusColor}text-transform:capitalize">${status}</span>
             <div class="trip-gain">
@@ -520,6 +523,30 @@ function loadBookings(user) {
     });
 }
 
+
+function loadCrewSummary(crewId) {
+  const crewSummary = document.getElementById('crew-summary');
+  if (!crewSummary || !crewId) return;
+  db.collection('users').get().then(snap => {
+    const members = [];
+    let altitude = 0;
+    let crewName = 'Crew';
+    snap.forEach(doc => {
+      const u = doc.data();
+      if (u.crewId === crewId) {
+        members.push(u);
+        altitude += Number(u.altitude || 0);
+      }
+      if (doc.id === crewId) {
+        crewName = u.email ? u.email.split('@')[0] + "'s Crew" : 'Crew';
+      }
+    });
+    crewSummary.textContent = `${crewName} · ${members.length} members · ${altitude.toLocaleString('en-IN')} ft combined altitude`;
+  }).catch(err => {
+    console.error('Firestore error:', err);
+    crewSummary.textContent = 'No data available';
+  });
+}
 
 function getDaysLeft(startDate) {
   if (!startDate) return 'No start date';
@@ -539,8 +566,10 @@ function loadCalendar() {
       return;
     }
     let html = '';
-    snap.forEach(doc => {
-      const t = doc.data();
+    const trips = [];
+    snap.forEach(doc => trips.push(doc.data()));
+    trips.sort((a,b) => new Date(a.startDate || 0) - new Date(b.startDate || 0));
+    trips.slice(0,5).forEach(t => {
       html += `<div style="padding:6px 0;border-bottom:1px solid var(--border2)">${t.name || 'Trip'} · ${t.startDate || 'Date TBD'}</div>`;
     });
     calendar.innerHTML = html;

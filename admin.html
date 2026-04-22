@@ -126,7 +126,11 @@
           <input id="trip-name" placeholder="Trip Name" />
           <input id="trip-price" type="number" placeholder="Price" min="0" />
           <input id="trip-seats" type="number" placeholder="Total Seats" min="1" value="10" />
-          <input id="trip-duration" placeholder="Duration" />
+          <select id="trip-category" style="background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text)">
+            <option value="trek">trek</option>
+            <option value="bike">bike</option>
+            <option value="car">car</option>
+          </select>
           <input id="trip-start-date" type="date" placeholder="Start Date" />
           <input id="trip-end-date" type="date" placeholder="End Date" />
           <input id="trip-location" placeholder="Location" />
@@ -218,16 +222,16 @@ function loadAdminData() {
     const users = userSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const trips = tripSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    renderDashboard(bookings, users);
+    renderDashboard(bookings, users, trips);
     renderBookings(bookings);
-    renderUsers(users);
+    renderUsers(users, bookings);
     renderTrips(trips);
   }).catch(err => {
     console.error("Firestore error:", err);
   });
 }
 
-function renderDashboard(bookings, users) {
+function renderDashboard(bookings, users, trips) {
   const totalBookings = bookings.length;
   const totalRevenue = bookings.reduce((sum, b) => {
     if ((b.paymentStatus || '').toLowerCase() === 'paid') return sum + Number(b.price || 0);
@@ -239,14 +243,33 @@ function renderDashboard(bookings, users) {
   document.getElementById('totalUsers').textContent = users.length;
 
   const tripStatsMap = {};
+  trips.forEach(t => {
+    tripStatsMap[t.tripId || t.name || 'Trip'] = {
+      tripId: t.tripId || '',
+      tripName: t.name || 'Trip',
+      startDate: t.startDate || '',
+      totalSeats: Number(t.totalSeats || 10),
+      status: t.status || 'upcoming',
+      bookings: 0,
+      revenue: 0
+    };
+  });
   bookings.forEach(b => {
-    const tripName = b.tripName || b.trip || 'Unnamed Trip';
-    if (!tripStatsMap[tripName]) {
-      tripStatsMap[tripName] = { bookings: 0, revenue: 0 };
+    const key = b.tripId || b.tripName || b.trip || 'Unnamed Trip';
+    if (!tripStatsMap[key]) {
+      tripStatsMap[key] = {
+        tripId: b.tripId || '',
+        tripName: b.tripName || b.trip || 'Unnamed Trip',
+        startDate: b.startDate || '',
+        totalSeats: 10,
+        status: 'upcoming',
+        bookings: 0,
+        revenue: 0
+      };
     }
-    tripStatsMap[tripName].bookings += 1;
+    tripStatsMap[key].bookings += 1;
     if ((b.paymentStatus || '').toLowerCase() === 'paid') {
-      tripStatsMap[tripName].revenue += Number(b.price || 0);
+      tripStatsMap[key].revenue += Number(b.price || 0);
     }
   });
 
@@ -258,13 +281,17 @@ function renderDashboard(bookings, users) {
   }
 
   tripStatsList.innerHTML = '';
-  entries.forEach(([tripName, stat]) => {
-    const seatsLeft = 10 - stat.bookings;
-    const status = seatsLeft <= 0 ? 'Full' : 'Active';
+  entries.forEach(([_, stat]) => {
+    const seatsLeft = (stat.totalSeats || 10) - stat.bookings;
+    const daysLeft = stat.startDate ? Math.ceil((new Date(stat.startDate) - new Date()) / (1000 * 60 * 60 * 24)) : '—';
+    const status = seatsLeft <= 0 ? 'Full' : ((stat.status || 'upcoming').toLowerCase() === 'upcoming' ? 'Upcoming' : 'Active');
     tripStatsList.innerHTML += `
       <div class="card">
-        <div class="row-grid-5">
-          <div><div class="label">Name</div><div class="value">${tripName}</div></div>
+        <div class="row-grid">
+          <div><div class="label">Name</div><div class="value">${stat.tripName}</div></div>
+          <div><div class="label">Trip ID</div><div class="value">${stat.tripId || '—'}</div></div>
+          <div><div class="label">Departure</div><div class="value">${stat.startDate || '—'}</div></div>
+          <div><div class="label">Days Left</div><div class="value">${typeof daysLeft === 'number' ? daysLeft : '—'}</div></div>
           <div><div class="label">Total bookings</div><div class="value">${stat.bookings}</div></div>
           <div><div class="label">Revenue</div><div class="value">₹${stat.revenue.toLocaleString('en-IN')}</div></div>
           <div><div class="label">Seats left</div><div class="value">${Math.max(seatsLeft, 0)}</div></div>
@@ -276,13 +303,19 @@ function renderDashboard(bookings, users) {
 
 function renderBookings(bookings) {
   const list = document.getElementById('bookingsList');
-  if (!bookings.length) {
+  const activeBookings = bookings.filter(b => (b.status || 'pending') === 'pending' || (b.paymentStatus || 'pending') !== 'paid');
+  const historyBookings = bookings.filter(b => (b.status || '') === 'rejected' || (b.status || '') === 'approved' || (b.paymentStatus || '') === 'paid');
+
+  if (!activeBookings.length && !historyBookings.length) {
     list.innerHTML = '<div class="card"><div class="empty-state">No data available</div></div>';
     return;
   }
 
   list.innerHTML = '';
-  bookings.forEach(b => {
+  if (activeBookings.length) {
+    list.innerHTML += '<div class="section-title" style="font-size:14px;margin-bottom:4px">Active Bookings</div>';
+  }
+  activeBookings.forEach(b => {
     list.innerHTML += `
       <div class="card">
         <div class="row-grid">
@@ -301,23 +334,48 @@ function renderBookings(bookings) {
         </div>
       </div>`;
   });
+
+  list.innerHTML += '<div class="section-title" style="font-size:14px;margin:12px 0 4px">History</div>';
+  if (!historyBookings.length) {
+    list.innerHTML += '<div class="card"><div class="empty-state">No data available</div></div>';
+  } else {
+    historyBookings.forEach(b => {
+      list.innerHTML += `
+      <div class="card">
+        <div class="row-grid">
+          <div><div class="label">User Email</div><div class="value">${b.userEmail || ''}</div></div>
+          <div><div class="label">Trip</div><div class="value">${b.tripName || b.trip || ''}</div></div>
+          <div><div class="label">Trip ID</div><div class="value">${b.tripId || ''}</div></div>
+          <div><div class="label">Status</div><div class="value" style="text-transform:capitalize">${b.status || ''}</div></div>
+          <div><div class="label">Payment</div><div class="value" style="text-transform:capitalize">${b.paymentStatus || ''}</div></div>
+          <div><div class="label">Date</div><div class="value">${formatDate(b.createdAt)}</div></div>
+        </div>
+      </div>`;
+    });
+  }
 }
 
-function renderUsers(users) {
+function renderUsers(users, bookings) {
   const list = document.getElementById('usersList');
-  if (!users.length) {
+  if (!users.length && !bookings.length) {
     list.innerHTML = '<div class="card"><div class="empty-state">No data available</div></div>';
     return;
   }
 
   list.innerHTML = '';
-  users.forEach(u => {
+  const userById = {};
+  users.forEach(u => { userById[u.id] = u; });
+  bookings.forEach(b => {
+    const u = userById[b.userId] || {};
     list.innerHTML += `
       <div class="card">
-        <div class="row-grid-3">
-          <div><div class="label">Email</div><div class="value">${u.email || ''}</div></div>
-          <div><div class="label">Total Trips</div><div class="value">${Number(u.totalTrips || 0)}</div></div>
-          <div><div class="label">Altitude</div><div class="value">${Number(u.altitude || 0).toLocaleString('en-IN')} ft</div></div>
+        <div class="row-grid">
+          <div><div class="label">Name</div><div class="value">${b.name || u.name || ''}</div></div>
+          <div><div class="label">Email</div><div class="value">${u.email || b.userEmail || ''}</div></div>
+          <div><div class="label">Phone</div><div class="value">${b.phone || u.phone || ''}</div></div>
+          <div><div class="label">Trip ID</div><div class="value">${b.tripId || ''}</div></div>
+          <div><div class="label">Payment Status</div><div class="value">${b.paymentStatus || ''}</div></div>
+          <div><div class="label">Booking Status</div><div class="value">${b.status || ''}</div></div>
         </div>
       </div>`;
   });
@@ -336,11 +394,15 @@ function renderTrips(trips) {
       <div class="card">
         <div class="row-grid">
           <div><div class="label">Name</div><div class="value">${t.name || ''}</div></div>
+          <div><div class="label">Category</div><div class="value">${t.category || ''}</div></div>
+          <div><div class="label">Leader</div><div class="value">${t.leader || ''}</div></div>
           <div><div class="label">Price</div><div class="value">₹${Number(t.price || 0).toLocaleString('en-IN')}</div></div>
           <div><div class="label">Total Seats</div><div class="value">${Number(t.totalSeats || 10)}</div></div>
+          <div><div class="label">Booked Seats</div><div class="value">${Number(t.bookedSeats || 0)}</div></div>
           <div><div class="label">Start Date</div><div class="value">${t.startDate || '—'}</div></div>
           <div><div class="label">End Date</div><div class="value">${t.endDate || '—'}</div></div>
           <div><div class="label">Location</div><div class="value">${t.location || '—'}</div></div>
+          <div><div class="label">Status</div><div class="value">${t.status || 'upcoming'}</div></div>
           <div><div class="label">Created</div><div class="value">${formatDate(t.createdAt)}</div></div>
         </div>
         <div class="actions">
@@ -354,7 +416,7 @@ function createTrip() {
   const name = (document.getElementById('trip-name').value || '').trim();
   const price = Number(document.getElementById('trip-price').value || 0);
   const totalSeats = Number(document.getElementById('trip-seats').value || 10);
-  const duration = (document.getElementById('trip-duration').value || '').trim();
+  const category = (document.getElementById('trip-category').value || 'trek').trim();
   const startDate = (document.getElementById('trip-start-date').value || '').trim();
   const endDate = (document.getElementById('trip-end-date').value || '').trim();
   const location = (document.getElementById('trip-location').value || '').trim();
@@ -365,24 +427,37 @@ function createTrip() {
     return;
   }
 
-  const tripId = 'trip-' + Date.now();
+  const prefix = category === 'trek' ? 'T' : category === 'bike' ? 'B' : 'C';
+  const leader = category === 'trek' ? 'Rohit' : category === 'bike' ? 'Sarthak' : 'Vinod';
 
-  db.collection("trips").add({
-    tripId,
-    name,
-    price,
-    totalSeats,
-    startDate,
-    endDate,
-    duration,
-    location,
-    description,
-    createdAt: new Date()
+  db.collection("trips").get().then(snapshot => {
+    let count = 0;
+    snapshot.forEach(doc => {
+      const t = doc.data();
+      if ((t.category || '') === category) count += 1;
+    });
+    const tripId = prefix + String(count + 1).padStart(2, '0');
+    const status = new Date(startDate) > new Date() ? 'upcoming' : 'active';
+    return db.collection("trips").add({
+      tripId,
+      name,
+      category,
+      leader,
+      startDate,
+      endDate,
+      totalSeats,
+      bookedSeats: 0,
+      price,
+      status,
+      location,
+      description,
+      createdAt: new Date()
+    });
   }).then(() => {
     document.getElementById('trip-name').value = '';
     document.getElementById('trip-price').value = '';
     document.getElementById('trip-seats').value = '10';
-    document.getElementById('trip-duration').value = '';
+    document.getElementById('trip-category').value = 'trek';
     document.getElementById('trip-start-date').value = '';
     document.getElementById('trip-end-date').value = '';
     document.getElementById('trip-location').value = '';
