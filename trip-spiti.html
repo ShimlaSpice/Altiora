@@ -309,12 +309,16 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 auth.onAuthStateChanged(user => {
   if (user) {
     // Upsert user profile
-    db.collection('users').doc(user.uid).set({
-      email:     user.email,
-      name:      user.displayName || user.email.split('@')[0],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      altitude:  0
-    }, { merge: true });
+    db.collection('users').doc(user.uid).get().then(snap => {
+      if (!snap.exists) {
+        return db.collection('users').doc(user.uid).set({
+          email: user.email,
+          createdAt: new Date(),
+          altitude: 0,
+          totalTrips: 0
+        });
+      }
+    });
   }
 });
 
