@@ -325,13 +325,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;background:ra
 
   <div class="d-card fade-in" style="margin-top:20px">
     <div class="d-card-title">My Crew</div>
-    <div style="font-size:13px;color:var(--muted)">Your crewId: <span id="crewIdValue">—</span></div>
+    <div style="font-size:13px;color:var(--muted)">Your crewId: <span id="crewIdValue">No data available</span></div>
     <div id="crew-summary" style="font-size:13px;color:var(--muted);margin-top:8px">No data available</div>
     <div style="margin-top:8px;display:flex;gap:8px"><input id="crewNameInput" placeholder="Set crew name" style="flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;padding:8px;color:var(--text)"><button class="btn-nav-outline" id="setCrewNameBtn" style="padding:8px 10px">Set</button></div>
-    <div style="margin-top:10px;display:flex;gap:10px">
-      <input id="joinCrewInput" placeholder="Enter crewId" style="flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text)">
-      <button class="btn-nav-outline" id="joinCrewBtn" style="padding:10px 14px">Join Crew</button>
-    </div>
     <div style="margin-top:12px"><a href="crew.html" class="btn-nav-outline" style="text-decoration:none">Open Crew Page</a></div>
   </div>
 </div>
@@ -365,11 +361,13 @@ auth.onAuthStateChanged(user => {
     if (!snap.exists) {
       return db.collection('users').doc(user.uid).set({
         email: user.email,
-        createdAt: new Date(),
+        name: user.displayName || '',
+        phone: user.phoneNumber || '',
+        emergencyContact: '',
         altitude: 0,
         totalTrips: 0,
         role: 'user',
-          crewId: user.uid
+        createdAt: new Date()
       });
     }
   });
@@ -377,6 +375,7 @@ auth.onAuthStateChanged(user => {
   loadDashboard(user);
   loadBookings(user);
   loadCalendar();
+  console.log("Clean data loaded");
 });
 
 // ── Logout ───────────────────────────────────────────────────────────
@@ -420,17 +419,12 @@ function loadDashboard(user) {
     const profileName = document.getElementById('profileName');
     const profilePhone = document.getElementById('profilePhone');
     const emergencyInput = document.getElementById('emergencyInput');
-    if (profileName) profileName.textContent = data.name || emailName || '—';
-    if (profilePhone) profilePhone.textContent = data.phone || user.phoneNumber || '—';
+    if (profileName) profileName.textContent = data.name || 'No data available';
+    if (profilePhone) profilePhone.textContent = data.phone || 'No data available';
     if (emergencyInput) emergencyInput.value = data.emergencyContact || '';
     const saveEmergencyBtn = document.getElementById('saveEmergencyBtn');
     if (saveEmergencyBtn) saveEmergencyBtn.onclick = () => updateEmergency(user.uid);
-    const setCrewNameBtn = document.getElementById('setCrewNameBtn');
-    if (setCrewNameBtn) setCrewNameBtn.onclick = () => {
-      const crewName = (document.getElementById('crewNameInput').value || '').trim();
-      if (!crewName) return;
-      db.collection('users').doc(user.uid).update({ crewName }).then(() => loadCrewSummary(data.crewId || user.uid));
-    };
+
 
     // Stat cards
     const statAlt   = document.getElementById('statAltitude');
@@ -448,18 +442,7 @@ function loadDashboard(user) {
     if (toNextSub) toNextSub.textContent = level === 'Legend' ? 'Top altitude tier reached' : 'to reach ' + (level === 'Explorer' ? 'Climber' : level === 'Climber' ? 'Summiteer' : level === 'Summiteer' ? 'Everest Class' : 'Legend');
 
     const crewIdValue = document.getElementById('crewIdValue');
-    if (crewIdValue) crewIdValue.textContent = data.crewId || user.uid;
-    const joinCrewBtn = document.getElementById('joinCrewBtn');
-    if (joinCrewBtn) {
-      joinCrewBtn.onclick = () => {
-        const newCrew = (document.getElementById('joinCrewInput').value || '').trim();
-        if (!newCrew) return;
-        db.collection('users').doc(user.uid).update({ crewId: newCrew }).then(() => {
-          if (crewIdValue) crewIdValue.textContent = newCrew;
-        }).then(() => loadCrewSummary(newCrew)).catch(err => console.error('Firestore error:', err));
-      };
-    }
-    loadCrewSummary(data.crewId || user.uid);
+    if (crewIdValue) crewIdValue.textContent = 'No data available';
 
     // Nav pill
     const navPill = document.querySelector('.nav-pill');
@@ -531,9 +514,10 @@ function loadBookings(user) {
       let weatherSet = false;
       snapshot.forEach(doc => {
         const b      = doc.data();
+        if (!b) return;
         if (!weatherSet) {
           const weather = document.getElementById('weather-update');
-          if (weather) weather.textContent = (b.location || "Mountain conditions pending for " + (b.tripName || b.trip || "your trip"));
+          if (weather) weather.textContent = (b.location || "Mountain conditions pending for " + (b.tripName || "your trip"));
           weatherSet = true;
         }
         const date   = b.createdAt ? new Date(b.createdAt.toDate()).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
@@ -545,8 +529,8 @@ function loadBookings(user) {
           <div class="trip-row">
             <div class="trip-type-dot" style="background:var(--accent)"></div>
             <div class="trip-r-info">
-              <div class="trip-r-name">${b.tripName || b.trip || ''}</div>
-              <div class="trip-r-meta">${b.tripId || '—'} · ${b.startDate || '—'} → ${b.endDate || '—'} · ${b.paymentStatus || 'pending'} · ${getDaysLeft(b.startDate)}</div>
+              <div class="trip-r-name">${b.tripName || ''}</div>
+              <div class="trip-r-meta">${b.tripId || ''} · ${b.startDate || '—'} → ${b.endDate || '—'} · ${b.paymentStatus || 'pending'} · ${getDaysLeft(b.startDate)}</div>
             </div>
             <span class="trip-status ${statusClass}" style="${statusColor}text-transform:capitalize">${status}</span>
             <div class="trip-gain">
@@ -569,33 +553,6 @@ function updateEmergency(uid) {
   const value = (document.getElementById("emergencyInput").value || "").trim();
   db.collection("users").doc(uid).update({ emergencyContact: value }).catch(err => {
     console.error("Firestore error:", err);
-  });
-}
-
-function loadCrewSummary(crewId) {
-  const crewSummary = document.getElementById('crew-summary');
-  if (!crewSummary || !crewId) return;
-  db.collection('users').get().then(snap => {
-    const members = [];
-    let altitude = 0;
-    let crewName = 'Crew';
-    let upcoming = 0;
-    snap.forEach(doc => {
-      const u = doc.data();
-      if (u.crewId === crewId) {
-        members.push(u);
-        altitude += Number(u.altitude || 0);
-        if (Number(u.totalTrips || 0) > 0) upcoming += Number(u.totalTrips || 0);
-        if (u.crewName) crewName = u.crewName;
-      }
-      if (doc.id === crewId) {
-        crewName = u.email ? u.email.split('@')[0] + "'s Crew" : 'Crew';
-      }
-    });
-    crewSummary.textContent = `${crewName} · ${members.length} members · ${altitude.toLocaleString('en-IN')} ft combined altitude · ${upcoming} upcoming trips`;
-  }).catch(err => {
-    console.error('Firestore error:', err);
-    crewSummary.textContent = 'No data available';
   });
 }
 

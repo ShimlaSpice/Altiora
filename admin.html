@@ -222,16 +222,6 @@ function downloadCSV() {
   }).catch(err => console.error("Firestore error:", err));
 }
 
-function saveMonthlyReport(bookings) {
-  const now = new Date();
-  const month = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const totalBookings = bookings.length;
-  const totalRevenue = bookings.reduce((sum,b)=> (b.paymentStatus==='paid'? sum+Number(b.price||0):sum),0);
-  db.collection("reports").doc(month).set({ month, totalBookings, totalRevenue, createdAt: new Date() }, { merge: true }).catch(err => {
-    console.error("Firestore error:", err);
-  });
-}
-
 function formatDate(ts) {
   if (!ts || !ts.toDate) return '—';
   return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -247,15 +237,15 @@ function loadAdminData() {
     console.log("Users:", userSnap.size);
     console.log("Trips:", tripSnap.size);
 
-    const bookings = bookingSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const users = userSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const trips = tripSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const bookings = bookingSnap.docs.map(d => ({ id: d.id, ...(d.data() || {}) })).filter(b => b);
+    const users = userSnap.docs.map(d => ({ id: d.id, ...(d.data() || {}) })).filter(u => u);
+    const trips = tripSnap.docs.map(d => ({ id: d.id, ...(d.data() || {}) })).filter(t => t);
 
     renderDashboard(bookings, users, trips);
     renderBookings(bookings);
     renderUsers(users, bookings);
     renderTrips(trips);
-    saveMonthlyReport(bookings);
+    console.log("Clean data loaded");
   }).catch(err => {
     console.error("Firestore error:", err);
   });
@@ -274,6 +264,7 @@ function renderDashboard(bookings, users, trips) {
 
   const tripStatsMap = {};
   trips.forEach(t => {
+    if (!t) return;
     tripStatsMap[t.tripId || t.name || 'Trip'] = {
       tripId: t.tripId || '',
       tripName: t.name || 'Trip',
@@ -285,11 +276,12 @@ function renderDashboard(bookings, users, trips) {
     };
   });
   bookings.forEach(b => {
-    const key = b.tripId || b.tripName || b.trip || 'Unnamed Trip';
+    if (!b) return;
+    const key = b.tripId || b.tripName || 'Unnamed Trip';
     if (!tripStatsMap[key]) {
       tripStatsMap[key] = {
         tripId: b.tripId || '',
-        tripName: b.tripName || b.trip || 'Unnamed Trip',
+        tripName: b.tripName || 'Unnamed Trip',
         startDate: b.startDate || '',
         totalSeats: 10,
         status: 'upcoming',
@@ -346,14 +338,15 @@ function renderBookings(bookings) {
     list.innerHTML += '<div class="section-title" style="font-size:14px;margin-bottom:4px">Active Bookings</div>';
   }
   activeBookings.forEach(b => {
+    if (!b) return;
     list.innerHTML += `
       <div class="card">
         <div class="row-grid">
           <div><div class="label">User Email</div><div class="value">${b.userEmail || ''}</div></div>
-          <div><div class="label">Trip</div><div class="value">${b.tripName || b.trip || ''}</div></div>
+          <div><div class="label">Trip</div><div class="value">${b.tripName || ''}</div></div>
           <div><div class="label">Price</div><div class="value">₹${Number(b.price || 0).toLocaleString('en-IN')}</div></div>
           <div><div class="label">Status</div><div class="value" style="text-transform:capitalize">${b.status || ''}</div></div>
-          <div><div class="label">Payment Status</div><div class="value" style="text-transform:capitalize">${b.paymentStatus || 'pending'}</div></div>
+          <div><div class="label">Payment Status</div><div class="value" style="text-transform:capitalize">${b.paymentStatus || ''}</div></div>
           <div><div class="label">Date</div><div class="value">${formatDate(b.createdAt)}</div></div>
         </div>
         <div class="actions">
@@ -370,11 +363,12 @@ function renderBookings(bookings) {
     list.innerHTML += '<div class="card"><div class="empty-state">No data available</div></div>';
   } else {
     historyBookings.forEach(b => {
+      if (!b) return;
       list.innerHTML += `
       <div class="card">
         <div class="row-grid">
           <div><div class="label">User Email</div><div class="value">${b.userEmail || ''}</div></div>
-          <div><div class="label">Trip</div><div class="value">${b.tripName || b.trip || ''}</div></div>
+          <div><div class="label">Trip</div><div class="value">${b.tripName || ''}</div></div>
           <div><div class="label">Trip ID</div><div class="value">${b.tripId || ''}</div></div>
           <div><div class="label">Status</div><div class="value" style="text-transform:capitalize">${b.status || ''}</div></div>
           <div><div class="label">Payment</div><div class="value" style="text-transform:capitalize">${b.paymentStatus || ''}</div></div>
@@ -396,6 +390,7 @@ function renderUsers(users, bookings) {
   const userById = {};
   users.forEach(u => { userById[u.id] = u; });
   bookings.forEach(b => {
+    if (!b) return;
     const u = userById[b.userId] || {};
     list.innerHTML += `
       <div class="card">
@@ -420,6 +415,7 @@ function renderTrips(trips) {
 
   list.innerHTML = '';
   trips.forEach(t => {
+    if (!t) return;
     list.innerHTML += `
       <div class="card">
         <div class="row-grid">
