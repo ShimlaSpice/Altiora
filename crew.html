@@ -33,7 +33,7 @@
 .create-crew-cta p{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.65}
 .crew-rules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px;margin-bottom:44px}
 .crew-rule{background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
-.cr-icon{margin-bottom:12px;font-size:22px}
+.cr-icon{font-size:22px;margin-bottom:12px}
 .cr-title{font-size:14px;font-weight:800;margin-bottom:7px;color:#fff}
 .cr-desc{font-size:12.5px;color:var(--muted);line-height:1.6}
 @media(max-width:860px){.page-hero,.lb-wrap{padding-left:20px;padding-right:20px}.crew-rules{grid-template-columns:1fr}}
@@ -65,7 +65,201 @@
   </ul>
   <div class="mob-divider"></div>
   <div class="mob-actions">
-    <a href="login.html" class="mob-signin">Dign In</a>
+    <a href="login.html" class="mob-signin">Sign In</a>
     <a href="signup.html" class="mob-signup">Sign Up</a>
   </div>
 </div>
+
+<div class="page-hero fade-in">
+  <div class="sec-label">Full Leaderboard</div>
+  <h1>Crew Rankings.</h1>
+  <p>Altitude is individual. But crews make it legendary. Every crew's total is the sum of all member expeditions.</p>
+</div>
+
+<!-- HOW CREWS WORK -->
+<div class="lb-wrap">
+  <div class="crew-rules fade-in">
+    <div class="crew-rule">
+      <div class="cr-icon">👥</div>
+      <div class="cr-title">Max 10 Members</div>
+      <div class="cr-desc">Each crew has a hard cap of 10 members. Invite via User ID. Accept or reject requests from your crew dashboard.</div>
+    </div>
+    <div class="crew-rule">
+      <div class="cr-icon">📐</div>
+      <div class="cr-title">Unique Crew ID</div>
+      <div class="cr-desc">Every crew gets a unique system-generated ID. Use it to link bookings and track combined altitude across all expeditions.</div>
+    </div>
+    <div class="crew-rule">
+      <div class="cr-icon">🏔</div>
+      <div class="cr-title">Three Crew Tiers</div>
+      <div class="cr-desc"><strong style="color:#fff">Base Campers</strong> · 50K ft combined<br><strong style="color:#FF8C38">Climbers</strong> · 100K ft combined<br><strong style="color:#FFB800">Extreme Mountaineers</strong> · 200K ft</div>
+    </div>
+  </div>
+
+  <!-- EXTREME MOUNTAINEERS -->
+  <div class="tier-section fade-in">
+    <div class="tier-header">
+      <div class="tier-icon" style="background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.2)">🏔</div>
+      <div>
+        <div class="tier-name" style="color:#FFB800">Extreme Mountaineers</div>
+        <div class="tier-threshold">200,000 ft+ combined altitude</div>
+      </div>
+    </div>
+    <div class="crew-table">
+      <div class="crew-row">
+        <div class="cr-rank" style="color:#FFB800">1</div>
+        <div class="cr-avi" style="background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.18)">🏔</div>
+        <div class="cr-meta">
+          <div class="cr-name">Summit Seekers</div>
+          <div class="cr-members">8 members · Himachal Pradesh · Crew ID: CR-2024-001</div>
+          <div class="cr-bar-wrap"><div class="cr-bar" style="width:100%;background:#FFB800"></div></div>
+        </div>
+        <div class="cr-alt"><div class="cr-alt-num" style="color:#FFB800">317,420</div><div class="cr-alt-label">ft total</div></div>
+      </div>
+      <div class="crew-row">
+        <div class="cr-rank" style="color:#FFB800">2</div>
+        <div class="cr-avi" style="background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.15)">⛰</div>
+        <div class="cr-meta">
+          <div class="cr-name">Frozen Horizon</div>
+          <div class="cr-members">6 members · Delhi · Crew ID: CR-2024-004</div>
+          <div class="cr-bar-wrap"><div class="cr-bar" style="width:77%;background:#FFB800"></div></div>
+        </div>
+        <div class="cr-alt"><div class="cr-alt-num" style="color:#FFB800">243,810</div><div class="cr-alt-label">ft total</div></div>
+      </div>
+      <div class="crew-row">
+        <div class="cr-rank" style="color:#FFB800">3</div>
+        <div class="cr-avi" style="background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.15)">🌄</div>
+        <div class="cr-meta">
+          <div class="cr-name">High Pass Collective</div>
+          <div class="cr-members">10 members · Bengaluru · Crew ID: CR-2025-002</div>
+          <div class="cr-bar-wrap"><div class="cr-bar" style="width:68%;background:#FFB800"></div></div>
+        </div>
+        <div class="cr-alt"><div class="cr-alt-num" style="color:#FFB800">214,330</div><div class="cr-alt-label">ft total</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIMBERS -->
+  <div class="tier-section fade-in">
+    <div class="tier-header">
+      <div class="tier-icon" style="background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.2)">🧗</div>
+      <div>
+        <div class="tier-name" style="color:#FF8C38">Climbers</div>
+        <div class="tier-threshold">100,000–199,999 ft combined altitude</div>
+      </div>
+    </div>
+    <div class="crew-table">
+      <div class="crew-row">
+        <div class="cr-rank" style="color:#FF8C38">4</div>
+        <div class="cr-avi" style="background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.15)">🦅</div>
+        <div class="cr-meta">
+          <div class="cr-name">Ridge Runners</div>
+          <div class="cr-members">5 members · Pune · Crew ID: CR-2024-007</div>
+          <div class="cr-bar-wrap"><div class="cr-bar" style="width:100%;background:#FF8C38"></div></div>
+        </div>
+        <div class="cr-alt"><div class="cr-alt-num" style="color:#FF8C38">194,220</div><div class="cr-alt-label">ft total</div></div>
+      </div>
+      <div class="crew-row">
+        <div class="cr-rank" style="color:#FF8C38">5</div>
+        <div class="cr-avi" style="background:rgba(255,107,0,.07);border:1px solid rgba(255,107,0,.14)">🌪</div>
+        <div class="cr-meta">
+          <div class="cr-name">Wild Altitude</div>
+          <div class="cr-members">7 members · Mumbai · Crew ID: CR-2025-009</div>
+          <div class="cr-bar-wrap"><div class="cr-bar" style="width:78%;background:#FF8C38"></div></div>
+        </div>
+        <div class="cr-alt"><div class="cr-alt-num" style="color:#FF8C38">152,480</div><div class="cr-alt-label">ft total</div></div>
+      </div>
+      <div class="crew-row">
+        <div class="cr-rank" style="color:#FF8C38">6</div>
+        <div class="cr-avi" style="background:rgba(255,107,0,.07);border:1px solid rgba(255,107,0,.14)">🔥</div>
+        <div class="cr-meta">
+          <div class="cr-name">The Ascenders</div>
+          <div class="cr-members">4 members · Chandigarh · Crew ID: CR-2025-011</div>
+          <div class="cr-bar-wrap"><div class="cr-bar" style="width:62%;background:#FF8C38"></div></div>
+        </div>
+        <div class="cr-alt"><div class="cr-alt-num" style="color:#FF8C38">121,630</div><div class="cr-alt-label">ft total</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BASE CAMPERS -->
+  <div class="tier-section fade-in">
+    <div class="tier-header">
+      <div class="tier-icon" style="background:rgba(79,195,247,.1);border:1px solid rgba(79,195,247,.2)">⛺</div>
+      <div>
+        <div class="tier-name" style="color:var(--accent)">Base Campers</div>
+        <div class="tier-threshold">50,000–99,999 ft combined altitude</div>
+      </div>
+    </div>
+    <div class="crew-table">
+      <div class="crew-row">
+        <div class="cr-rank" style="color:var(--accent)">7</div>
+        <div class="cr-avi" style="background:rgba(79,195,247,.08);border:1px solid rgba(79,195,247,.15)">🌊</div>
+        <div class="cr-meta">
+          <div class="cr-name">Cloud Chasers</div>
+          <div class="cr-members">3 members · Hyderabad · Crew ID: CR-2026-003</div>
+          <div class="cr-bar-wrap"><div class="cr-bar" style="width:100%;background:var(--accent)"></div></div>
+        </div>
+        <div class="cr-alt"><div class="cr-alt-num" style="color:var(--accent)">88,740</div><div class="cr-alt-label">ft total</div></div>
+      </div>
+      <div class="crew-row">
+        <div class="cr-rank" style="color:var(--accent)">8</div>
+        <div class="cr-avi" style="background:rgba(79,195,247,.07);border:1px solid rgba(79,195,247,.13)">🏕</div>
+        <div class="cr-meta">
+          <div class="cr-name">Vertical Minds</div>
+          <div class="cr-members">5 members · Jaipur · Crew ID: CR-2026-008</div>
+          <div class="cr-bar-wrap"><div class="cr-bar" style="width:72%;background:var(--accent)"></div></div>
+        </div>
+        <div class="cr-alt"><div class="cr-alt-num" style="color:var(--accent)">63,910</div><div class="cr-alt-label">ft total</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE CREW CTA -->
+  <div class="create-crew-cta fade-in">
+    <h3>Start Your Own Crew</h3>
+    <p>Create a crew, invite friends via their Altiora User ID, and start stacking altitude together. Crew names must be unique across the platform.</p>
+    <a href="signup.html" class="btn-primary">Join & Create a Crew</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-top">
+    <div>
+      <a href="index.html" class="foot-logo">ALT<em>I</em>ORA</a>
+      <div class="foot-tagline">Earn your altitude · Himalayan expeditions since 2021</div>
+    </div>
+    <div class="foot-nav-group">
+      <div class="foot-col">
+        <div class="foot-col-title">Explore</div>
+        <ul>
+          <li><a href="expeditions.html">All Expeditions</a></li>
+          <li><a href="trip-spiti.html">Spiti Valley</a></li>
+          <li><a href="trip-leh.html">Manali–Leh</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <div class="foot-col-title">Platform</div>
+        <ul>
+          <li><a href="crew.html">Crew Leaderboard</a></li>
+          <li><a href="login.html">Sign In</a></li>
+          <li><a href="signup.html">Join Altiora</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
+    <div class="foot-badges"><span class="foot-badge">🛡 Fully Insured</span></div>
+  </div>
+</footer>
+
+<script>
+const ham=document.getElementById('hamburger'),mob=document.getElementById('mobileMenu');
+ham.addEventListener('click',()=>{ham.classList.toggle('open');mob.classList.toggle('open');document.body.style.overflow=mob.classList.contains('open')?'hidden':''});
+mob.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{ham.classList.remove('open');mob.classList.remove('open');document.body.style.overflow=''}));
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:0.08});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

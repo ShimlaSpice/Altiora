@@ -7,7 +7,10 @@
 <link rel="stylesheet" href="style.css"/>
 <style>
 .dash-wrap { max-width: 1100px; margin: 0 auto; padding: 44px 40px 72px; position:relative; z-index:1; }
-/* Design system from style.css */
+/* body bg from style.css */
+
+.d-card,.stat-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);}
+.btn-accent,.btn-primary{box-shadow:0 0 20px rgba(79,195,247,.25);}
 
 .greeting { margin-bottom: 40px; }
 .greeting-label { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
@@ -136,7 +139,7 @@
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo"><span class="nav-logo-text">ALT<em>I</em>ORA</span></a>
+  <a href="index.html" class="nav-logo"><span class="nav-logo-text" style="font-size:20px;font-weight:900;letter-spacing:1px">ALT<em style="color:#4FC3F7;font-style:normal">I</em>ORA</span></a>
   <ul class="nav-links">
     <li><a href="dashboard.html" class="active">Dashboard</a></li>
     <li><a href="crew.html">My Crew</a></li>
@@ -147,19 +150,6 @@
     <a href="login.html" class="btn-nav-outline" id="logoutBtn">Sign Out</a>
   </div>
 </nav>
-
-<div class="mobile-menu" id="mobileMenu">
-  <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="expeditions.html">Expeditions</a></li>
-    <li><a href="dashboard.html" class="active">Dashboard</a></li>
-  </ul>
-  <div class="mobile-menu-divider"></div>
-  <div class="mobile-menu-actions">
-    <a href="login.html" class="mobile-signin">Sign In</a>
-    <a href="signup.html" class="mobile-cta">Claim Your Altitude</a>
-  </div>
-</div>
 
 <div class="dash-wrap">
 
@@ -344,8 +334,8 @@
 
 <footer>
   <div class="footer-top">
-    <div class="foot-brand">
-      <div class="foot-logo">ALT<em>I</em>ORA</div>
+    <div>
+      <a href="index.html" class="foot-logo">ALT<em>I</em>ORA</a>
       <div class="foot-tagline">Earn your altitude · Himalayan expeditions since 2021</div>
     </div>
     <div class="foot-nav-group">
@@ -358,9 +348,9 @@
         </ul>
       </div>
       <div class="foot-col">
-        <div class="foot-col-title">Account</div>
+        <div class="foot-col-title">Platform</div>
         <ul>
-          <li><a href="dashboard.html">My Dashboard</a></li>
+          <li><a href="crew.html">Crews</a></li>
           <li><a href="login.html">Sign In</a></li>
           <li><a href="signup.html">Join Altiora</a></li>
         </ul>
@@ -368,11 +358,8 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
-    <div class="foot-badges">
-      <span class="foot-badge">🛡 Fully Insured</span>
-      <span class="foot-badge">✓ Verified Reviews</span>
-    </div>
+    <div class="foot-copy">© 2026 Altiora Expeditions</div>
+    <div class="foot-badges"><span class="foot-badge">🛡 Fully Insured</span></div>
   </div>
 </footer>
 
@@ -624,20 +611,13 @@ function loadCalendar() {
 const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 </script>
-
 <script>
-const _ham = document.getElementById('hamburger');
-const _mob = document.getElementById('mobileMenu');
-if(_ham && _mob){
-  _ham.addEventListener('click', () => {
-    _ham.classList.toggle('open'); _mob.classList.toggle('open');
-    document.body.style.overflow = _mob.classList.contains('open') ? 'hidden' : '';
-  });
-  _mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    _ham.classList.remove('open'); _mob.classList.remove('open');
-    document.body.style.overflow = '';
-  }));
-}
+(function(){
+  var h=document.getElementById('hamburger'),m=document.getElementById('mobileMenu');
+  if(!h||!m) return;
+  h.addEventListener('click',function(){h.classList.toggle('open');m.classList.toggle('open');document.body.style.overflow=m.classList.contains('open')?'hidden':'';});
+  m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){h.classList.remove('open');m.classList.remove('open');document.body.style.overflow='';});});
+})();
 </script>
 </body>
 </html>

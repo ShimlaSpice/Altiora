@@ -7,9 +7,6 @@
 <link rel="stylesheet" href="style.css"/>
 <style>
 .trip-hero {
-  background-image: url("https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1600&q=80&auto=format&fit=crop");
-  background-size: cover; background-position: center;
-}
   min-height: 60vh; position: relative; display: flex; align-items: flex-end;
   padding: 0 56px 56px; overflow: hidden;
   background: radial-gradient(800px 400px at 50% 0%, rgba(79,195,247,0.12), transparent 60%), linear-gradient(160deg,#0a1726 0%,#0e2238 40%,#081525 100%);
@@ -93,7 +90,7 @@
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo"><span class="nav-logo-text">ALT<em>I</em>ORA</span></a>
+  <a href="index.html" class="nav-logo"><span class="nav-logo-text" style="font-size:20px;font-weight:900;letter-spacing:1px">ALT<em style="color:#4FC3F7;font-style:normal">I</em>ORA</span></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="expeditions.html" class="active">Expeditions</a></li>
@@ -103,21 +100,8 @@
   <div class="nav-right">
     <a href="login.html" class="btn-nav-ghost">Sign In</a>
     <a href="signup.html" class="btn-nav">Claim Your Altitude</a>
-    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
   </div>
 </nav>
-<div class="mobile-menu" id="mobileMenu">
-  <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="expeditions.html">Expeditions</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-  </ul>
-  <div class="mobile-menu-divider"></div>
-  <div class="mobile-menu-actions">
-    <a href="login.html" class="mobile-signin">Sign In</a>
-    <a href="signup.html" class="mobile-cta">Claim Your Altitude</a>
-  </div>
-</div>
 
 <!-- HERO -->
 <div class="trip-hero">
@@ -147,7 +131,7 @@
       <div class="trip-hero-stat"><div class="trip-hero-stat-val">Jun – Sep</div><div class="trip-hero-stat-label">Season</div></div>
       <div class="trip-hero-stat"><div class="trip-hero-stat-val">Max 10</div><div class="trip-hero-stat-label">Group size</div></div>
     </div>
-    <div class="seats-badge"><span class="dot"></span>Only 3 of 10 spots left this season</div>
+    <div class="seats-badge"><span class="dot"></span>Only 3 spots left this season</div>
   </div>
 </div>
 
@@ -309,8 +293,8 @@
 
 <footer>
   <div class="footer-top">
-    <div class="foot-brand">
-      <div class="foot-logo">ALT<em>I</em>ORA</div>
+    <div>
+      <a href="index.html" class="foot-logo">ALT<em>I</em>ORA</a>
       <div class="foot-tagline">Earn your altitude · Himalayan expeditions since 2021</div>
     </div>
     <div class="foot-nav-group">
@@ -323,9 +307,9 @@
         </ul>
       </div>
       <div class="foot-col">
-        <div class="foot-col-title">Account</div>
+        <div class="foot-col-title">Platform</div>
         <ul>
-          <li><a href="dashboard.html">My Dashboard</a></li>
+          <li><a href="crew.html">Crews</a></li>
           <li><a href="login.html">Sign In</a></li>
           <li><a href="signup.html">Join Altiora</a></li>
         </ul>
@@ -333,11 +317,8 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
-    <div class="foot-badges">
-      <span class="foot-badge">🛡 Fully Insured</span>
-      <span class="foot-badge">✓ Verified Reviews</span>
-    </div>
+    <div class="foot-copy">© 2026 Altiora Expeditions</div>
+    <div class="foot-badges"><span class="foot-badge">🛡 Fully Insured</span></div>
   </div>
 </footer>
 
@@ -431,10 +412,10 @@ function createBooking(e) {
 <script src="firebase.js"></script>
 <script>
 (function(){
-  var h=document.getElementById('hamburger'), m=document.getElementById('mobileMenu');
+  var h=document.getElementById('hamburger'),m=document.getElementById('mobileMenu');
   if(!h||!m) return;
-  h.addEventListener('click',function(){ h.classList.toggle('open'); m.classList.toggle('open'); document.body.style.overflow=m.classList.contains('open')?'hidden':''; });
-  m.querySelectorAll('a').forEach(function(a){ a.addEventListener('click',function(){ h.classList.remove('open'); m.classList.remove('open'); document.body.style.overflow=''; }); });
+  h.addEventListener('click',function(){h.classList.toggle('open');m.classList.toggle('open');document.body.style.overflow=m.classList.contains('open')?'hidden':'';});
+  m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){h.classList.remove('open');m.classList.remove('open');document.body.style.overflow='';});});
 })();
 </script>
 </body>
