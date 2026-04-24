@@ -1,1 +1,19 @@
-/* test */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#07111d;
+  --card:#0d1926;
+  --accent:#4FC3F7;
+  --orange:#FF6B00;
+  --orange2:#FF8C38;
+  --text:#EEF2F7;
+  --muted:#96A7B8;
+  --muted2:#6A7D8E;
+  --border:rgba(79,195,247,0.13);
+  --border2:rgba(255,255,255,0.07);
+  --glass:rgba(10,18,30,0.70);
+  --green:#25D366;
+  --gold:#FFB800;
+}
