@@ -6,7 +6,7 @@
 <title>Expeditions · Altiora</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.page-hero { padding: 60px 56px 60px; background: transparent; }
+.page-hero { padding: 60px 56px 52px; }
 .page-hero h1 { font-size: clamp(40px,5vw,64px); font-weight: 900; letter-spacing: -2px; margin-bottom: 14px; }
 .page-hero p  { font-size: 17px; color: var(--muted); max-width: 520px; line-height: 1.7; }
 
@@ -19,38 +19,54 @@
   color: var(--muted); padding: 9px 20px; border-radius: 100px;
   font-size: 13px; font-weight: 600; cursor: pointer;
   text-decoration: none; transition: all .2s; display: inline-block;
+  user-select: none;
 }
 .filter-btn:hover, .filter-btn.active { border-color: rgba(79,195,247,.4); color: var(--accent); background: rgba(79,195,247,.06); }
 
 .trips-wrap { padding: 0 56px 80px; }
 .trips-big-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+
+/* Hidden card for filtering */
+.trip-card[data-hidden="true"] { display: none; }
+
 .trip-card {
-  background: rgba(12,18,28,0.65); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(79,195,247,0.12);
+  background: rgba(12,18,28,0.65); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(79,195,247,0.12);
   border-radius: 24px; overflow: hidden; text-decoration: none; color: var(--text); display: block;
   transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s, border-color .35s;
 }
 .trip-card:hover { transform: translateY(-8px); box-shadow: 0 28px 60px rgba(0,0,0,.6),0 0 32px rgba(79,195,247,.14); border-color: rgba(79,195,247,.32); }
 .trip-img { height: 220px; position: relative; overflow: hidden; }
-.trip-img-inner { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; transition: transform .5s; }
-.trip-card:hover .trip-img-inner { transform: scale(1.04); }
-.bg-spiti { background: linear-gradient(160deg,#0d1f35,#1a3050 30%,#0f2040 60%,#081525); }
-.bg-leh   { background: linear-gradient(160deg,#1a1030,#2a1845 30%,#1a1035 60%,#0d0820); }
-.bg-pin   { background: linear-gradient(160deg,#1a1020,#2a1525 30%,#1a1020 60%,#0d0810); }
-.bg-kaza  { background: linear-gradient(160deg,#102018,#183028 30%,#0e1a12 60%,#081208); }
-.bg-hanle { background: linear-gradient(160deg,#101828,#182438 30%,#0e1820 60%,#080e14); }
-.bg-bara  { background: linear-gradient(160deg,#201018,#301428 30%,#201018 60%,#10080e); }
-.trip-badge-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+.trip-img-photo { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .5s; }
+.trip-card:hover .trip-img-photo { transform: scale(1.05); }
+.trip-img-overlay { position: absolute; inset: 0; background: linear-gradient(0deg,rgba(6,12,20,.88) 0%,rgba(6,12,20,.15) 60%,transparent 100%); z-index: 1; }
+.trip-img-inner { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 16px; z-index: 2; }
+.trip-badge-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 .trip-type  { background: rgba(79,195,247,.15); border: 1px solid rgba(79,195,247,.3); color: var(--accent); font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 8px; letter-spacing: 1px; text-transform: uppercase; }
-.trip-price { color: #fff; font-size: 15px; font-weight: 800; }
+.trip-price { color: #fff; font-size: 15px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
 .trip-body  { padding: 26px; }
 .trip-name  { font-size: 18px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
 .trip-specs { display: flex; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
 .trip-spec  { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
 .spec-dot   { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-.trip-cta   { display: block; width: 100%; text-align: center; background: transparent; border: 1.5px solid rgba(79,195,247,.28); color: var(--accent); padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 700; text-decoration: none; transition: all .25s; margin-top: 16px; }
+.alt-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(79,195,247,.08); border: 1px solid rgba(79,195,247,.18); color: var(--accent); font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 8px; margin-bottom: 14px; }
+
+/* Slot bars */
+.slot-bar-wrap { margin-bottom: 14px; }
+.slot-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.slot-label strong { color: #ff6b3d; }
+.slot-track { height: 4px; background: rgba(255,255,255,.06); border-radius: 100px; overflow: hidden; }
+.slot-fill { height: 100%; border-radius: 100px; }
+.slot-fill.high { background: #ff6b3d; }
+.slot-fill.med  { background: #FFB800; }
+.slot-fill.low  { background: #4FC3F7; }
+
+.trip-cta   { display: block; width: 100%; text-align: center; background: transparent; border: 1.5px solid rgba(79,195,247,.28); color: var(--accent); padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 700; text-decoration: none; transition: all .25s; margin-top: 4px; }
 .trip-cta:hover { background: rgba(79,195,247,.08); border-color: var(--accent); }
 
-.alt-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(79,195,247,.08); border: 1px solid rgba(79,195,247,.18); color: var(--accent); font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 8px; margin-bottom: 14px; }
+/* No results */
+.no-results { display: none; padding: 60px 0; text-align: center; color: var(--muted); font-size: 16px; grid-column: 1 / -1; }
+.no-results.show { display: block; }
 
 @media (max-width: 900px) {
   .page-hero, .filter-bar, .trips-wrap { padding-left: 24px; padding-right: 24px; }
@@ -61,7 +77,7 @@
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
+  <a href="index.html" class="nav-logo"><span class="nav-logo-text">ALT<em>I</em>ORA</span></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="expeditions.html" class="active">Expeditions</a></li>
@@ -71,33 +87,49 @@
   <div class="nav-right">
     <a href="login.html" class="btn-nav-ghost">Sign In</a>
     <a href="signup.html" class="btn-nav">Claim Your Altitude</a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
   </div>
 </nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html" class="active">Expeditions</a></li>
+    <li><a href="index.html#crews">Crews</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <div class="mobile-menu-divider"></div>
+  <div class="mobile-menu-actions">
+    <a href="login.html" class="mobile-signin">Sign In</a>
+    <a href="signup.html" class="mobile-cta">Claim Your Altitude</a>
+    <a href="https://wa.me/918800000000?text=Hi%2C+I%27d+like+to+know+more+about+Altiora+expeditions" target="_blank" class="mobile-wa">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Talk to an Expert
+    </a>
+  </div>
+</div>
 
 <div class="page-hero fade-in">
   <div class="sec-label">All Expeditions</div>
   <h1>Choose Your<br>Next Expedition.</h1>
-  <p>You don't just travel mountains. You earn every foot of altitude.<br>Filter by type, find your match, and claim your spot before it's gone.</p>
+  <p>You don't just travel mountains. You earn every foot of altitude. Filter, find your match, and claim your spot before it's gone.</p>
 </div>
 
 <div class="filter-bar">
-  <a href="expeditions.html" class="filter-btn active">All Trips</a>
-  <a href="expeditions.html" class="filter-btn">4×4 Expeditions</a>
-  <a href="expeditions.html" class="filter-btn">Bike Expeditions</a>
-  <a href="expeditions.html" class="filter-btn">Treks</a>
-  <a href="expeditions.html" class="filter-btn">Summer 2026</a>
+  <button class="filter-btn active" data-filter="all">All Trips</button>
+  <button class="filter-btn" data-filter="4x4">4×4 Expeditions</button>
+  <button class="filter-btn" data-filter="bike">Bike Expeditions</button>
+  <button class="filter-btn" data-filter="trek">Treks</button>
+  <button class="filter-btn" data-filter="summer">Summer 2026</button>
 </div>
 
 <div class="trips-wrap">
-  <div class="trips-big-grid">
+  <div class="trips-big-grid" id="tripsGrid">
 
-    <a href="trip-spiti.html" class="trip-card fade-in">
-      <div class="trip-img bg-spiti">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 100,60 160,90 240,20 300,55 370,10 400,40 400,220" fill="rgba(79,195,247,.05)"/>
-          <polygon points="240,20 220,50 260,45 240,20" fill="rgba(200,230,255,.12)"/>
-          <polygon points="0,220 60,140 140,160 230,110 310,140 400,120 400,220" fill="rgba(13,31,53,.8)"/>
-        </svg>
+    <a href="trip-spiti.html" class="trip-card fade-in" data-type="4x4" data-season="summer">
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1599661046289-e31897846e41?w=700&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">4×4 Expedition</span><span class="trip-price">From ₹28,000</span></div></div>
       </div>
       <div class="trip-body">
@@ -108,18 +140,18 @@
           <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
           <span class="trip-spec"><span class="spec-dot"></span>Jun–Sep</span>
         </div>
-        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>Only 3 spots left</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Slots filled</span><strong>7 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill high" style="width:70%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
 
-    <a href="trip-leh.html" class="trip-card fade-in">
-      <div class="trip-img bg-leh">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 80,70 150,100 220,30 290,70 360,20 400,50 400,220" fill="rgba(155,89,182,.06)"/>
-          <polygon points="220,30 200,58 240,55 220,30" fill="rgba(220,200,255,.1)"/>
-          <polygon points="0,220 50,150 130,165 210,130 290,155 370,135 400,145 400,220" fill="rgba(26,16,48,.8)"/>
-        </svg>
+    <a href="trip-leh.html" class="trip-card fade-in" data-type="bike" data-season="summer">
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">Bike Expedition</span><span class="trip-price">From ₹22,000</span></div></div>
       </div>
       <div class="trip-body">
@@ -130,18 +162,18 @@
           <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
           <span class="trip-spec"><span class="spec-dot"></span>Jul–Aug</span>
         </div>
-        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>5 spots remaining</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Slots filled</span><strong>5 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill med" style="width:50%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
 
-    <a href="trip-pin.html" class="trip-card fade-in">
-      <div class="trip-img bg-pin">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 90,50 170,80 250,10 320,60 400,30 400,220" fill="rgba(231,76,60,.05)"/>
-          <polygon points="250,10 228,44 272,40 250,10" fill="rgba(230,210,200,.12)"/>
-          <polygon points="0,220 45,165 130,178 215,155 295,170 375,155 400,162 400,220" fill="rgba(26,16,32,.8)"/>
-        </svg>
+    <a href="trip-pin.html" class="trip-card fade-in" data-type="trek" data-season="summer">
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?w=700&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">High Altitude Trek</span><span class="trip-price">From ₹18,000</span></div></div>
       </div>
       <div class="trip-body">
@@ -152,18 +184,18 @@
           <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
           <span class="trip-spec"><span class="spec-dot"></span>Aug–Sep</span>
         </div>
-        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>2 spots left — filling fast</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Slots filled</span><strong>8 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill high" style="width:80%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
 
-    <a href="trip-spiti.html" class="trip-card fade-in">
-      <div class="trip-img bg-kaza">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 110,65 180,95 260,25 330,65 400,30 400,220" fill="rgba(46,204,113,.05)"/>
-          <polygon points="260,25 238,55 282,50 260,25" fill="rgba(200,240,210,.1)"/>
-          <polygon points="0,220 55,145 140,162 225,115 305,148 400,125 400,220" fill="rgba(16,32,24,.8)"/>
-        </svg>
+    <a href="trip-spiti.html" class="trip-card fade-in" data-type="4x4" data-season="summer">
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1580654843061-8a5bf4abe4b4?w=700&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">4×4 Expedition</span><span class="trip-price">From ₹24,000</span></div></div>
       </div>
       <div class="trip-body">
@@ -174,18 +206,18 @@
           <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
           <span class="trip-spec"><span class="spec-dot"></span>Jun–Oct</span>
         </div>
-        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>7 spots left</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Slots filled</span><strong>3 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill low" style="width:30%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
 
-    <a href="trip-leh.html" class="trip-card fade-in">
-      <div class="trip-img bg-hanle">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 95,55 165,85 245,18 315,58 390,22 400,35 400,220" fill="rgba(52,152,219,.06)"/>
-          <polygon points="245,18 222,50 268,46 245,18" fill="rgba(200,220,255,.1)"/>
-          <polygon points="0,220 48,148 133,165 218,122 300,152 390,132 400,140 400,220" fill="rgba(16,24,40,.82)"/>
-        </svg>
+    <a href="trip-leh.html" class="trip-card fade-in" data-type="bike" data-season="summer">
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=700&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">Bike Expedition</span><span class="trip-price">From ₹26,000</span></div></div>
       </div>
       <div class="trip-body">
@@ -196,18 +228,18 @@
           <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
           <span class="trip-spec"><span class="spec-dot"></span>Jul–Sep</span>
         </div>
-        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>4 spots left</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Slots filled</span><strong>6 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill med" style="width:60%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
 
-    <a href="trip-pin.html" class="trip-card fade-in">
-      <div class="trip-img bg-bara">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 85,58 155,88 235,22 305,62 385,25 400,38 400,220" fill="rgba(155,89,182,.07)"/>
-          <polygon points="235,22 212,52 258,48 235,22" fill="rgba(220,200,240,.1)"/>
-          <polygon points="0,220 42,152 127,168 212,128 292,156 380,138 400,146 400,220" fill="rgba(32,16,24,.82)"/>
-        </svg>
+    <a href="trip-pin.html" class="trip-card fade-in" data-type="trek" data-season="">
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner"><div class="trip-badge-row"><span class="trip-type">High Altitude Trek</span><span class="trip-price">From ₹20,000</span></div></div>
       </div>
       <div class="trip-body">
@@ -218,28 +250,95 @@
           <span class="trip-spec"><span class="spec-dot"></span>Max 10 seats</span>
           <span class="trip-spec"><span class="spec-dot"></span>Aug–Sep</span>
         </div>
-        <div class="urgency" style="margin-bottom:0"><span class="dot"></span>6 spots left</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Slots filled</span><strong>4 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill low" style="width:40%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
+
+    <div class="no-results" id="noResults">No expeditions match this filter. <a href="expeditions.html" style="color:var(--accent)">View all trips</a></div>
 
   </div>
 </div>
 
 <footer>
-  <div class="foot-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></div>
-  <ul class="foot-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="expeditions.html">Expeditions</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="login.html">Sign In</a></li>
-  </ul>
-  <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
+  <div class="footer-top">
+    <div class="foot-brand">
+      <div class="foot-logo">ALT<em>I</em>ORA</div>
+      <div class="foot-tagline">Earn your altitude · Himalayan expeditions since 2021</div>
+    </div>
+    <div class="foot-nav-group">
+      <div class="foot-col">
+        <div class="foot-col-title">Explore</div>
+        <ul>
+          <li><a href="expeditions.html">All Expeditions</a></li>
+          <li><a href="trip-spiti.html">Spiti Valley</a></li>
+          <li><a href="trip-leh.html">Manali–Leh</a></li>
+          <li><a href="trip-pin.html">Pin Parvati</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <div class="foot-col-title">Account</div>
+        <ul>
+          <li><a href="dashboard.html">My Dashboard</a></li>
+          <li><a href="login.html">Sign In</a></li>
+          <li><a href="signup.html">Join Altiora</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
+    <div class="foot-badges">
+      <span class="foot-badge">🛡 Fully Insured</span>
+      <span class="foot-badge">✓ Verified Reviews</span>
+    </div>
+  </div>
 </footer>
 
 <script>
+// Hamburger
+const ham = document.getElementById('hamburger');
+const mob = document.getElementById('mobileMenu');
+ham.addEventListener('click', () => {
+  ham.classList.toggle('open'); mob.classList.toggle('open');
+  document.body.style.overflow = mob.classList.contains('open') ? 'hidden' : '';
+});
+mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  ham.classList.remove('open'); mob.classList.remove('open');
+  document.body.style.overflow = '';
+}));
+
+// Scroll animations
 const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// Working filters
+const filterBtns = document.querySelectorAll('.filter-btn');
+const cards = document.querySelectorAll('.trip-card[data-type]');
+const noResults = document.getElementById('noResults');
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    let visible = 0;
+    cards.forEach(card => {
+      let show = false;
+      if (filter === 'all') show = true;
+      else if (filter === '4x4') show = card.dataset.type === '4x4';
+      else if (filter === 'bike') show = card.dataset.type === 'bike';
+      else if (filter === 'trek') show = card.dataset.type === 'trek';
+      else if (filter === 'summer') show = card.dataset.season === 'summer';
+      card.style.display = show ? 'block' : 'none';
+      if (show) visible++;
+    });
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+  });
+});
 </script>
 </body>
 </html>
