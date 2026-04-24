@@ -6,47 +6,59 @@
 <title>Altiora — Earn Your Altitude</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-/* ── HERO ────────────────────────────────────────────────────────────────── */
+/* HERO */
 .hero {
   min-height: 100vh; position: relative;
   display: flex; align-items: flex-end; overflow: hidden;
   padding: 0 0 80px;
-  /* No background — inherits body gradient */
 }
-.hero-bg    { display: none; } /* replaced by body gradient */
-.hero-glow  { position: absolute; top: -15%; left: 40%; width: 900px; height: 700px; background: radial-gradient(ellipse,rgba(79,195,247,0.10) 0%,transparent 65%); pointer-events: none; }
-.hero-mountains { position: absolute; bottom: 0; left: 0; width: 100%; height: 58%; }
-.hero-overlay   { position: absolute; inset: 0; background: linear-gradient(90deg,rgba(6,14,26,.85) 0%,rgba(6,14,26,.30) 55%,transparent 100%); }
-.hero-content   { position: relative; z-index: 3; padding: 0 56px; max-width: 840px; }
+.hero-bg-img {
+  position: absolute; inset: 0; z-index: 0;
+  background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat;
+}
+.hero-bg-img::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,rgba(6,14,26,.90) 0%,rgba(6,14,26,.55) 55%,rgba(6,14,26,.25) 100%),
+              linear-gradient(0deg,rgba(6,14,26,.75) 0%,transparent 50%);
+}
+.hero-glow  { position: absolute; top: -15%; left: 40%; width: 900px; height: 700px; background: radial-gradient(ellipse,rgba(79,195,247,0.08) 0%,transparent 65%); pointer-events: none; z-index: 1; }
+.hero-overlay { display: none; }
+.hero-content { position: relative; z-index: 3; padding: 0 56px; max-width: 840px; }
 
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 9px;
-  background: rgba(79,195,247,.07); border: 1px solid rgba(79,195,247,.2);
+  background: rgba(79,195,247,.09); border: 1px solid rgba(79,195,247,.22);
   border-radius: 100px; padding: 7px 18px; margin-bottom: 28px;
   font-size: 11.5px; font-weight: 700; color: var(--accent); letter-spacing: 1.2px; text-transform: uppercase;
 }
 .hero-eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; flex-shrink: 0; }
 .hero h1 { font-size: clamp(56px,8.5vw,102px); font-weight: 900; line-height: 1.03; letter-spacing: -1.5px; margin-bottom: 20px; color: #FFF; }
 .hero h1 .blue { color: var(--accent); display: block; }
-.hero-sub { font-size: clamp(15px,1.5vw,18px); color: var(--muted); line-height: 1.72; margin-bottom: 40px; max-width: 480px; font-weight: 400; }
+.hero-sub { font-size: clamp(15px,1.5vw,18px); color: rgba(240,244,248,0.82); line-height: 1.72; margin-bottom: 40px; max-width: 480px; font-weight: 400; }
 .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
-.hero-kpis { display: flex; gap: 0; margin-top: 52px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,.07); }
+
+/* Trust strip below CTA */
+.hero-trust { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 20px; }
+.hero-trust-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: rgba(168,179,194,0.75); font-weight: 500; }
+.hero-trust-item .ht-icon { font-size: 14px; }
+
+.hero-kpis { display: flex; gap: 0; margin-top: 52px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,.08); }
 .kpi { flex: 1; padding: 0 28px 0 0; }
 .kpi:first-child { padding-left: 0; }
-.kpi + .kpi { border-left: 1px solid rgba(255,255,255,.07); padding-left: 28px; }
+.kpi + .kpi { border-left: 1px solid rgba(255,255,255,.08); padding-left: 28px; }
 .kpi-num { font-size: 28px; font-weight: 900; letter-spacing: -0.8px; color: #fff; }
 .kpi-num em { color: var(--accent); font-style: normal; }
-.kpi-label { font-size: 12px; color: var(--muted); margin-top: 5px; letter-spacing: .2px; font-weight: 500; }
-.scroll-hint { position: absolute; bottom: 36px; left: 56px; display: flex; align-items: center; gap: 10px; font-size: 10.5px; color: var(--muted2); letter-spacing: 1.2px; text-transform: uppercase; font-weight: 600; }
-.scroll-line { width: 28px; height: 1px; background: rgba(255,255,255,.16); }
+.kpi-label { font-size: 12px; color: rgba(168,179,194,0.7); margin-top: 5px; letter-spacing: .2px; font-weight: 500; }
+.scroll-hint { position: absolute; bottom: 36px; left: 56px; z-index: 3; display: flex; align-items: center; gap: 10px; font-size: 10.5px; color: rgba(168,179,194,.55); letter-spacing: 1.2px; text-transform: uppercase; font-weight: 600; }
+.scroll-line { width: 28px; height: 1px; background: rgba(255,255,255,.18); }
 
-/* ── ALTITUDE SECTION ────────────────────────────────────────────────────── */
+/* ALTITUDE */
 .alt-section { padding: 72px 56px; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
 .alt-card {
   border-radius: 26px; padding: 44px; position: relative; overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  /* Uses .glass via HTML class */
 }
 .alt-card:hover { transform: translateY(-6px); box-shadow: 0 22px 50px rgba(0,0,0,.55), 0 0 50px rgba(79,195,247,.14); }
 .alt-card::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: radial-gradient(circle,rgba(79,195,247,.09) 0%,transparent 70%); pointer-events: none; }
@@ -64,11 +76,10 @@
 .level-name { font-size: 15px; font-weight: 800; color: #fff; }
 .level-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
-/* ── TRIPS / EXPERIENCES ─────────────────────────────────────────────────── */
+/* TRIPS */
 .trips-section { padding: 72px 56px; }
 .trips-grid {
   display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-top: 48px;
-  /* Glass container wrapping all experience cards */
   background: rgba(12,18,28,0.50);
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(79,195,247,0.10);
@@ -82,28 +93,43 @@
 }
 .trip-card:hover { transform: translateY(-6px); box-shadow: 0 22px 50px rgba(0,0,0,.5), 0 0 24px rgba(79,195,247,.1); border-color: rgba(79,195,247,.28); }
 .trip-img { height: 214px; position: relative; overflow: hidden; }
-.trip-img-inner { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; transition: transform .45s ease; }
+.trip-img-inner { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; transition: transform .45s ease; position: relative; z-index: 2; }
 .trip-card:hover .trip-img-inner { transform: scale(1.04); }
-.bg-spiti { background: linear-gradient(160deg,#0d1f35 0%,#1a3050 30%,#0f2040 60%,#081525 100%); }
-.bg-leh   { background: linear-gradient(160deg,#1a1030 0%,#2a1845 30%,#1a1035 60%,#0d0820 100%); }
-.bg-pin   { background: linear-gradient(160deg,#1a1020 0%,#2a1525 30%,#1a1020 60%,#0d0810 100%); }
-.trip-badge-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+.trip-img-photo {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+  transition: transform .45s ease;
+}
+.trip-card:hover .trip-img-photo { transform: scale(1.05); }
+.trip-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(6,12,20,.88) 0%, rgba(6,12,20,.2) 60%, transparent 100%);
+  z-index: 1;
+}
+.trip-badge-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; width: 100%; }
 .trip-type  { background: rgba(79,195,247,.14); border: 1px solid rgba(79,195,247,.28); color: var(--accent); font-size: 9.5px; font-weight: 700; padding: 5px 11px; border-radius: 7px; letter-spacing: 1px; text-transform: uppercase; }
-.trip-price { color: #fff; font-size: 14.5px; font-weight: 800; }
+.trip-price { color: #fff; font-size: 14.5px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
 .trip-body  { padding: 24px; }
 .trip-name  { font-size: 18px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 12px; color: #fff; }
 .trip-specs { display: flex; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
 .trip-spec  { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
 .spec-dot   { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-.trip-cta { display: block; width: 100%; text-align: center; background: transparent; border: 1.5px solid rgba(79,195,247,.24); color: var(--accent); padding: 12px; border-radius: 11px; font-size: 13.5px; font-weight: 700; text-decoration: none; transition: all .22s ease; margin-top: 16px; }
+/* Slot bar */
+.slot-bar-wrap { margin-bottom: 14px; }
+.slot-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.slot-label strong { color: #ff6b3d; }
+.slot-track { height: 4px; background: rgba(255,255,255,.06); border-radius: 100px; overflow: hidden; }
+.slot-fill { height: 100%; border-radius: 100px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+.slot-fill.high { background: #ff6b3d; }
+.slot-fill.med  { background: #FFB800; }
+.slot-fill.low  { background: #4FC3F7; }
+.trip-cta { display: block; width: 100%; text-align: center; background: transparent; border: 1.5px solid rgba(79,195,247,.24); color: var(--accent); padding: 12px; border-radius: 11px; font-size: 13.5px; font-weight: 700; text-decoration: none; transition: all .22s ease; margin-top: 4px; }
 .trip-cta:hover { background: rgba(79,195,247,.08); border-color: rgba(79,195,247,.55); }
 
-/* ── PEAK LADDER ─────────────────────────────────────────────────────────── */
+/* PEAK LADDER */
 .peaks-section { padding: 72px 56px; }
 .peaks-two { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
 .peak-ladder {
   display: flex; flex-direction: column; position: relative;
-  /* Glass panel via inline styles — same system */
   background: rgba(12,18,28,0.65);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(79,195,247,0.12);
@@ -116,19 +142,19 @@
 .peak-row.active-p { background: rgba(79,195,247,.07); border: 1px solid rgba(79,195,247,.13); }
 .peak-row.locked-p { opacity: .32; }
 .peak-mk { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; z-index: 1; position: relative; }
-.mk-d { background: rgba(79,195,247,.1);   border: 1px solid rgba(79,195,247,.22); }
-.mk-a { background: rgba(255,107,0,.12);   border: 1px solid rgba(255,107,0,.28); }
+.mk-d { background: rgba(79,195,247,.1); border: 1px solid rgba(79,195,247,.22); }
+.mk-a { background: rgba(255,107,0,.12); border: 1px solid rgba(255,107,0,.28); }
 .mk-l { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
 .peak-info { flex: 1; }
 .peak-name { font-size: 14.5px; font-weight: 700; color: #fff; }
 .peak-alt  { font-size: 11px; color: var(--muted); margin-top: 3px; }
 .peak-badge { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 7px; white-space: nowrap; }
-.pb-done   { background:rgba(79,195,247,.08);  border:1px solid rgba(79,195,247,.2); color:var(--accent); }
-.pb-active { background:rgba(255,107,0,.1);    border:1px solid rgba(255,107,0,.22); color:#FF8C38; }
-.pb-legend { background:rgba(255,184,0,.1);    border:1px solid rgba(255,184,0,.22); color:#FFB800; }
+.pb-done   { background:rgba(79,195,247,.08); border:1px solid rgba(79,195,247,.2); color:var(--accent); }
+.pb-active { background:rgba(255,107,0,.1); border:1px solid rgba(255,107,0,.22); color:#FF8C38; }
+.pb-legend { background:rgba(255,184,0,.1); border:1px solid rgba(255,184,0,.22); color:#FFB800; }
 .pb-locked { color: var(--muted2); font-size: 10px; }
 
-/* ── CREWS ───────────────────────────────────────────────────────────────── */
+/* CREWS */
 .crews-section { padding: 72px 56px; }
 .crews-two { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
 .crew-board { display: flex; flex-direction: column; gap: 10px; }
@@ -153,7 +179,30 @@
 .crew-alt-num { font-size: 17px; font-weight: 800; color: var(--accent); }
 .crew-alt-label { font-size: 11px; color: var(--muted2); margin-top: 2px; text-align: right; }
 
-/* ── TRUST ───────────────────────────────────────────────────────────────── */
+/* TESTIMONIALS */
+.testi-section { padding: 72px 56px; }
+.testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 48px; }
+.testi-card {
+  background: rgba(12,18,28,0.65);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(79,195,247,0.10);
+  border-radius: 22px; padding: 30px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.testi-card:hover { transform: translateY(-6px); border-color: rgba(79,195,247,.22); box-shadow: 0 22px 50px rgba(0,0,0,.45); }
+.testi-stars  { color: #FFB800; font-size: 12.5px; letter-spacing: 3px; margin-bottom: 16px; }
+.testi-quote  { font-size: 14.5px; color: var(--muted); line-height: 1.8; font-style: italic; margin-bottom: 20px; }
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avi    {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; flex-shrink: 0;
+}
+.t-name  { font-size: 13.5px; font-weight: 700; color: #fff; }
+.t-level { font-size: 11px; color: var(--accent); margin-top: 2px; }
+.testi-verified { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--muted2); margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+/* TRUST */
 .trust-section { padding: 72px 56px; }
 .trust-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-top: 48px; }
 .trust-card {
@@ -168,25 +217,18 @@
 .trust-title { font-size: 14.5px; font-weight: 800; margin-bottom: 8px; color: #fff; letter-spacing: -.1px; }
 .trust-desc  { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
-/* ── TESTIMONIALS ────────────────────────────────────────────────────────── */
-.testi-section { padding: 72px 56px; }
-.testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 48px; }
-.testi-card {
-  background: rgba(12,18,28,0.65);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(79,195,247,0.10);
-  border-radius: 22px; padding: 30px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+/* SOCIAL PROOF BAR */
+.social-bar {
+  background: rgba(79,195,247,0.04); border-top: 1px solid rgba(79,195,247,0.08); border-bottom: 1px solid rgba(79,195,247,0.08);
+  padding: 20px 56px;
+  display: flex; align-items: center; gap: 36px; flex-wrap: wrap;
 }
-.testi-card:hover { transform: translateY(-6px); border-color: rgba(79,195,247,.22); box-shadow: 0 22px 50px rgba(0,0,0,.45); }
-.testi-stars  { color: #FFB800; font-size: 12.5px; letter-spacing: 3px; margin-bottom: 16px; }
-.testi-quote  { font-size: 14.5px; color: var(--muted); line-height: 1.8; font-style: italic; margin-bottom: 20px; }
-.testi-author { display: flex; align-items: center; gap: 12px; }
-.testi-avi    { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
-.t-name  { font-size: 13.5px; font-weight: 700; color: #fff; }
-.t-level { font-size: 11px; color: var(--accent); margin-top: 2px; }
+.social-stat { display: flex; align-items: center; gap: 10px; }
+.social-num { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: #fff; }
+.social-lbl { font-size: 12px; color: var(--muted); font-weight: 500; }
+.social-div { width: 1px; height: 32px; background: rgba(255,255,255,0.07); }
 
-/* ── FINAL CTA ───────────────────────────────────────────────────────────── */
+/* FINAL CTA */
 .final-section { padding: 72px 56px; text-align: center; }
 .final-h   { font-size: clamp(40px,6vw,72px); font-weight: 900; letter-spacing: -2.5px; line-height: 1.04; margin-bottom: 18px; color: #fff; }
 .final-h em { color: var(--accent); font-style: normal; }
@@ -195,27 +237,23 @@
 .final-urgency { margin-top: 26px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: #ff6b3d; font-weight: 600; }
 .final-urgency .dot { width: 6px; height: 6px; border-radius: 50%; background: #ff6b3d; animation: pulse 1.5s infinite; }
 
-/* ── STICKY BAR ──────────────────────────────────────────────────────────── */
-.sticky-bar { position: sticky; bottom: 0; z-index: 150; display: flex; justify-content: flex-end; pointer-events: none; }
-.sticky-inner { margin: 0 56px 22px auto; display: flex; align-items: center; gap: 10px; pointer-events: all; opacity: 0; transform: translateY(10px); transition: opacity .35s ease, transform .35s ease; }
-.sticky-inner.show { opacity: 1; transform: translateY(0); }
-.sticky-wa { width: 48px; height: 48px; background: #25D366; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(37,211,102,.4); cursor: pointer; text-decoration: none; transition: all .22s ease; flex-shrink: 0; }
-.sticky-wa:hover { transform: scale(1.08); box-shadow: 0 10px 28px rgba(37,211,102,.55); }
-.sticky-book { background: var(--orange); color: #fff; text-decoration: none; padding: 13px 26px; border-radius: 12px; font-size: 14px; font-weight: 700; box-shadow: 0 6px 24px rgba(255,107,0,.4); transition: all .22s ease; display: inline-block; }
-.sticky-book:hover { background: var(--orange2); transform: translateY(-2px); }
-
-/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+/* RESPONSIVE */
 @media (max-width: 900px) {
   .hero { padding: 0 0 48px; }
   .hero-content { padding: 0 24px; }
   .hero h1 { letter-spacing: -1px; }
   .hero-kpis { flex-direction: column; gap: 20px; }
   .kpi + .kpi { border-left: none; border-top: 1px solid rgba(255,255,255,.07); padding-left: 0; padding-top: 20px; }
-  .alt-section, .trips-section, .peaks-section, .crews-section, .trust-section, .testi-section, .final-section { padding: 72px 24px; }
-  .two-col, .peaks-two, .crews-two { grid-template-columns: 1fr; gap: 48px; }
+  .alt-section, .trips-section, .peaks-section, .crews-section, .trust-section, .testi-section, .final-section { padding: 56px 24px; }
+  .social-bar { padding: 20px 24px; gap: 20px; }
+  .two-col, .peaks-two, .crews-two { grid-template-columns: 1fr; gap: 40px; }
   .trips-grid, .trust-grid, .testi-grid { grid-template-columns: 1fr; }
+  .testi-grid { grid-template-columns: repeat(2, 1fr); }
   .sticky-inner { margin: 0 20px 20px auto; }
   .scroll-hint { display: none; }
+}
+@media (max-width: 580px) {
+  .testi-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -223,7 +261,9 @@
 
 <!-- NAV -->
 <nav class="nav">
-  <a href="index.html" class="nav-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></a>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-text">ALT<em>I</em>ORA</span>
+  </a>
   <ul class="nav-links">
     <li><a href="index.html" class="active">Home</a></li>
     <li><a href="expeditions.html">Expeditions</a></li>
@@ -234,54 +274,81 @@
     <div class="nav-pill"><span class="dot"></span>2026 Season Open</div>
     <a href="login.html" class="btn-nav-ghost">Sign In</a>
     <a href="signup.html" class="btn-nav">Claim Your Altitude</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="expeditions.html">Expeditions</a></li>
+    <li><a href="index.html#crews">Crews</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <div class="mobile-menu-divider"></div>
+  <div class="mobile-menu-actions">
+    <a href="login.html" class="mobile-signin">Sign In</a>
+    <a href="signup.html" class="mobile-cta">Claim Your Altitude</a>
+    <a href="https://wa.me/918800000000?text=Hi%2C+I%27d+like+to+know+more+about+Altiora+expeditions" target="_blank" class="mobile-wa">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Talk to an Expert
+    </a>
+  </div>
+</div>
+
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg-img"></div>
   <div class="hero-glow"></div>
-  <svg class="hero-mountains" viewBox="0 0 1400 500" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="mg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a3d6e" stop-opacity=".32"/><stop offset="100%" stop-color="#080c11" stop-opacity=".85"/></linearGradient>
-      <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d2040" stop-opacity=".5"/><stop offset="100%" stop-color="#080c11" stop-opacity=".92"/></linearGradient>
-      <linearGradient id="mg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4FC3F7" stop-opacity=".06"/><stop offset="100%" stop-color="#080c11" stop-opacity="1"/></linearGradient>
-      <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(200,230,255,.9)"/><stop offset="100%" stop-color="rgba(79,195,247,0)" stop-opacity="0"/></linearGradient>
-    </defs>
-    <polygon points="0,500 200,220 320,280 500,80 640,160 760,40 900,130 1050,50 1150,140 1300,80 1400,150 1400,500" fill="url(#mg1)"/>
-    <polygon points="760,40 700,82 795,100 760,40" fill="url(#snow)" opacity=".72"/>
-    <polygon points="1050,50 995,98 1105,92 1050,50" fill="url(#snow)" opacity=".62"/>
-    <polygon points="500,80 448,123 553,117 500,80" fill="url(#snow)" opacity=".52"/>
-    <polygon points="0,500 100,300 220,340 380,240 520,290 680,200 820,260 980,210 1100,270 1250,230 1400,280 1400,500" fill="url(#mg2)"/>
-    <polygon points="0,500 60,380 180,400 320,350 460,380 600,330 720,370 860,340 980,375 1100,345 1220,370 1340,355 1400,365 1400,500" fill="url(#mg3)"/>
-    <line x1="760" y1="42" x2="760" y2="500" stroke="rgba(79,195,247,.07)" stroke-width="1" stroke-dasharray="4,8"/>
-    <circle cx="760" cy="40" r="3" fill="rgba(79,195,247,.65)"/>
-    <text x="772" y="46" font-family="Inter,sans-serif" font-size="11" fill="rgba(79,195,247,.55)" font-weight="700" letter-spacing="1">Altiora Peak · 18,379 ft</text>
-  </svg>
-  <div class="hero-overlay"></div>
   <div class="hero-content fade-in">
     <div class="hero-eyebrow"><span class="dot"></span>2026 Season · Limited Seats Only</div>
     <h1>Earn Your<span class="blue">Altitude.</span></h1>
-    <p class="hero-sub">You don't just travel mountains.<br>You earn every foot of altitude.</p>
+    <p class="hero-sub">You don't just travel mountains — you earn every foot of altitude. Track it, rank it, own it.</p>
     <div class="hero-actions">
       <div>
         <a href="signup.html" class="btn-primary">Claim Your Altitude</a>
-        <p class="cta-subtext">Free to join · Only 3 spots left this season</p>
+        <p class="cta-subtext" style="color:rgba(168,179,194,.65);font-size:12px;margin-top:9px">Free to join · No credit card required</p>
       </div>
       <a href="expeditions.html" class="btn-ghost">View Expeditions</a>
+    </div>
+    <div class="hero-trust">
+      <div class="hero-trust-item"><span class="ht-icon">✓</span> Fully insured expeditions</div>
+      <div class="hero-trust-item"><span class="ht-icon">✓</span> Max 10 per group</div>
+      <div class="hero-trust-item"><span class="ht-icon">✓</span> 4,200+ travelers</div>
     </div>
     <div class="hero-kpis">
       <div class="kpi"><div class="kpi-num">4,<em>200</em>+</div><div class="kpi-label">Travelers ascended</div></div>
       <div class="kpi"><div class="kpi-num">2.<em>1</em>M ft</div><div class="kpi-label">Collective altitude</div></div>
-      <div class="kpi"><div class="kpi-num">120+</div><div class="kpi-label">At Everest level</div></div>
+      <div class="kpi"><div class="kpi-num">120+</div><div class="kpi-label">At Everest Class</div></div>
     </div>
   </div>
   <div class="scroll-hint"><div class="scroll-line"></div>Scroll to ascend</div>
 </section>
 
-<!-- BRAND STATEMENT -->
-<div class="brand-bar" style="text-align:center;padding:28px 56px;border-bottom:1px solid rgba(255,255,255,.04)">
-  <p style="font-size:13px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:rgba(168,179,194,.45)">Not a trip.&nbsp;&nbsp;A climb.</p>
+<!-- SOCIAL PROOF BAR -->
+<div class="social-bar fade-in">
+  <div class="social-stat">
+    <div class="social-num">4,200+</div>
+    <div class="social-lbl">Travelers trust Altiora</div>
+  </div>
+  <div class="social-div"></div>
+  <div class="social-stat">
+    <div class="social-num">98%</div>
+    <div class="social-lbl">Re-book rate</div>
+  </div>
+  <div class="social-div"></div>
+  <div class="social-stat">
+    <div class="social-num">4.9★</div>
+    <div class="social-lbl">Average trip rating</div>
+  </div>
+  <div class="social-div"></div>
+  <div class="social-stat">
+    <div class="social-num">0</div>
+    <div class="social-lbl">Serious incidents · 5 yrs</div>
+  </div>
 </div>
 
 <!-- ALTITUDE TRACKER -->
@@ -291,8 +358,9 @@
     <div>
       <h2 class="sec-title">Track Every Foot<br>You Conquer.</h2>
       <p class="sec-sub">Your altitude score compounds with every expedition. Unlock elite levels, earn rewards, and claim your place on the Peak Ladder.</p>
-      <div style="margin-top:36px">
+      <div style="margin-top:36px;display:flex;gap:12px;flex-wrap:wrap">
         <a href="dashboard.html" class="btn-primary">View My Dashboard</a>
+        <a href="expeditions.html" class="btn-ghost">Browse Trips</a>
       </div>
     </div>
     <div>
@@ -321,18 +389,13 @@
   <p class="section-tagline">Earn altitude on every route</p>
   <div class="sec-label">Experiences</div>
   <h2 class="sec-title">Choose Your Path.</h2>
-  <p class="sec-sub">Four ways to earn altitude. Every route tracked, every foot counted.</p>
+  <p class="sec-sub">Every route tracked, every foot counted. Max 10 travelers per expedition — always.</p>
   <div class="trips-grid">
 
     <a href="trip-spiti.html" class="trip-card">
-      <div class="trip-img bg-spiti">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 100,60 160,90 240,20 300,55 370,10 400,40 400,220" fill="rgba(79,195,247,.05)" stroke="rgba(79,195,247,.12)" stroke-width="1"/>
-          <polygon points="240,20 220,50 260,45 240,20" fill="rgba(200,230,255,.12)"/>
-          <polygon points="370,10 350,35 390,32 370,10" fill="rgba(200,230,255,.1)"/>
-          <polygon points="0,220 60,140 140,160 230,110 310,140 400,120 400,220" fill="rgba(13,31,53,.8)"/>
-          <polygon points="0,220 40,185 120,195 200,172 280,185 360,175 400,180 400,220" fill="rgba(8,12,17,.9)"/>
-        </svg>
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1599661046289-e31897846e41?w=600&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner">
           <div class="trip-badge-row">
             <span class="trip-type">4×4 Expedition</span>
@@ -343,23 +406,22 @@
       <div class="trip-body">
         <div class="trip-name">Spiti Valley Deep Run</div>
         <div class="trip-specs">
-          <span class="trip-spec"><span class="spec-dot"></span>+18,380 ft</span>
+          <span class="trip-spec"><span class="spec-dot"></span>+18,380 ft altitude</span>
           <span class="trip-spec"><span class="spec-dot"></span>9 Days</span>
-          <span class="trip-spec"><span class="spec-dot"></span>Max 10</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Jun–Sep</span>
         </div>
-        <div class="urgency"><span class="dot"></span>Only 3 spots left</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Spots filled</span><strong>7 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill high" style="width:70%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
 
     <a href="trip-leh.html" class="trip-card">
-      <div class="trip-img bg-leh">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 80,70 150,100 220,30 290,70 360,20 400,50 400,220" fill="rgba(155,89,182,.06)" stroke="rgba(155,89,182,.1)" stroke-width="1"/>
-          <polygon points="220,30 200,58 240,55 220,30" fill="rgba(220,200,255,.1)"/>
-          <polygon points="0,220 50,150 130,165 210,130 290,155 370,135 400,145 400,220" fill="rgba(26,16,48,.8)"/>
-          <polygon points="0,220 30,192 110,200 190,182 270,196 350,183 400,188 400,220" fill="rgba(8,12,17,.9)"/>
-        </svg>
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner">
           <div class="trip-badge-row">
             <span class="trip-type">Bike Expedition</span>
@@ -370,24 +432,22 @@
       <div class="trip-body">
         <div class="trip-name">Manali–Leh Royal Ride</div>
         <div class="trip-specs">
-          <span class="trip-spec"><span class="spec-dot"></span>+17,600 ft</span>
+          <span class="trip-spec"><span class="spec-dot"></span>+17,600 ft altitude</span>
           <span class="trip-spec"><span class="spec-dot"></span>7 Days</span>
-          <span class="trip-spec"><span class="spec-dot"></span>Max 10</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Jul–Aug</span>
         </div>
-        <div class="urgency"><span class="dot"></span>5 spots remaining</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Spots filled</span><strong>5 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill med" style="width:50%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
 
     <a href="trip-pin.html" class="trip-card">
-      <div class="trip-img bg-pin">
-        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <polygon points="0,220 90,50 170,80 250,10 320,60 400,30 400,220" fill="rgba(231,76,60,.05)" stroke="rgba(231,76,60,.1)" stroke-width="1"/>
-          <polygon points="250,10 228,44 272,40 250,10" fill="rgba(230,210,200,.12)"/>
-          <path d="M 80 160 Q 140 140 200 155 Q 260 170 320 148" fill="none" stroke="rgba(255,107,0,.35)" stroke-width="2" stroke-dasharray="5,4"/>
-          <polygon points="0,220 45,165 130,178 215,155 295,170 375,155 400,162 400,220" fill="rgba(26,16,32,.8)"/>
-          <polygon points="0,220 25,196 105,205 185,188 265,200 345,186 400,192 400,220" fill="rgba(8,12,17,.92)"/>
-        </svg>
+      <div class="trip-img">
+        <div class="trip-img-photo" style="background-image:url('https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?w=600&q=80&auto=format&fit=crop')"></div>
+        <div class="trip-img-overlay"></div>
         <div class="trip-img-inner">
           <div class="trip-badge-row">
             <span class="trip-type">High Altitude Trek</span>
@@ -398,11 +458,14 @@
       <div class="trip-body">
         <div class="trip-name">Pin Parvati Pass Trek</div>
         <div class="trip-specs">
-          <span class="trip-spec"><span class="spec-dot"></span>+15,400 ft</span>
+          <span class="trip-spec"><span class="spec-dot"></span>+15,400 ft altitude</span>
           <span class="trip-spec"><span class="spec-dot"></span>12 Days</span>
-          <span class="trip-spec"><span class="spec-dot"></span>Max 10</span>
+          <span class="trip-spec"><span class="spec-dot"></span>Aug–Sep</span>
         </div>
-        <div class="urgency"><span class="dot"></span>2 spots left — filling fast</div>
+        <div class="slot-bar-wrap">
+          <div class="slot-label"><span>Spots filled</span><strong>8 of 10 taken</strong></div>
+          <div class="slot-track"><div class="slot-fill high" style="width:80%"></div></div>
+        </div>
         <div class="trip-cta">View Details →</div>
       </div>
     </a>
@@ -410,7 +473,7 @@
   </div>
   <div style="margin-top:44px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
     <a href="expeditions.html" class="btn-primary">View All Expeditions</a>
-    <span class="urgency"><span class="dot"></span>2026 season is 89% booked</span>
+    <span class="urgency"><span class="dot"></span>2026 season — 73 of 90 total slots filled</span>
   </div>
 </section>
 
@@ -421,8 +484,8 @@
   <div class="peaks-two">
     <div>
       <h2 class="sec-title">How High<br>Will You Go?</h2>
-      <p class="sec-sub">Every trip adds to your altitude. Climb higher. Unlock rewards.</p>
-      <p class="sec-sub" style="margin-top:16px;font-size:14px">Five tiers. One goal. The only leaderboard that matters is the one measured in feet.</p>
+      <p class="sec-sub">Five tiers. One goal. The only leaderboard that matters is the one measured in feet above sea level.</p>
+      <p class="sec-sub" style="margin-top:16px;font-size:14px">Unlock gear discounts, priority booking, and exclusive Altiora merch as you climb the ladder.</p>
       <div style="margin-top:36px;display:flex;gap:12px;flex-wrap:wrap">
         <a href="signup.html" class="btn-primary">Start Climbing</a>
         <a href="dashboard.html" class="btn-ghost">My Progress</a>
@@ -437,16 +500,16 @@
       <div class="peak-row locked-p">
         <div class="peak-mk mk-l">🔒</div>
         <div class="peak-info"><div class="peak-name">Everest Class</div><div class="peak-alt">100,000 ft · Priority access + merch</div></div>
-        <span class="peak-badge pb-locked">Priority + merch</span>
+        <span class="peak-badge pb-locked">Priority + Merch</span>
       </div>
       <div class="peak-row active-p">
         <div class="peak-mk mk-a">🔥</div>
-        <div class="peak-info"><div class="peak-name">Summiteer</div><div class="peak-alt">50,000 ft · Your example level</div></div>
+        <div class="peak-info"><div class="peak-name">Summiteer</div><div class="peak-alt">50,000 ft · Gear discount + badge</div></div>
         <span class="peak-badge pb-active">Active</span>
       </div>
       <div class="peak-row">
         <div class="peak-mk mk-d">✓</div>
-        <div class="peak-info"><div class="peak-name">Climber</div><div class="peak-alt">20,000 ft · Badge + gear</div></div>
+        <div class="peak-info"><div class="peak-name">Climber</div><div class="peak-alt">20,000 ft · Member badge + perks</div></div>
         <span class="peak-badge pb-done">Unlocked</span>
       </div>
       <div class="peak-row">
@@ -475,31 +538,31 @@
         <div class="crew-rank gold">1</div>
         <div class="crew-avi" style="background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.2)">🏔</div>
         <div class="crew-meta">
-          <div class="crew-name">Mountain Mafia</div>
-          <div class="crew-members">8 core members · Himachal base</div>
+          <div class="crew-name">Summit Seekers</div>
+          <div class="crew-members">8 members · Himachal base</div>
           <div class="crew-bar-wrap"><div class="crew-bar" style="width:100%;background:#FFB800"></div></div>
         </div>
-        <div><div class="crew-alt-num" style="color:#FFB800">320K</div><div class="crew-alt-label">ft total</div></div>
+        <div><div class="crew-alt-num" style="color:#FFB800">317K</div><div class="crew-alt-label">ft total</div></div>
       </div>
       <div class="crew-card">
         <div class="crew-rank silver">2</div>
         <div class="crew-avi" style="background:rgba(79,195,247,.08);border:1px solid rgba(79,195,247,.15)">⛺</div>
         <div class="crew-meta">
           <div class="crew-name">Frozen Horizon</div>
-          <div class="crew-members">6 core members · Delhi base</div>
+          <div class="crew-members">6 members · Delhi base</div>
           <div class="crew-bar-wrap"><div class="crew-bar" style="width:77%;background:var(--accent)"></div></div>
         </div>
-        <div><div class="crew-alt-num">248K</div><div class="crew-alt-label">ft total</div></div>
+        <div><div class="crew-alt-num">243K</div><div class="crew-alt-label">ft total</div></div>
       </div>
       <div class="crew-card">
         <div class="crew-rank" style="color:rgba(255,107,0,.6)">3</div>
         <div class="crew-avi" style="background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.15)">🦅</div>
         <div class="crew-meta">
           <div class="crew-name">Ridge Runners</div>
-          <div class="crew-members">5 core members · Pune base</div>
+          <div class="crew-members">5 members · Pune base</div>
           <div class="crew-bar-wrap"><div class="crew-bar" style="width:61%;background:var(--orange)"></div></div>
         </div>
-        <div><div class="crew-alt-num" style="color:var(--orange)">196K</div><div class="crew-alt-label">ft total</div></div>
+        <div><div class="crew-alt-num" style="color:var(--orange)">194K</div><div class="crew-alt-label">ft total</div></div>
       </div>
     </div>
   </div>
@@ -507,33 +570,70 @@
 
 <!-- TESTIMONIALS -->
 <section class="testi-section fade-in">
-  <div class="sec-label">Proof</div>
+  <div class="sec-label">Verified Experiences</div>
   <h2 class="sec-title">Real People. Real Altitude.</h2>
   <div class="testi-grid">
+
     <div class="testi-card">
       <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"Altiora isn't a travel agency — it's a ranking system for people who actually show up. Hitting Summiteer level was the proudest moment of my year."</p>
+      <p class="testi-quote">"Altiora isn't a travel agency — it's a ranking system for people who actually show up. Crossing into Summiteer level was the proudest outdoor moment of my year."</p>
       <div class="testi-author">
         <div class="testi-avi" style="background:rgba(79,195,247,.1);color:var(--accent)">RK</div>
-        <div><div class="t-name">Rahul Khanna</div><div class="t-level">Summiteer · 48,200 ft</div></div>
+        <div><div class="t-name">Rahul K.</div><div class="t-level">Summiteer · 48,200 ft earned</div></div>
       </div>
+      <div class="testi-verified">✓ Verified Spiti Valley expedition · March 2026</div>
     </div>
+
     <div class="testi-card">
       <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"Did the Spiti 4×4 run with 9 strangers. Left with a crew for life. We're #2 on the leaderboard and gunning for the top."</p>
+      <p class="testi-quote">"Did the Spiti 4×4 run with 9 strangers. Left with a crew for life. We're #2 on the leaderboard and gunning hard for the top."</p>
       <div class="testi-author">
         <div class="testi-avi" style="background:rgba(255,107,0,.1);color:#FF8C38">PS</div>
-        <div><div class="t-name">Priya Sharma</div><div class="t-level">Climber · 34,800 ft</div></div>
+        <div><div class="t-name">Priya S.</div><div class="t-level">Climber · 34,820 ft earned</div></div>
       </div>
+      <div class="testi-verified">✓ Verified Spiti 4×4 expedition · Jan 2026</div>
     </div>
+
     <div class="testi-card">
       <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"The max 10 rule is everything. Small group, real experience, no chaos. Did Leh twice and both times felt completely different."</p>
+      <p class="testi-quote">"The 10-person cap is everything. Small group, real experience, zero chaos. Booked Leh twice and both runs felt completely different."</p>
       <div class="testi-author">
         <div class="testi-avi" style="background:rgba(255,184,0,.1);color:#FFB800">AM</div>
-        <div><div class="t-name">Arjun Mehta</div><div class="t-level">Everest Class · 112,600 ft</div></div>
+        <div><div class="t-name">Arjun M.</div><div class="t-level">Everest Class · 112,640 ft earned</div></div>
       </div>
+      <div class="testi-verified">✓ Verified Manali–Leh expedition · Dec 2025</div>
     </div>
+
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"The altitude tracking is addictive. I started booking trips specifically to hit the next level. Currently 2,300 ft short of Everest Class and absolutely not stopping."</p>
+      <div class="testi-author">
+        <div class="testi-avi" style="background:rgba(46,213,115,.1);color:#2ed573">NK</div>
+        <div><div class="t-name">Neha K.</div><div class="t-level">Summiteer · 97,660 ft earned</div></div>
+      </div>
+      <div class="testi-verified">✓ Verified Pin Parvati trek · Feb 2026</div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Most tour operators are chaotic. Altiora runs like a professional operation. Safety briefing, acclimatization schedule, emergency protocols — it showed."</p>
+      <div class="testi-author">
+        <div class="testi-avi" style="background:rgba(155,89,182,.1);color:#a855f7">VS</div>
+        <div><div class="t-name">Vikram S.</div><div class="t-level">Climber · 23,480 ft earned</div></div>
+      </div>
+      <div class="testi-verified">✓ Verified Kaza–Kibber expedition · Nov 2025</div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"I was skeptical about the gamification angle but it genuinely changed how I travel. The dashboard gives me something to work toward between trips."</p>
+      <div class="testi-author">
+        <div class="testi-avi" style="background:rgba(79,195,247,.1);color:var(--accent)">AT</div>
+        <div><div class="t-name">Ananya T.</div><div class="t-level">Climber · 29,110 ft earned</div></div>
+      </div>
+      <div class="testi-verified">✓ Verified Hanle Dark Sky run · Oct 2025</div>
+    </div>
+
   </div>
 </section>
 
@@ -544,7 +644,7 @@
   <p class="sec-sub">Not a mass-market operator. Every detail engineered for the serious traveler.</p>
   <div class="trust-grid">
     <div class="trust-card"><div class="trust-icon">🏔</div><div class="trust-title">Led by Himachal Experts</div><div class="trust-desc">Every route guided by locals who grew up in these ranges. No outside vendors, no guesswork.</div></div>
-    <div class="trust-card"><div class="trust-icon">🛡</div><div class="trust-title">Fully Insured Expeditions</div><div class="trust-desc">Medical evacuation, gear coverage, and trip insurance bundled in. Zero compromise.</div></div>
+    <div class="trust-card"><div class="trust-icon">🛡</div><div class="trust-title">Fully Insured Expeditions</div><div class="trust-desc">Medical evacuation, gear coverage, and trip insurance bundled in. Zero compromise on safety.</div></div>
     <div class="trust-card"><div class="trust-icon">👥</div><div class="trust-title">Max 10 Per Group</div><div class="trust-desc">Hard cap. No exceptions. Small groups mean real experiences — not crowded convoys.</div></div>
     <div class="trust-card"><div class="trust-icon">📡</div><div class="trust-title">Altitude Tracking</div><div class="trust-desc">Your altitude is logged and synced to your profile automatically after every completed expedition.</div></div>
   </div>
@@ -554,18 +654,18 @@
 <section class="final-section fade-in">
   <div class="sec-label" style="text-align:center">The ascent starts now</div>
   <h2 class="final-h">Start Your <em>Ascent.</em></h2>
-  <p class="final-sub">The mountains are waiting.</p>
+  <p class="final-sub">Join 4,200+ travelers who earn every foot. The mountains are waiting.</p>
   <div class="final-btns">
     <a href="signup.html" class="btn-primary" style="font-size:17px;padding:20px 42px">Claim Your Altitude</a>
-    <a href="expeditions.html" class="btn-ghost">View Expeditions</a>
+    <a href="https://wa.me/918800000000?text=Hi%2C+I%27d+like+to+know+more+about+Altiora+expeditions" target="_blank" rel="noopener" class="btn-ghost" style="font-size:17px;padding:20px 42px">Talk to an Expert</a>
   </div>
-  <div class="final-urgency"><span class="dot"></span>2026 Himalayan season — 89% full</div>
+  <div class="final-urgency"><span class="dot"></span>2026 Himalayan season — 73 of 90 total slots filled</div>
 </section>
 
 <!-- STICKY BAR -->
 <div class="sticky-bar">
   <div class="sticky-inner" id="stickyInner">
-    <a href="https://wa.me/919999999999" class="sticky-wa" target="_blank" rel="noopener" title="WhatsApp">
+    <a href="https://wa.me/918800000000?text=Hi%2C+I%27d+like+to+know+more+about+Altiora+expeditions" class="sticky-wa" target="_blank" rel="noopener" title="Chat on WhatsApp">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
     <a href="signup.html" class="sticky-book">Claim Your Altitude →</a>
@@ -574,17 +674,62 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="foot-logo"><img src="assets/logo/altiora-primary.png" alt="Altiora" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','ALT<em style=&quot;color:#4FC3F7;font-style:normal&quot;>I</em>ORA')"></div>
-  <ul class="foot-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="expeditions.html">Expeditions</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="login.html">Sign In</a></li>
-  </ul>
-  <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
+  <div class="footer-top">
+    <div class="foot-brand">
+      <div class="foot-logo">ALT<em>I</em>ORA</div>
+      <div class="foot-tagline">Earn your altitude · Himalayan expeditions since 2021</div>
+    </div>
+    <div class="foot-nav-group">
+      <div class="foot-col">
+        <div class="foot-col-title">Explore</div>
+        <ul>
+          <li><a href="expeditions.html">All Expeditions</a></li>
+          <li><a href="trip-spiti.html">Spiti Valley</a></li>
+          <li><a href="trip-leh.html">Manali–Leh</a></li>
+          <li><a href="trip-pin.html">Pin Parvati</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <div class="foot-col-title">Account</div>
+        <ul>
+          <li><a href="dashboard.html">My Dashboard</a></li>
+          <li><a href="login.html">Sign In</a></li>
+          <li><a href="signup.html">Join Altiora</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <div class="foot-col-title">Contact</div>
+        <ul>
+          <li><a href="https://wa.me/918800000000" target="_blank">WhatsApp Us</a></li>
+          <li><a href="mailto:hello@altiora.in">hello@altiora.in</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="foot-copy">© 2026 Altiora Expeditions · Earn your altitude</div>
+    <div class="foot-badges">
+      <span class="foot-badge">🛡 Fully Insured</span>
+      <span class="foot-badge">✓ Verified Reviews</span>
+    </div>
+  </div>
 </footer>
 
 <script>
+// Hamburger menu
+const ham = document.getElementById('hamburger');
+const mob = document.getElementById('mobileMenu');
+ham.addEventListener('click', () => {
+  ham.classList.toggle('open');
+  mob.classList.toggle('open');
+  document.body.style.overflow = mob.classList.contains('open') ? 'hidden' : '';
+});
+// Close on link click
+mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  ham.classList.remove('open'); mob.classList.remove('open');
+  document.body.style.overflow = '';
+}));
+
 // Scroll animations
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
