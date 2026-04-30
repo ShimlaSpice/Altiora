@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Log Your Climbs — Altiora</title>
+<meta name="description" content="Calculate your estimated Himalayan altitude score for free. No login required."/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.log-hero{padding:130px 56px 48px;text-align:center;position:relative;overflow:hidden}
+.log-hero::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1440&q=70') center/cover;opacity:.07}
+.log-hero-inner{position:relative;z-index:1;max-width:640px;margin:0 auto}
+.log-main{padding:0 56px 96px;max-width:800px;margin:0 auto}
+.trips-container{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.trip-entry{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:20px 22px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:12px;align-items:end;transition:border-color .2s}
+.trip-entry:hover{border-color:rgba(201,168,76,.18)}
+.trip-entry .form-label{font-size:10px}
+.remove-trip{background:rgba(232,93,38,.1);border:1px solid rgba(232,93,38,.2);color:var(--fire);border-radius:8px;padding:13px 12px;cursor:pointer;font-size:13px;transition:all .2s;flex-shrink:0;font-family:var(--font-b);align-self:flex-end}
+.remove-trip:hover{background:rgba(232,93,38,.2)}
+.add-trip-btn{background:rgba(255,255,255,.04);border:1px dashed var(--border2);border-radius:12px;padding:16px;width:100%;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;font-family:var(--font-b);text-align:center}
+.add-trip-btn:hover{border-color:rgba(201,168,76,.3);color:var(--gold);background:rgba(201,168,76,.04)}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;margin-top:32px;display:none}
+.result-card.show{display:block;animation:fadeup .4s ease}
+.result-big{font-family:var(--font-d);font-size:clamp(56px,8vw,88px);font-weight:700;color:#fff;line-height:1;letter-spacing:-3px}
+.result-big span{color:var(--gold)}
+.result-ft{font-size:16px;color:var(--muted);margin-top:4px;margin-bottom:20px}
+.result-tier-display{display:inline-flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin-bottom:24px}
+.rtd-icon{font-size:28px}
+.rtd-name{font-family:var(--font-d);font-size:18px;font-weight:700;color:#fff}
+.rtd-label{font-size:11px;color:var(--muted2);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+.rtd-unv{font-size:10px;color:var(--muted2);margin-left:8px;background:rgba(255,255,255,.06);padding:3px 8px;border-radius:100px;letter-spacing:.5px}
+.result-bar-wrap{margin-bottom:8px}
+.result-bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted2);margin-bottom:7px}
+.result-track{height:8px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden}
+.result-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--ice),var(--gold));transition:width 1.2s cubic-bezier(.34,1.56,.64,1);width:0%}
+.result-to-next{font-size:12px;color:var(--muted2);margin-bottom:24px}
+.verify-steps{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:22px;margin-bottom:24px}
+.vs-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
+.vs-steps{display:flex;flex-direction:column;gap:12px}
+.vs-step{display:flex;align-items:flex-start;gap:12px;font-size:13px;color:var(--muted)}
+.vs-num{width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.15);color:var(--gold);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.result-ctas{display:flex;gap:10px;flex-wrap:wrap}
+.disclaimer-box{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:16px 18px;font-size:12px;color:var(--muted2);line-height:1.6;margin-top:0;margin-bottom:24px}
+.tier-explainer{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:32px}
+.te-card{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:20px 16px;text-align:center;transition:border-color .2s}
+.te-card:hover{border-color:rgba(201,168,76,.2)}
+.te-icon{font-size:26px;margin-bottom:10px}
+.te-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.te-thresh{font-size:11px;color:var(--muted2);margin-bottom:6px}
+.te-perk{font-size:10px;color:var(--muted);line-height:1.5}
+@media(max-width:900px){
+  .log-hero,.log-main{padding-left:20px;padding-right:20px}
+  .trip-entry{grid-template-columns:1fr 1fr;gap:10px}
+  .tier-explainer{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .trip-entry{grid-template-columns:1fr}
+  .tier-explainer{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav scrolled">
+  <a href="index.html" class="nav-logo">ALT<span>I</span>ORA</a>
+  <ul class="nav-center">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html">Expeditions</a></li>
+    <li><a href="crew.html">Crews</a></li>
+    <li><a href="log-climbs.html" class="active">Log Climbs</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="login.html" class="btn-nav-ghost">Sign In</a>
+    <a href="signup.html" class="btn-nav">Sign Up Free</a>
+    <button class="hamburger" id="ham"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mob">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="expeditions.html">Expeditions</a></li>
+    <li><a href="crew.html">Crews</a></li>
+    <li><a href="log-climbs.html" class="active">Log Climbs</a></li>
+  </ul>
+  <div class="mob-div"></div>
+  <div class="mob-actions">
+    <a href="login.html" class="mob-signin">Sign In</a>
+    <a href="signup.html" class="mob-signup">Sign Up Free</a>
+  </div>
+</div>
+
+<div class="log-hero">
+  <div class="log-hero-inner">
+    <div class="hero-eyebrow" style="justify-content:center"><span class="hero-dot"></span>Free · No Login Required</div>
+    <h1 class="sec-title" style="font-size:clamp(36px,5vw,64px);letter-spacing:-2px;text-align:center;margin-bottom:14px">How high have<br>you climbed?</h1>
+    <p style="font-size:16px;color:var(--muted);line-height:1.7;font-weight:300">Log your past Himalayan trips and see your estimated altitude score. Find out where you stand on the tier ladder — instantly.</p>
+  </div>
+</div>
+
+<div class="log-main">
+
+  <!-- TRIP LOGGER -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px">
+    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px">Add Your Past Himalayan Trips</div>
+
+    <div class="trips-container" id="tripsContainer">
+      <!-- trips injected here -->
+    </div>
+
+    <button class="add-trip-btn" id="addTripBtn">+ Add Another Trip</button>
+
+    <div style="margin-top:22px;display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="clearAll()" style="background:none;border:1px solid var(--border2);color:var(--muted);padding:12px 20px;border-radius:9px;cursor:pointer;font-family:var(--font-b);font-size:13px;transition:all .2s" onmouseover="this.style.borderColor='rgba(232,93,38,.3)'" onmouseout="this.style.borderColor='var(--border2)'">Clear All</button>
+      <button onclick="calculateScore()" class="btn-primary" style="font-size:14px;padding:13px 28px">Calculate My Score →</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="resultCard" class="result-card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px">
+      <div>
+        <div class="result-big"><span id="resScore">0</span></div>
+        <div class="result-ft">estimated feet climbed</div>
+      </div>
+      <div class="result-tier-display">
+        <span class="rtd-icon" id="resTierIcon">🥾</span>
+        <div>
+          <div class="rtd-name" id="resTierName">Explorer</div>
+          <div class="rtd-label">Unverified <span class="rtd-unv">UNVERIFIED</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-bar-wrap">
+      <div class="result-bar-label">
+        <span id="resCurrent">—</span>
+        <span id="resNext">—</span>
+      </div>
+      <div class="result-track"><div class="result-fill" id="resFill"></div></div>
+    </div>
+    <div class="result-to-next" id="resToNext"></div>
+
+    <div class="disclaimer-box">
+      <strong style="color:var(--gold)">This is an estimated, unverified score.</strong> It's based on self-reported trips and approximate altitude data. To earn a verified Altiora score — the one that appears permanently on the public leaderboard — you need to complete one Altiora expedition with GPS tracking.
+    </div>
+
+    <div class="verify-steps">
+      <div class="vs-title">How to verify your score</div>
+      <div class="vs-steps">
+        <div class="vs-step"><span class="vs-num">1</span><span>Complete any Altiora expedition — Spiti, Leh, Pin Parvati, or any future route</span></div>
+        <div class="vs-step"><span class="vs-num">2</span><span>Your GPS-tracked altitude gain is added to your profile during the trip</span></div>
+        <div class="vs-step"><span class="vs-num">3</span><span>Your verified score appears publicly on the leaderboard — permanently, with your name on it</span></div>
+      </div>
+    </div>
+
+    <div class="result-ctas">
+      <a href="expeditions.html" class="btn-primary">Verify My Score — View Expeditions →</a>
+      <a href="signup.html" class="btn-ghost">Save My Score Free</a>
+    </div>
+  </div>
+
+  <!-- TIER EXPLAINER -->
+  <div style="margin-top:48px">
+    <div class="sec-label" style="margin-bottom:16px">The Tier Ladder</div>
+    <h3 style="font-family:var(--font-d);font-size:24px;font-weight:700;color:#fff;margin-bottom:24px;letter-spacing:-1px">Where would your score place you?</h3>
+    <div class="tier-explainer">
+      <div class="te-card">
+        <div class="te-icon">🥾</div>
+        <div class="te-name">Explorer</div>
+        <div class="te-thresh">10,000 ft+</div>
+        <div class="te-perk">Welcome kit · Altitude tracking begins · Leaderboard entry</div>
+      </div>
+      <div class="te-card">
+        <div class="te-icon">🧗</div>
+        <div class="te-name">Climber</div>
+        <div class="te-thresh">20,000 ft+</div>
+        <div class="te-perk">10% gear discount · Member badge</div>
+      </div>
+      <div class="te-card" style="border-color:rgba(201,168,76,.2)">
+        <div class="te-icon">🏔</div>
+        <div class="te-name">Summiteer</div>
+        <div class="te-thresh">40,000 ft+</div>
+        <div class="te-perk">15% gear discount · Priority booking · Altiora badge</div>
+      </div>
+      <div class="te-card" style="border-color:rgba(201,168,76,.3)">
+        <div class="te-icon">👑</div>
+        <div class="te-name">Elite</div>
+        <div class="te-thresh">100,000 ft+</div>
+        <div class="te-perk">25% discount · Lifetime membership · Physical club card</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<a href="https://wa.me/918800000000" class="wa-float show" aria-label="WhatsApp">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+const ham=document.getElementById('ham'),mob=document.getElementById('mob');
+ham.addEventListener('click',()=>{ham.classList.toggle('open');mob.classList.toggle('open')});
+
+const ROUTES=[
+  {label:'Manali–Leh Highway',ft:17600},
+  {label:'Spiti Valley Circuit',ft:18380},
+  {label:'Pin Parvati Pass',ft:15400},
+  {label:'Stok Kangri',ft:20182},
+  {label:'Roopkund Trek',ft:14173},
+  {label:'Hampta Pass',ft:14042},
+  {label:'Chadar Trek',ft:11811},
+  {label:'Kedarkantha',ft:12500},
+  {label:'Valley of Flowers',ft:11795},
+  {label:'Har Ki Dun',ft:11417},
+  {label:'Brahmatal Trek',ft:12106},
+  {label:'Rupin Pass',ft:15250},
+  {label:'Other / Custom',ft:0,custom:true}
+];
+
+let tripCount=0;
+
+function addTrip(defaults={}){
+  tripCount++;
+  const id=`trip_${tripCount}`;
+  const div=document.createElement('div');
+  div.className='trip-entry';
+  div.id=id;
+  div.innerHTML=`
+    <div class="form-group" style="margin:0">
+      <label class="form-label">Route / Trip Name</label>
+      <select class="form-select" id="${id}_route" onchange="routeChanged('${id}')">
+        <option value="">Select route...</option>
+        ${ROUTES.map(r=>`<option value="${r.ft}" ${r.custom?'data-custom="1"':''}>${r.label}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group" style="margin:0" id="${id}_customWrap" style="display:none">
+      <label class="form-label">Highest Altitude (ft)</label>
+      <input type="number" class="form-input" id="${id}_custom" placeholder="e.g. 16000" min="5000" max="30000"/>
+    </div>
+    <div class="form-group" style="margin:0">
+      <label class="form-label">Year</label>
+      <select class="form-select" id="${id}_year">
+        ${[2026,2025,2024,2023,2022,2021,2020].map(y=>`<option value="${y}">${y}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group" style="margin:0">
+      <label class="form-label">Duration (days)</label>
+      <input type="number" class="form-input" id="${id}_days" value="7" min="1" max="30"/>
+    </div>
+    <button class="remove-trip" onclick="removeTrip('${id}')">✕</button>
+  `;
+  document.getElementById('tripsContainer').appendChild(div);
+  if(defaults.ft){
+    const sel=div.querySelector(`#${id}_route`);
+    for(let o of sel.options){if(o.value==defaults.ft){o.selected=true;break;}}
+  }
+}
+
+function routeChanged(id){
+  const sel=document.getElementById(`${id}_route`);
+  const opt=sel.options[sel.selectedIndex];
+  const wrap=document.getElementById(`${id}_customWrap`);
+  if(wrap)wrap.style.display=opt.getAttribute('data-custom')?'block':'none';
+}
+
+function removeTrip(id){
+  const el=document.getElementById(id);
+  if(el)el.remove();
+}
+
+function clearAll(){
+  document.getElementById('tripsContainer').innerHTML='';
+  document.getElementById('resultCard').classList.remove('show');
+  tripCount=0;
+  addTrip();
+}
+
+document.getElementById('addTripBtn').addEventListener('click',()=>addTrip());
+
+const TIERS=[
+  {icon:'🥾',name:'Explorer',min:10000,max:20000},
+  {icon:'🧗',name:'Climber',min:20000,max:40000},
+  {icon:'🏔',name:'Summiteer',min:40000,max:100000},
+  {icon:'👑',name:'Elite',min:100000,max:null}
+];
+
+function calculateScore(){
+  const entries=document.querySelectorAll('.trip-entry');
+  let total=0;
+  entries.forEach(entry=>{
+    const id=entry.id;
+    const sel=document.getElementById(`${id}_route`);
+    if(!sel)return;
+    const opt=sel.options[sel.selectedIndex];
+    let ft=parseInt(sel.value)||0;
+    if(opt.getAttribute('data-custom')){
+      ft=parseInt(document.getElementById(`${id}_custom`)?.value)||0;
+    }
+    total+=ft;
+  });
+  if(total===0){alert('Please add at least one trip to calculate your score.');return;}
+
+  const tier=TIERS.find(t=>total>=t.min&&(t.max===null||total<t.max))||TIERS[0];
+  document.getElementById('resScore').textContent=total.toLocaleString('en-IN');
+  document.getElementById('resTierIcon').textContent=tier.icon;
+  document.getElementById('resTierName').textContent=tier.name;
+  const pct=tier.max?Math.min(((total-tier.min)/(tier.max-tier.min))*100,99):100;
+  document.getElementById('resCurrent').textContent=`${tier.name} (${tier.min.toLocaleString()} ft)`;
+  const nextTier=TIERS[TIERS.indexOf(tier)+1];
+  document.getElementById('resNext').textContent=nextTier?`${nextTier.name} (${tier.max.toLocaleString()} ft)`:'Maximum Tier';
+  if(nextTier){
+    document.getElementById('resToNext').textContent=`${(tier.max-total).toLocaleString('en-IN')} ft to reach ${nextTier.name} tier`;
+  } else {
+    document.getElementById('resToNext').textContent='You\'ve reached Elite — the highest tier in Altiora.';
+  }
+
+  const card=document.getElementById('resultCard');
+  card.classList.add('show');
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>{document.getElementById('resFill').style.width=pct+'%';},100);
+}
+
+// Init with one trip
+addTrip();
+</script>
+</body>
+</html>
